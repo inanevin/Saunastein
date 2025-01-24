@@ -40,7 +40,7 @@ namespace Lina
 	class Text : public Widget
 	{
 	public:
-		Text() : Widget() {};
+		Text() : Widget(){};
 		virtual ~Text() = default;
 
 		struct Properties

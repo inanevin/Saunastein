@@ -41,7 +41,7 @@ namespace Lina
 	public:
 		static constexpr uint32 VERSION = 0;
 
-		EntityTemplate(ResourceID id, const String& name) : Resource(id, GetTypeID<EntityTemplate>(), name) {};
+		EntityTemplate(ResourceID id, const String& name) : Resource(id, GetTypeID<EntityTemplate>(), name){};
 		~EntityTemplate() = default;
 
 		virtual bool LoadFromFile(const String& path) override;

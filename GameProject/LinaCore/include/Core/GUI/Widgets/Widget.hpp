@@ -187,7 +187,7 @@ namespace Lina
 	{
 	public:
 		Widget(Bitmask32 flags = 0) : m_flags(flags), m_tid(GetTypeID<Widget>()) {};
-		virtual ~Widget() = default;
+		virtual ~Widget()						= default;
 
 		virtual void Initialize();
 		virtual void Construct() {};

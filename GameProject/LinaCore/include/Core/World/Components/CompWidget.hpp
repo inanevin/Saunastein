@@ -38,7 +38,7 @@ namespace Lina
 	class CompWidget : public Component
 	{
 	public:
-		CompWidget() : Component(GetTypeID<CompWidget>(), 0) {};
+		CompWidget() : Component(GetTypeID<CompWidget>(), 0){};
 		virtual ~CompWidget();
 
 		virtual void CollectReferences(HashSet<ResourceID>& refs) override;
