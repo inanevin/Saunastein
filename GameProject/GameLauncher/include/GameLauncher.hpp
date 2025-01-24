@@ -28,6 +28,7 @@ SOFTWARE.
 
 #pragma once
 
+#include "Game.hpp"
 #include "Core/ApplicationDelegate.hpp"
 #include "Core/Meta/ProjectData.hpp"
 #include "Core/System/PluginInterface.hpp"
@@ -74,6 +75,7 @@ namespace Lina
 		bool VerifyPackages(String& errString);
 
 	private:
+		Game			   m_game			   = {};
 		Plugin*			   m_gamePlugin		   = nullptr;
 		PluginInterface	   m_pluginInterface   = {};
 		LinaGX::Window*	   m_window			   = nullptr;

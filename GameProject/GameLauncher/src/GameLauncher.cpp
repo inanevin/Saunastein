@@ -106,13 +106,16 @@ namespace Lina
 		m_wr	= wr;
 		m_world = m_wr->GetWorld();
 		m_swapchainRenderer->SetWorldRenderer(m_wr);
-
 		m_world->GetWorldCamera().SetPosition(Vector3(0, 0, 0));
 		m_world->GetWorldCamera().Calculate(m_wr->GetSize());
+
+		m_game.OnGameBegin(m_world);
 	}
 
 	void GameLauncher::OnWorldUnloaded(ResourceID id)
 	{
+		m_game.OnGameEnd();
+
 		m_wr	= nullptr;
 		m_world = nullptr;
 		m_swapchainRenderer->SetWorldRenderer(nullptr);
@@ -125,8 +128,12 @@ namespace Lina
 
 	void GameLauncher::Tick(float delta)
 	{
-		if(m_world)
+		m_game.OnGamePreTick(delta);
+
+		if (m_world)
 			m_world->Tick(delta);
+
+		m_game.OnGameTick(delta);
 
 		if (m_wr)
 			m_wr->Tick(delta);
@@ -214,37 +221,37 @@ namespace Lina
 
 	void GameLauncher::OnWindowKey(LinaGX::Window* window, uint32 keycode, int32 scancode, LinaGX::InputAction inputAction)
 	{
-		if(window != m_window)
+		if (window != m_window)
 			return;
 
-		if(m_world)
+		if (m_world)
 			m_world->GetInput().OnKey(keycode, scancode, inputAction);
 	}
 
 	void GameLauncher::OnWindowMouse(LinaGX::Window* window, uint32 button, LinaGX::InputAction inputAction)
 	{
-		if(window != m_window)
+		if (window != m_window)
 			return;
 
-		if(m_world)
+		if (m_world)
 			m_world->GetInput().OnMouse(button, inputAction);
 	}
 
 	void GameLauncher::OnWindowMouseWheel(LinaGX::Window* window, float amt)
 	{
-		if(window != m_window)
+		if (window != m_window)
 			return;
 
-		if(m_world)
+		if (m_world)
 			m_world->GetInput().OnMouseWheel(amt);
 	}
 
 	void GameLauncher::OnWindowMouseMove(LinaGX::Window* window, const LinaGX::LGXVector2& move)
 	{
-		if(window != m_window)
+		if (window != m_window)
 			return;
 
-		if(m_world)
+		if (m_world)
 			m_world->GetInput().OnMouseMove(move);
 	}
 
