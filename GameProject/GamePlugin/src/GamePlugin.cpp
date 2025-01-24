@@ -80,17 +80,27 @@ namespace Lina
             m_resources[param.name] = param;
             LINA_INFO("Resource: {0}", param.name);
         }
-    
+        
+        EntityTemplate* templ = GetEntityTemplate("suzanne");
+        if (templ == NULL) {
+            LINA_ERR("suzanne not found");
+            return;
+        }
+        
         // Span suzannes
-//        for (uint32_t x = 0; x < 8; ++x) {
-//            for (uint32_t y = 0; y < 8; ++y) {
-//                for (uint32_t z = 0; z < 8; ++z) {
-//                    Entity* entity = SpawnEntity("suzanne");
-//                    entity->SetPosition(Vector3(x * 4.0f, y * 4.0f, z * 4.0f));
-//                    m_entities.push_back(entity);
-//                }
-//            }
-//        }
+        EntityTemplate* entity_template = GetEntityTemplate("suzanne");
+        if (entity_template == NULL) return;
+        
+        for (uint32_t x = 0; x < 8; ++x) {
+            for (uint32_t y = 0; y < 8; ++y) {
+                for (uint32_t z = 0; z < 8; ++z) {
+                    Entity* entity = SpawnEntity(entity_template);
+                    if (entity == NULL) break;
+                    entity->SetPosition(Vector3(x * 4.0f, y * 4.0f, z * 4.0f));
+                    m_entities.push_back(entity);
+                }
+            }
+        }
     }
     
     EntityTemplate* Saunastein::GetEntityTemplate(String key) {
