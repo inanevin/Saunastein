@@ -97,6 +97,12 @@ namespace Lina
         }
     }
     
+    Saunastein::~Saunastein() {
+        for(auto entity : m_entities) {
+            m_world->DestroyEntity(entity);
+        }
+    }
+    
     EntityTemplate* Saunastein::GetEntityTemplate(String key) {
         EntityParameter param = m_resources[key];
         if (param.type != EntityParameterType::ResourceID) {
@@ -147,15 +153,31 @@ namespace Lina
         bool input_backward = input.GetKey(LINAGX_KEY_S);
         bool input_left = input.GetKey(LINAGX_KEY_A);
         bool input_right = input.GetKey(LINAGX_KEY_D);
+
+        bool input_turn_left = input.GetKey(LINAGX_KEY_LEFT);
+        bool input_turn_right = input.GetKey(LINAGX_KEY_RIGHT);
         
-        const float movement_speed = 5.0f;
+        const float movement_speed = 2.0f * delta;
+        const float turn_speed = 90.0f * delta;
+        Camera& camera = m_world->GetWorldCamera();
         
-        for (auto entity : m_entities) {
-            if (input_forward) entity->AddPosition(Vector3::Forward * movement_speed * delta);
-            if (input_backward) entity->AddPosition(-Vector3::Forward * movement_speed * delta);
-            if (input_left) entity->AddPosition(-Vector3::Right * movement_speed * delta);
-            if (input_right) entity->AddPosition(Vector3::Right * movement_speed * delta);
-        }
+        Vector3 camera_pos = camera.GetPosition();
+        Quaternion camera_rot = camera.GetRotation();
+        Vector3 camera_fwd = camera_rot * Vector3::Forward;
+        Vector3 camera_right = camera_rot * Vector3::Right;
+        
+        if (input_forward) camera_pos += camera_fwd * movement_speed;
+        if (input_backward) camera_pos += -camera_fwd * movement_speed;
+        if (input_left) camera_pos += -camera_right * movement_speed;
+        if (input_right) camera_pos += camera_right * movement_speed;
+        
+        if (input_turn_left) camera_rot *= Quaternion(Vector3::Up, turn_speed);
+        if (input_turn_right) camera_rot *= Quaternion(Vector3::Up, -turn_speed);
+        
+        camera.SetPosition(camera_pos);
+        camera.SetRotation(camera_rot);
+        
+        camera.Calculate(m_world->GetScreen().GetRenderSize());
     }
 
 } // namespace Lina

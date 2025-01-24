@@ -41,6 +41,7 @@ namespace Lina
         
     public:
         Saunastein(EntityWorld* world);
+        ~Saunastein();
         
         virtual void OnComponentAdded(Component* c) override;
         virtual void OnComponentRemoved(Component* c) override;
