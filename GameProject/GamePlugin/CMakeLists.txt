@@ -40,11 +40,13 @@ set_property(GLOBAL PROPERTY DEBUG_CONFIGURATIONS "Debug;DebugFAST;DebugASAN;Deb
 set(SOURCES 
 include/GamePluginExports.hpp
 include/GamePlugin.hpp
+include/Player.hpp
 )
 
 set(HEADERS
 src/GamePluginEntryPoint.cpp
 src/GamePlugin.cpp
+src/Player.cpp
 )
 
 #--------------------------------------------------------------------
