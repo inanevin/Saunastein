@@ -85,9 +85,9 @@ namespace Lina
         EntityTemplate* entity_template = GetEntityTemplate("ent_suzanne");
         if (entity_template == NULL) return;
         
-        for (uint32_t x = 0; x < 8; ++x) {
-            for (uint32_t y = 0; y < 8; ++y) {
-                for (uint32_t z = 0; z < 8; ++z) {
+        for (uint32_t x = 0; x < 4; ++x) {
+            for (uint32_t y = 0; y < 4; ++y) {
+                for (uint32_t z = 0; z < 4; ++z) {
                     Entity* entity = SpawnEntity(entity_template);
                     if (entity == NULL) break;
                     entity->SetPosition(Vector3(x * 4.0f, y * 4.0f, z * 4.0f));
@@ -171,8 +171,8 @@ namespace Lina
         if (input_left) camera_pos += -camera_right * movement_speed;
         if (input_right) camera_pos += camera_right * movement_speed;
         
-        if (input_turn_left) camera_rot *= Quaternion(Vector3::Up, turn_speed);
-        if (input_turn_right) camera_rot *= Quaternion(Vector3::Up, -turn_speed);
+        if (input_turn_left) camera_rot = camera_rot * Quaternion(Vector3::Up, -turn_speed);
+        if (input_turn_right) camera_rot = camera_rot * Quaternion(Vector3::Up, turn_speed);
         
         camera.SetPosition(camera_pos);
         camera.SetRotation(camera_rot);
