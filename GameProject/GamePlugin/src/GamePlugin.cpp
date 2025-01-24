@@ -29,7 +29,6 @@ SOFTWARE.
 #include "GamePlugin.hpp"
 #include "Common/Math/Vector.hpp"
 #include "Common/Reflection/ReflectionSystem.hpp"
-#include "Core/Physics/PhysicsWorld.hpp"
 #include "Core/Resources/ResourceManager.hpp"
 #include "Core/System/PluginInterface.hpp"
 #include "Core/World/EntityTemplate.hpp"
@@ -78,16 +77,10 @@ Saunastein::Saunastein(EntityWorld *world) : m_world(world) {
   if (entity_template == NULL)
     return;
 
-  for (uint32_t x = 0; x < 8; ++x) {
-    for (uint32_t y = 0; y < 8; ++y) {
-      for (uint32_t z = 0; z < 8; ++z) {
+  for (uint32_t x = 0; x < 4; ++x) {
+    for (uint32_t y = 0; y < 4; ++y) {
+      for (uint32_t z = 0; z < 4; ++z) {
         Entity *entity = SpawnEntity(entity_template);
-
-        // m_world->GetPhysicsWorld()->CreateBodyForEntity(entity);
-        // m_world->GetPhysicsWorld()->GetPhysicsSystem().GetBodyInterface().AddBody(entity->GetPhysicsBody()->GetID(),
-        // JPH::EActivation::Activate);
-        // m_world->GetPhysicsWorld()->GetPhysicsSystem().GetBodyInterface().RemoveBody(entity->GetPhysicsBody()->GetID());
-
         if (entity == NULL)
           break;
         entity->SetPosition(Vector3(x * 4.0f, y * 4.0f, z * 4.0f));
@@ -172,9 +165,9 @@ void Saunastein::OnWorldTick(float delta, PlayMode playmode) {
     camera_pos += camera_right * movement_speed;
 
   if (input_turn_left)
-    camera_rot *= Quaternion(Vector3::Up, turn_speed);
+    camera_rot = camera_rot * Quaternion(Vector3::Up, -turn_speed);
   if (input_turn_right)
-    camera_rot *= Quaternion(Vector3::Up, -turn_speed);
+    camera_rot = camera_rot * Quaternion(Vector3::Up, turn_speed);
 
   camera.SetPosition(camera_pos);
   camera.SetRotation(camera_rot);
