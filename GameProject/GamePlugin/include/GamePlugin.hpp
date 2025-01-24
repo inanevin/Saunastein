@@ -36,8 +36,8 @@ namespace Lina
     class Saunastein: public EntityWorldListener {
         EntityWorld* m_world = NULL;
         std::map<String, EntityParameter> m_resources;
-//        Entity* m_suzanne = NULL;
         Vector<Entity*> m_entities;
+        Vector3 m_player_movement = Vector3::Zero;
         
     public:
         Saunastein(EntityWorld* world);
