@@ -81,14 +81,8 @@ namespace Lina
             LINA_INFO("Resource: {0}", param.name);
         }
         
-        EntityTemplate* templ = GetEntityTemplate("suzanne");
-        if (templ == NULL) {
-            LINA_ERR("suzanne not found");
-            return;
-        }
-        
         // Span suzannes
-        EntityTemplate* entity_template = GetEntityTemplate("suzanne");
+        EntityTemplate* entity_template = GetEntityTemplate("ent_suzanne");
         if (entity_template == NULL) return;
         
         for (uint32_t x = 0; x < 8; ++x) {
@@ -111,6 +105,7 @@ namespace Lina
         }
         
         ResourceID rid = m_resources[key].valRes;
+        LINA_INFO("RID: {}", rid);
         ResourceManagerV2* rm = m_world->GetResourceManager();
         EntityTemplate* entity_template = rm->GetIfExists<EntityTemplate>(rid);
         
@@ -146,16 +141,12 @@ namespace Lina
     }
 
     void Saunastein::OnWorldTick(float delta, PlayMode playmode) {
-//        for (auto entity : m_entities) {
-//            entity->AddPosition(Vector3(1.0, 0.0, 0.0) * delta);
-//            entity->AddRotation(Vector3(90.0, 45.0, 30.0) * delta);
-//        }
         WorldInput input = m_world->GetInput();
         
-        bool input_forward = input.GetKeyDown(LINAGX_KEY_W);
-        bool input_backward = input.GetKeyDown(LINAGX_KEY_S);
-        bool input_left = input.GetKeyDown(LINAGX_KEY_A);
-        bool input_right = input.GetKeyDown(LINAGX_KEY_D);
+        bool input_forward = input.GetKey(LINAGX_KEY_W);
+        bool input_backward = input.GetKey(LINAGX_KEY_S);
+        bool input_left = input.GetKey(LINAGX_KEY_A);
+        bool input_right = input.GetKey(LINAGX_KEY_D);
         
         const float movement_speed = 5.0f;
         
