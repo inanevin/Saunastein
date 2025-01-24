@@ -248,6 +248,11 @@ namespace Lina
 			return m_neededResourceDefinitions;
 		}
 
+		inline ProjectData* GetProjectData()
+		{
+			return m_projectData;
+		}
+
 	private:
 		void				BeginPlay();
 		void				EndPlay();

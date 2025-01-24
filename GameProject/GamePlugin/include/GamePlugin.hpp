@@ -29,11 +29,32 @@ SOFTWARE.
 #pragma once
 
 #include "Core/System/Plugin.hpp"
+#include "Core/World/EntityWorld.hpp"
 
 namespace Lina
 {
+    class Saunastein: public EntityWorldListener {
+        EntityWorld* m_world = NULL;
+        std::map<String, EntityParameter> m_resources;
+//        Entity* m_suzanne = NULL;
+        Vector<Entity*> m_entities;
+        
+    public:
+        Saunastein(EntityWorld* world);
+        ~Saunastein();
+        
+        virtual void OnComponentAdded(Component* c) override;
+        virtual void OnComponentRemoved(Component* c) override;
+        virtual void OnWorldTick(float delta, PlayMode playmode) override;
+        
+        Entity* SpawnEntity(String key);
+        Entity* SpawnEntity(EntityTemplate* entity_template);
+        EntityTemplate* GetEntityTemplate(String key);
+    };
+
 	class GamePlugin : public Plugin
 	{
+        Saunastein* saunastein = NULL;
 	public:
 		GamePlugin(const String& path, void* platformHandle, PluginInterface* interface) : Plugin(path, platformHandle, interface){};
 		virtual ~GamePlugin() = default;
@@ -41,6 +62,7 @@ namespace Lina
 		// Inherited via IPlugin
 		virtual void OnAttached() override;
 		virtual void OnDetached() override;
+        virtual void OnSetPlayMode(EntityWorld* world, PlayMode mode) override;
 	};
 
 } // namespace Lina
