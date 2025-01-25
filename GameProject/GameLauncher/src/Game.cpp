@@ -42,6 +42,7 @@ SOFTWARE.
 #include "Core/Graphics/Resource/Material.hpp"
 #include "Core/Application.hpp"
 #include "Core/World/Components/CompAudio.hpp"
+#include "Core/Physics/PhysicsWorld.hpp"
 #include <LinaGX/Core/InputMappings.hpp>
 
 namespace Lina
@@ -142,10 +143,13 @@ namespace Lina
 			m_skyTopColor	  = *skyMat->GetProperty<Vector3>("skyColor"_hs);
 			m_skyHorizonColor = *skyMat->GetProperty<Vector3>("horizonColor"_hs);
 		}
+		m_world->GetPhysicsWorld()->AddContactListener(this);
 	}
 
 	void Game::OnGameEnd()
 	{
+		m_world->GetPhysicsWorld()->RemoveContactListener(this);
+
 		delete m_waveManager;
 		delete m_player;
 		delete m_bubbleManager;
@@ -153,6 +157,7 @@ namespace Lina
 
 	void Game::OnGamePreTick()
 	{
+
 		if (m_mouseLocked)
 		{
 			m_world->GetScreen().GetOwnerWindow()->ConfineMouseToCenter();
@@ -166,7 +171,7 @@ namespace Lina
 			return;
 
 		m_player->PreTick();
-    m_waveManager->PreTick();
+		m_waveManager->PreTick();
 		m_bubbleManager->PreTick();
 	}
 
@@ -289,6 +294,19 @@ namespace Lina
 			skyMat->SetProperty<Vector3>("horizonColor"_hs, horizonColor);
 			m_gameLauncher->GetApp()->GetGfxContext().MarkBindlessDirty();
 		}
+	}
+
+	void Game::OnContactBegin(Entity* e1, Entity* e2, const Vector3& p1, const Vector3& p2)
+	{
+		LINA_TRACE("CONTACT");
+	}
+
+	void Game::OnContact(Entity* e1, Entity* e2, const Vector3& p1, const Vector3& p2)
+	{
+	}
+
+	void Game::OnContactEnd(Entity* e1, Entity* e2)
+	{
 	}
 
 } // namespace Lina
