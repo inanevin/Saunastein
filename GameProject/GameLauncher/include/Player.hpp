@@ -44,7 +44,7 @@ namespace Lina
 	class Entity;
 	class BubbleManager;
 	class Game;
-class Application;
+	class Application;
 
 	class Player
 	{

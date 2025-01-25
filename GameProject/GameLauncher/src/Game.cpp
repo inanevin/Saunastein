@@ -80,13 +80,13 @@ namespace Lina
 	{
 	}
 
-void Game::OnGameBegin(EntityWorld* world, GameLauncher* gl, Application *app)
+	void Game::OnGameBegin(EntityWorld* world, GameLauncher* gl, Application* app)
 	{
 		m_gameLauncher = gl;
 		m_world		   = world;
 
 		m_bubbleManager = new BubbleManager(m_world);
-    m_hudManager = new HudManager(this);
+		m_hudManager	= new HudManager(this);
 		m_player		= new Player(m_world, m_bubbleManager, app);
 		m_mouseLocked	= true;
 
@@ -185,7 +185,7 @@ void Game::OnGameBegin(EntityWorld* world, GameLauncher* gl, Application *app)
 		m_player->Tick(dt);
 		m_bubbleManager->Tick(dt);
 		m_waveManager->Tick(dt);
-    m_hudManager->Tick(dt);
+		m_hudManager->Tick(dt);
 
 		if (m_player->m_health < 0.0f && m_gameLostScreen != nullptr)
 		{
@@ -265,8 +265,8 @@ void Game::OnGameBegin(EntityWorld* world, GameLauncher* gl, Application *app)
 
 	void Game::OnWaveSpawned(uint32_t index, String name)
 	{
-    m_hudManager->SetMainText(name);
-//		LINA_TRACE("OnEnemyWaveSpawned: {0} {1}", index, name);
+		m_hudManager->SetMainText(name);
+		//		LINA_TRACE("OnEnemyWaveSpawned: {0} {1}", index, name);
 	}
 
 	void Game::UpdateHeat(float addition)
@@ -302,7 +302,6 @@ void Game::OnGameBegin(EntityWorld* world, GameLauncher* gl, Application *app)
 
 	void Game::OnContactBegin(Entity* e1, Entity* e2, const Vector3& p1, const Vector3& p2)
 	{
-		
 	}
 
 	void Game::OnContact(Entity* e1, Entity* e2, const Vector3& p1, const Vector3& p2)
