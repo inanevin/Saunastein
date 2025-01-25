@@ -41,19 +41,24 @@ namespace Lina
 	void Enemy::Tick(float dt)
 	{
 		m_timer += dt;
-		int animFrame = ((int)(m_timer / 0.2f) % 2);
+    JPH::Body* physicsBody = m_entity->GetPhysicsBody();
+    float currentPhysicsSpeed = physicsBody->GetLinearVelocity().Length();
+    float animFrameTime = 0.1f + (0.5f / currentPhysicsSpeed);
+    LINA_INFO("currentPhysicsSpeed: {0}", currentPhysicsSpeed);
+    
+		int animFrame = ((int)(m_timer / animFrameTime) % 2);
 
 		m_currentSpriteIdx = animFrame;
-//    m_currentSpriteIdx = 1;
-
-		const float speed = 5.0f;
+    
+    float forceFactor = Math::Clamp(1.0f / currentPhysicsSpeed, 0.0f, 1.0f);
+    float force = 8.0f * forceFactor;
 		Vector3 selfPosition = m_entity->GetPosition();
 		selfPosition.y = 0.0f;
 		Vector3 targetPosition = m_target->m_entity->GetPosition();
 		targetPosition.y = 0.0f;
 		Vector3 targetDirection = (targetPosition - selfPosition).Normalized();
 
-		m_entity->GetPhysicsBody()->SetLinearVelocity(ToJoltVec3(targetDirection * speed));
+    physicsBody->AddForce(ToJoltVec3(targetDirection * force));
 
 		for (uint32_t spriteIdx = 0; spriteIdx < m_sprites.size(); ++spriteIdx)
 		{
@@ -65,10 +70,5 @@ namespace Lina
 				m_sprites[spriteIdx]->SetRotation(Quaternion::LookAt(selfPosition, targetPosition, Vector3::Up));
 			}
 		}
-
-		//    LINA_INFO("spriteFlipScale: {0}", spriteFlipScale);
-		//    Vector3 spriteScale = m_sprite->GetLocalScale();
-		//    spriteScale.x = m_origSpriteScale * spriteFlipScale;
-		//    m_sprite->SetLocalScale(spriteScale);
 	}
 } // namespace Lina

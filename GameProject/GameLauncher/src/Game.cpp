@@ -43,9 +43,9 @@ namespace Lina
 	{
 		if (keycode == LINAGX_KEY_ESCAPE && inputAction == LinaGX::InputAction::Pressed)
 		{
-			m_mouseLocked = false;
-			m_world->GetScreen().GetOwnerWindow()->SetMouseVisible(true);
-			m_mouseVisible = true;
+//			m_mouseLocked = false;
+//			m_world->GetScreen().GetOwnerWindow()->SetMouseVisible(true);
+//			m_mouseVisible = true;
 		}
 	}
 
@@ -54,13 +54,13 @@ namespace Lina
 		if (m_gameState != GameState::Running)
 			return;
 
-		m_mouseLocked = true;
-
-		if (inputAction == LinaGX::InputAction::Pressed)
-		{
-			m_world->GetScreen().GetOwnerWindow()->SetMouseVisible(false);
-			m_mouseVisible = false;
-		}
+//		m_mouseLocked = true;
+//
+//		if (inputAction == LinaGX::InputAction::Pressed)
+//		{
+//			m_world->GetScreen().GetOwnerWindow()->SetMouseVisible(false);
+//			m_mouseVisible = false;
+//		}
 	}
 
 	void Game::OnMouseWheel(float amt)
@@ -115,14 +115,14 @@ namespace Lina
 
 	void Game::OnGamePreTick(float dt)
 	{
-		if (m_mouseLocked)
-		{
-			m_world->GetScreen().GetOwnerWindow()->ConfineMouseToCenter();
-		}
-		else
-		{
-			m_world->GetScreen().GetOwnerWindow()->FreeMouse();
-		}
+//		if (m_mouseLocked)
+//		{
+//			m_world->GetScreen().GetOwnerWindow()->ConfineMouseToCenter();
+//		}
+//		else
+//		{
+//			m_world->GetScreen().GetOwnerWindow()->FreeMouse();
+//		}
 	}
 
 	void Game::OnGameTick(float dt)
@@ -198,9 +198,9 @@ namespace Lina
 	{
 	}
 
-	void Game::OnEnemyWaveSpawned(uint32_t index)
+	void Game::OnEnemyWaveSpawned(uint32_t index, String name)
 	{
-		LINA_TRACE("OnEnemyWaveSpawned: {0}", index);
+		LINA_TRACE("OnEnemyWaveSpawned: {0} {1}", index, name);
 	}
 
 } // namespace Lina
