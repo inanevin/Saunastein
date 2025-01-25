@@ -26,7 +26,10 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
+
 #pragma once
+
+#include "Core/World/EntityWorld.hpp"
 
 namespace LinaGX
 {
@@ -39,6 +42,7 @@ namespace Lina
 {
 	class EntityWorld;
 	class Player;
+  class Enemy;
 
 	class Game
 	{
@@ -52,9 +56,14 @@ namespace Lina
 		void OnMouse(uint32 button, LinaGX::InputAction inputAction);
 		void OnMouseWheel(float amt);
 		void OnMouseMove(const LinaGX::LGXVector2&);
+    
+    EntityTemplate* GetEntityTemplate(String key);
 
 	private:
 		EntityWorld* m_world  = nullptr;
 		Player*		 m_player = nullptr;
+    HashMap<String, EntityParameter> m_resources;
+    Vector<Entity*> m_enemySpawns;
+    Vector<Enemy*> m_enemies;
 	};
 } // namespace Lina

@@ -24,6 +24,7 @@ set(SOURCES
 src/GameLauncher.cpp
 src/Game.cpp
 src/Player.cpp
+src/Enemy.cpp
 src/SwapchainRenderer.cpp
 )
 
@@ -31,6 +32,7 @@ set(HEADERS
 include/GameLauncher.hpp
 include/Game.hpp
 include/Player.hpp
+include/Enemy.hpp
 include/SwapchainRenderer.hpp
 )
 

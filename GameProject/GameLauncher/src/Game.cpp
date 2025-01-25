@@ -28,6 +28,10 @@ SOFTWARE.
 
 #include "Game.hpp"
 #include "Player.hpp"
+#include "Enemy.hpp"
+
+#include "Core/Resources/ResourceManager.hpp"
+#include "Core/World/EntityTemplate.hpp"
 
 namespace Lina
 {
@@ -52,6 +56,50 @@ namespace Lina
 	{
 		m_world	 = world;
 		m_player = new Player(m_world);
+    
+    // Find resources
+    Entity *res = m_world->FindEntity("Resources");
+    
+    if (res == NULL) {
+      LINA_ERR("Resources entity not found");
+      return;
+    }
+    
+    for (auto param : res->GetParams().params) {
+      m_resources[param.name] = param;
+      LINA_INFO("Resource: {0}", param.name);
+    }
+    
+    // Find enemy spawns
+    m_world->ViewEntities([&](Entity* e, uint32 index) -> bool {
+      LINA_INFO("Entity: {0}", e->GetName());
+      if (e->GetName().compare("EnemySpawn") == 0) {
+        this->m_enemySpawns.push_back(e);
+      }
+      return false;
+    });
+    
+    LINA_INFO("EnemySpawns: {0}", m_enemySpawns.size());
+    
+    // Placeholder: spawn a single enemy at each enemy spawner
+    EntityTemplate* enemyTemplate = GetEntityTemplate("Enemy_1");
+    if (enemyTemplate != nullptr) {
+      for (Entity* spawn : m_enemySpawns) {
+        Enemy* enemy = new Enemy(m_world, enemyTemplate, m_player);
+        enemy->m_entity->SetPosition(spawn->GetPosition());
+        enemy->m_entity->SetRotation(spawn->GetRotation());
+      }
+    }
+    
+//    if (m_resources.contains("Enemy_1")) {
+////      ResourceID rid = m_resources["Enemy_1"].valRes;
+////      EntityTemplate* enemyTemplate = m_resources["Enemy_1"].valRes;
+//      for (Entity* spawn : m_enemySpawns) {
+//        Enemy* enemy = new Enemy(m_world, enemyTemplate);
+//      }
+//    } else {
+//      LINA_ERROR("No Enemy_1 template resource found");
+//    }
 	}
 
 	void Game::OnGameEnd()
@@ -67,5 +115,27 @@ namespace Lina
 	{
 		m_player->Tick(dt);
 	}
-
+  
+  EntityTemplate* Game::GetEntityTemplate(String key) {
+    if (m_resources.contains(key)) {
+      EntityParameter param = m_resources[key];
+      if (param.type != EntityParameterType::ResourceID) {
+        LINA_ERR("Parameter {0} is not a resource", key);
+        return nullptr;
+      }
+      
+      ResourceID rid = m_resources[key].valRes;
+      ResourceManagerV2 *rm = m_world->GetResourceManager();
+      EntityTemplate *entity_template = rm->GetIfExists<EntityTemplate>(rid);
+      
+      if (entity_template == nullptr) {
+        LINA_ERR("Failed to get EntityTemplate for key {0} ", key);
+        return nullptr;
+      }
+      
+      return entity_template;
+    } else {
+      LINA_ERR("No resource {0} found", key);
+    }
+  }
 } // namespace Lina
