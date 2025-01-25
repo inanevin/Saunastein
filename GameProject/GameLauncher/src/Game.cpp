@@ -103,7 +103,7 @@ namespace Lina
 			CompWidget* w = m_world->GetComponent<CompWidget>(m_gameLostScreen);
 			if (w)
 			{
-				Widget* w = w->GetWidgetManager()->GetRoot()->FindChildWithDebugName("Restart");
+				// Widget* w = w->GetWidgetManager()->GetRoot()->FindChildWithDebugName("Restart");
 			}
 		}
 	}
