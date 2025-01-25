@@ -37,6 +37,10 @@ SOFTWARE.
 #include "Core/World/Components/CompAudio.hpp"
 #include "Core/World/Components/CompWidget.hpp"
 #include "Core/World/Components/CompLight.hpp"
+#include "Core/GUI/Theme.hpp"
+#include "Core/GUI/Widgets/Widget.hpp"
+#include "Core/GUI/Widgets/Primitives/Text.hpp"
+#include "Core/GUI/Widgets/Primitives/Button.hpp"
 
 namespace Lina
 {
@@ -44,7 +48,7 @@ namespace Lina
 #define PACKAGE_0_PATH "LinaPackage0.linapkg"
 #define PACKAGE_1_PATH "LinaPackage1.linapkg"
 
-#define FULLSCREEN 0
+#define FULLSCREEN 1
 
 	SystemInitializationInfo Lina_GetInitInfo()
 	{
@@ -60,6 +64,7 @@ namespace Lina
 
 	bool Lina::GameLauncher::PreInitialize(String& errString)
 	{
+		Theme::GetDef().defaultFont = ENGINE_FONT_ROBOTO_ID;
 		m_pluginInterface.SetLog(m_app->GetLog());
 
 		if (!LoadGamePlugin(errString))

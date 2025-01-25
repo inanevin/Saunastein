@@ -69,7 +69,11 @@ namespace Lina
 	{
 		m_world	 = world;
 		m_player = new Player(m_world);
-    m_mouseLocked = true;
+        m_mouseLocked = true;
+        
+        m_gameLostScreen = m_world->FindEntity("GameLost");
+        m_gameWonScreen = m_world->FindEntity("GameWon");
+        
     // Find resources
     Entity *res = m_world->FindEntity("Resources");
     
@@ -133,11 +137,20 @@ namespace Lina
 
 	void Game::OnGameTick(float dt)
 	{
+        if(m_gameState != GameState::Running)
+            return;
+        
 		m_player->Tick(dt);
     
-    for (Enemy* enemy : m_enemies) {
-      enemy->Tick(dt);
-    }
+        for (Enemy* enemy : m_enemies) {
+            enemy->Tick(dt);
+        }
+        
+        if(m_player->m_health < 0.0f && m_gameLostScreen)
+        {
+            m_gameState = GameState::Lost;
+            m_gameLostScreen->SetVisible(true);
+        }
 	}
   
   EntityTemplate* Game::GetEntityTemplate(String key) {
