@@ -301,6 +301,7 @@ namespace Lina
 
 	bool GameLauncher::LoadGamePlugin(String& errString)
 	{
+		return true;
 #ifdef LINA_PLATFORM_WINDOWS
 		const String path = "GamePlugin.dll";
 #endif
