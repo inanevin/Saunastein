@@ -185,7 +185,7 @@ namespace Lina
 
 static void HandleEnemyDamage(WaveManager* wm, BubbleManager::BubbleData* bubble, Enemy* enemy) {
   if (!enemy->m_dead) {
-    enemy->m_health--;
+    enemy->TakeDamage(1);
     LINA_INFO("ENEMY TAKE HIT! Has {0}", enemy->m_health);
   }
   
