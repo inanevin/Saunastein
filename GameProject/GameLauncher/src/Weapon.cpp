@@ -37,6 +37,7 @@ SOFTWARE.
 #include "Core/Resources/ResourceManager.hpp"
 #include "Core/World/EntityTemplate.hpp"
 #include "Core/Physics/PhysicsWorld.hpp"
+#include "Core/Graphics/Resource/Material.hpp"d
 #include "Common/Data/Vector.hpp"
 
 #include <LinaGX/Core/InputMappings.hpp>
@@ -49,6 +50,7 @@ namespace Lina
 	void WeaponAnimation::Tick(float dt, Material* material)
 	{
 	}
+
 	Weapon::Weapon(EntityWorld* world, Player* player, BubbleManager* bm)
 	{
 		m_world			= world;
