@@ -46,14 +46,32 @@ namespace Lina
 	class Weapon
 	{
 	public:
+		struct Movement
+		{
+			float bobPower	 = 4.0f;
+			float bobSpeed	 = 8.0f;
+			float swayPowerX = 0.5f;
+			float swayPowerY = 0.5f;
+			float swaySpeed	 = 15.0f;
+		};
+
+		struct Runtime
+		{
+			Vector3 startLocalPos		= Vector3::Zero;
+			Vector3 startLocalEuler		= Vector3::Zero;
+			Vector3 localPositionOffset = Vector3::Zero;
+		};
+
 		Weapon(Player* player, EntityWorld* weapon);
 		virtual ~Weapon();
 
 		virtual void Tick(float dt);
 
-		Entity*		 m_entity = nullptr;
-		EntityWorld* m_world  = nullptr;
-		Player*		 m_player = nullptr;
+		Movement	 m_movement = {};
+		Runtime		 m_runtime	= {};
+		Entity*		 m_entity	= nullptr;
+		EntityWorld* m_world	= nullptr;
+		Player*		 m_player	= nullptr;
 	};
 
 	class WeaponMelee : public Weapon

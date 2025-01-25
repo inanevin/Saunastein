@@ -49,14 +49,14 @@ namespace Lina
 		JPH::MassProperties mp;
 		mp.mMass = m_entity->GetPhysicsSettings().mass;
 
-		body->SetFriction(0.1f);
+		body->SetFriction(10.0f);
 		body->SetRestitution(0.1f);
+		body->GetMotionProperties()->SetLinearDamping(3.0f);
 
 		body->GetMotionProperties()->SetMassProperties(JPH::EAllowedDOFs::TranslationX | JPH::EAllowedDOFs::TranslationY | JPH::EAllowedDOFs::TranslationZ | JPH::EAllowedDOFs::RotationY, mp);
 		m_entity->GetPhysicsBody()->SetAllowSleeping(false);
 
-		m_movement.movementSpeed = 12.0f;
-		m_movement.movementPower = 10.5f;
+		m_movement.movementPower = 60.5f;
 		m_movement.rotationSpeed = 30.0f;
 		m_movement.rotationPower = 5.0f;
 
@@ -66,7 +66,8 @@ namespace Lina
 		m_movement.headbobYawPower = 0.3f;
 		m_movement.headbobYawSpeed = 7.5f;
 
-		m_weapon = new WeaponMelee(this, m_world);
+		m_movement.headSwayPower = 0.0f;
+		m_weapon				 = new WeaponMelee(this, m_world);
 	}
 
 	Player::~Player()
@@ -82,28 +83,31 @@ namespace Lina
 		const float	  verticalTarget   = m_world->GetInput().GetKey(LINAGX_KEY_W) ? 1.0f : (m_world->GetInput().GetKey(LINAGX_KEY_S) ? -1.0f : 0.0f);
 		const float	  horizontalTarget = m_world->GetInput().GetKey(LINAGX_KEY_D) ? 1.0f : (m_world->GetInput().GetKey(LINAGX_KEY_A) ? -1.0f : 0.0f);
 		const Vector2 input			   = Vector2(horizontalTarget, verticalTarget);
-		const Vector3 direction		   = (m_cameraRef->GetRotation().GetForward() * verticalTarget + m_cameraRef->GetRotation().GetRight() * horizontalTarget);
+		Vector3		  direction		   = (m_cameraRef->GetRotation().GetForward() * verticalTarget + m_cameraRef->GetRotation().GetRight() * horizontalTarget);
+		direction.y					   = 0.0f;
+		m_runtime.velocity			   = direction;
 
-		m_runtime.targetPosition += direction * dt * m_movement.movementSpeed;
-		m_runtime.targetPosition.y = 2.0f;
-
-		const Vector3 velocity = (m_runtime.targetPosition - m_entity->GetPosition()) * m_movement.movementPower;
-		m_entity->GetPhysicsBody()->SetLinearVelocity(ToJoltVec3(velocity));
+		if (!Math::Equals(direction.x, 0.0f, 0.001f) || !Math::Equals(direction.y, 0.0f, 0.001f))
+		{
+			const Vector3 force = direction.Normalized() * m_movement.movementPower;
+			m_entity->GetPhysicsBody()->AddForce(ToJoltVec3(force));
+		}
 
 		// Mouse camera movement.
 		const Vector2 mouseDelta = m_world->GetInput().GetMouseDelta();
 		m_runtime.cameraAngles.x += mouseDelta.x * dt * 10.0f;
 		m_runtime.cameraAngles.y += mouseDelta.y * dt * 10.0f;
 		m_runtime.cameraAngles.y = Math::Clamp(m_runtime.cameraAngles.y, -89.0f, 89.0f);
-		m_runtime.cameraAngles.z = -m_movement.headSwayPower * input.x;
+		m_runtime.cameraAngles.z = 0.0f;
 
 		// Head-bob
-		Vector3 headbob = Vector3(Math::Sin(SystemInfo::GetAppTimeF() * m_movement.headbobYawSpeed) * m_movement.headbobYawPower, Math::Cos(SystemInfo::GetAppTimeF() * m_movement.headbobPitchSpeed) * m_movement.headbobPitchPower, 0.0f);
-		headbob *= velocity.Magnitude() * 0.2f;
+		Vector3 headbob =
+			Vector3(Math::Sin(SystemInfo::GetAppTimeF() * m_movement.headbobYawSpeed) * m_movement.headbobYawPower, Math::Cos(SystemInfo::GetAppTimeF() * m_movement.headbobPitchSpeed) * m_movement.headbobPitchPower, input.x * m_movement.headSwayPower);
+		headbob *= direction.Magnitude() * 2.0f;
 
 		const Quaternion qX				= Quaternion::AngleAxis(m_runtime.cameraAngles.x + headbob.x, Vector3::Up);
 		const Quaternion qY				= Quaternion::AngleAxis(m_runtime.cameraAngles.y + headbob.y, Vector3::Right);
-		const Quaternion qZ				= Quaternion::AngleAxis(m_runtime.cameraAngles.z, Vector3::Forward);
+		const Quaternion qZ				= Quaternion::AngleAxis(m_runtime.cameraAngles.z + headbob.z, Vector3::Forward);
 		const Quaternion cameraRotation = qX * qY * qZ;
 		m_runtime.targetRotation		= Quaternion::Slerp(m_runtime.targetRotation, cameraRotation, dt * m_movement.rotationSpeed);
 

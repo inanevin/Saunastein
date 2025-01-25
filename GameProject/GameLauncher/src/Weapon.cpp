@@ -29,37 +29,52 @@ SOFTWARE.
 #include "Weapon.hpp"
 #include "Player.hpp"
 #include "Core/World/EntityWorld.hpp"
+#include "Common/System/SystemInfo.hpp"
+#include "Common/Math/Math.hpp"
 
 namespace Lina
 {
 	Weapon::Weapon(Player* player, EntityWorld* w)
 	{
-        m_player = player;
+		m_player = player;
 		m_world	 = w;
 		m_entity = w->FindEntity("WeaponQuad");
+
+		m_movement.bobPower	  = 0.7f;
+		m_movement.bobSpeed	  = 12.0f;
+		m_movement.swaySpeed  = 0.8f;
+		m_movement.swayPowerX = 0.001f;
+		m_movement.swayPowerY = -0.001f;
+
+		m_runtime.startLocalPos	  = m_entity->GetLocalPosition();
+		m_runtime.startLocalEuler = m_entity->GetLocalRotationAngles();
 	}
 
 	Weapon::~Weapon()
 	{
 	}
 
-    void Weapon::Tick(float dt)
-    {
-        if(!m_entity)
-            return;
-        
-       // const Vector3& camPosition = m_player->m_cameraRef->GetPosition();
-       // const Quaternion& camRotation = m_player->m_cameraRef->GetRotation();
-       //
-       // m_entity->SetPosition(camPosition + camRotation.GetForward() * 0.5f);
-       // m_entity->SetRotation(Quaternion::LookAt(m_entity->GetPosition(), -camPosition, Vector3::Up));
-    }
+	void Weapon::Tick(float dt)
+	{
+		if (!m_entity)
+			return;
 
-    void WeaponMelee::Tick(float dt)
-    {
-        Weapon::Tick(dt);
-        
-        if(!m_entity)
-            return;
-    }
+		float bob = Math::Sin(SystemInfo::GetAppTimeF() * m_movement.bobSpeed) * m_movement.bobPower;
+		bob *= m_player->m_runtime.velocity.Magnitude();
+
+		const Vector2 md = m_world->GetInput().GetMouseDelta();
+
+		const Vector3 targetLocalPositionOffset = Vector3(md.x * m_movement.swayPowerX, md.y * m_movement.swayPowerY, 0.0f);
+		m_runtime.localPositionOffset			= Math::Lerp(m_runtime.localPositionOffset, targetLocalPositionOffset, m_movement.swaySpeed * dt);
+		m_entity->SetLocalPosition(m_runtime.startLocalPos + m_runtime.localPositionOffset);
+		m_entity->SetLocalRotation(Quaternion::PitchYawRoll(Vector3(m_runtime.startLocalEuler.x, 0.0f, bob)));
+	}
+
+	void WeaponMelee::Tick(float dt)
+	{
+		Weapon::Tick(dt);
+
+		if (!m_entity)
+			return;
+	}
 } // namespace Lina

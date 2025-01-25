@@ -48,7 +48,6 @@ namespace Lina
 	public:
 		struct Movement
 		{
-			float movementSpeed = 12.0f;
 			float movementPower = 10.5f;
 			float rotationSpeed = 20.0f;
 			float rotationPower = 5.0f;
@@ -62,9 +61,9 @@ namespace Lina
 
 		struct Runtime
 		{
-			Vector3	   targetPosition = Vector3::Zero;
 			Quaternion targetRotation = Quaternion::Identity();
 			Vector3	   cameraAngles	  = Vector2::Zero;
+			Vector3	   velocity		  = Vector3::Zero;
 		};
 
 		Player(EntityWorld* ew);
