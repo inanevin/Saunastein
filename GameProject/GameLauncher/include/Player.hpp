@@ -26,6 +26,37 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include "Player.hpp"
+#pragma once
 
-namespace Lina {} // namespace Lina
+#include "Common/Math/Vector.hpp"
+#include "Common/Math/Quaternion.hpp"
+
+namespace LinaGX
+{
+
+} // namespace LinaGX
+
+namespace Lina
+{
+
+	class EntityWorld;
+	class Entity;
+
+	class Player
+	{
+	public:
+		Player(EntityWorld* ew);
+
+		void Tick(float dt);
+		~Player();
+
+	private:
+		EntityWorld* m_world		  = nullptr;
+		Entity*		 m_entity		  = nullptr;
+		Entity*		 m_cameraRef	  = nullptr;
+		Vector3		 m_targetPosition = Vector3::Zero;
+		Quaternion	 m_targetRotation = Quaternion::Identity();
+
+		Vector2 m_cameraAngles = Vector2::Zero;
+	};
+} // namespace Lina

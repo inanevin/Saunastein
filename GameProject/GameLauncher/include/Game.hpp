@@ -38,6 +38,7 @@ namespace LinaGX
 namespace Lina
 {
 	class EntityWorld;
+	class Player;
 
 	class Game
 	{
@@ -53,6 +54,7 @@ namespace Lina
 		void OnMouseMove(const LinaGX::LGXVector2&);
 
 	private:
-		EntityWorld* m_world = nullptr;
-	}
+		EntityWorld* m_world  = nullptr;
+		Player*		 m_player = nullptr;
+	};
 } // namespace Lina

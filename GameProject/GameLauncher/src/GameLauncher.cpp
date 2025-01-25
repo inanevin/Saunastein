@@ -48,8 +48,8 @@ namespace Lina
 	{
 		const SystemInitializationInfo outInfo = SystemInitializationInfo{
 			.appName	  = "Lina Game",
-			.windowWidth  = 800,
-			.windowHeight = 600,
+			.windowWidth  = 1920,
+			.windowHeight = 1080,
 			.windowStyle  = WindowStyle::WindowedApplication,
 			.appDelegate  = new GameLauncher(),
 		};
@@ -66,13 +66,17 @@ namespace Lina
 		if (!VerifyPackages(errString))
 			return false;
 
-		IStream stream = Serialization::LoadFromFile(PACKAGE_0_PATH);
+		const String config	  = LINA_CONFIGURATION;
+		const String pkg0Path = config.compare("Debug") == 0 ? "../Release/LinaPackage0.linapkg" : "LinaPackage0.linapkg";
+		const String pkg1Path = config.compare("Debug") == 0 ? "../Release/LinaPackage1.linapkg" : "LinaPackage1.linapkg";
+
+		IStream stream = Serialization::LoadFromFile(pkg0Path.c_str());
 		uint32	pjSize = 0;
 		stream >> pjSize;
 		m_project.LoadFromStream(stream);
 		stream.Destroy();
 
-		m_app->GetResourceManager().SetUsePackages(PACKAGE_0_PATH, PACKAGE_1_PATH);
+		m_app->GetResourceManager().SetUsePackages(pkg0Path, pkg1Path);
 		m_app->GetResourceManager().LoadResourcesFromProject(&m_project, {ENGINE_SHADER_SWAPCHAIN_ID}, NULL, 0);
 
 		// Check for Game Plugin
@@ -109,7 +113,9 @@ namespace Lina
 		m_world->GetWorldCamera().SetPosition(Vector3(0, 0, 0));
 		m_world->GetWorldCamera().Calculate(m_wr->GetSize());
 
-		m_game.OnGameBegin(m_world);
+		m_world->GetScreen().GetOwnerWindow()->ConfineMouseToCenter();
+		// m_world->GetScreen().GetOwnerWindow()->SetWrapMouse(true);
+		// m_world->GetScreen().GetOwnerWindow()->SetMouseVisible(false);
 	}
 
 	void GameLauncher::OnWorldUnloaded(ResourceID id)
@@ -124,6 +130,19 @@ namespace Lina
 	void GameLauncher::PreTick()
 	{
 		m_swapchainRenderer->CheckVisibility();
+
+		if (m_world)
+		{
+			m_world->GetScreen().SetRenderSize(m_wr->GetSize());
+			m_world->GetScreen().SetDisplaySize(m_wr->GetSize());
+			m_world->GetScreen().SetOwnerWindow(m_window);
+
+			if (!m_gameBegun)
+			{
+				m_gameBegun = true;
+				m_game.OnGameBegin(m_world);
+			}
+		}
 	}
 
 	void GameLauncher::Tick(float delta)
@@ -257,6 +276,19 @@ namespace Lina
 
 	void GameLauncher::OnWindowFocus(LinaGX::Window* window, bool gainedFocus)
 	{
+		if (!m_world)
+			return;
+
+		//  if(!gainedFocus)
+		//  {
+		//      m_world->GetScreen().GetOwnerWindow()->SetWrapMouse(false);
+		//      m_world->GetScreen().GetOwnerWindow()->SetMouseVisible(true);
+		//  }
+		//  else
+		//  {
+		//      m_world->GetScreen().GetOwnerWindow()->SetWrapMouse(true);
+		//      m_world->GetScreen().GetOwnerWindow()->SetMouseVisible(false);
+		//  }
 	}
 
 	void GameLauncher::OnWindowHoverBegin(LinaGX::Window* window)
@@ -295,13 +327,18 @@ namespace Lina
 
 	bool GameLauncher::VerifyPackages(String& errString)
 	{
-		if (!FileSystem::FileOrPathExists(PACKAGE_0_PATH))
+		const String config = LINA_CONFIGURATION;
+
+		const String pkg0Path = config.compare("Debug") == 0 ? "../Release/LinaPackage0.linapkg" : "LinaPackage0.linapkg";
+		const String pkg1Path = config.compare("Debug") == 0 ? "../Release/LinaPackage1.linapkg" : "LinaPackage1.linapkg";
+
+		if (!FileSystem::FileOrPathExists(pkg0Path))
 		{
 			errString = "Could not locate package LinaPackage0.linapkg";
 			return false;
 		}
 
-		if (!FileSystem::FileOrPathExists(PACKAGE_1_PATH))
+		if (!FileSystem::FileOrPathExists(pkg1Path))
 		{
 			errString = "Could not locate package LinaPackage1.linapkg";
 			return false;

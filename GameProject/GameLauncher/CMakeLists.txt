@@ -23,12 +23,14 @@ project(GameLauncher)
 set(SOURCES 
 src/GameLauncher.cpp
 src/Game.cpp
+src/Player.cpp
 src/SwapchainRenderer.cpp
 )
 
 set(HEADERS
 include/GameLauncher.hpp
 include/Game.hpp
+include/Player.hpp
 include/SwapchainRenderer.hpp
 )
 

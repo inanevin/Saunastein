@@ -27,6 +27,7 @@ SOFTWARE.
 */
 
 #include "Game.hpp"
+#include "Player.hpp"
 
 namespace Lina
 {
@@ -49,10 +50,13 @@ namespace Lina
 
 	void Game::OnGameBegin(EntityWorld* world)
 	{
+		m_world	 = world;
+		m_player = new Player(m_world);
 	}
 
 	void Game::OnGameEnd()
 	{
+		delete m_player;
 	}
 
 	void Game::OnGamePreTick(float dt)
@@ -61,6 +65,7 @@ namespace Lina
 
 	void Game::OnGameTick(float dt)
 	{
+		m_player->Tick(dt);
 	}
 
 } // namespace Lina
