@@ -100,10 +100,10 @@ namespace Lina
 
 		if (m_gameLostScreen)
 		{
-			CompWidget* w = m_world->GetComponent<Compidget>(m_gameLostScreen);
+			CompWidget* w = m_world->GetComponent<CompWidget>(m_gameLostScreen);
 			if (w)
 			{
-				Widget* w = w->GetWidgetManager().GetRoot()->FindChildWithDebugName("Restart");
+				Widget* w = w->GetWidgetManager()->GetRoot()->FindChildWithDebugName("Restart");
 			}
 		}
 	}
