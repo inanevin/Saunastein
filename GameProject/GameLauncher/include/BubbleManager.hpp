@@ -66,6 +66,7 @@ namespace Lina
 		void PreTick();
 		void Tick(float dt);
 		void SpawnBubble(const Vector3& shootForce, const Vector3& position, const Quaternion& rotation, float destroyIn = 3.0f);
+		void KillBubble(Entity* e);
 
 		EntityTemplate*	   m_bubbleTemplate = nullptr;
 		Vector<BubbleData> m_bubbles;

@@ -183,6 +183,22 @@ namespace Lina
     UpdateWaves();
 	}
 
+static void HandleEnemyDamage(WaveManager* wm, BubbleManager::BubbleData* bubble, Enemy* enemy) {
+  if (!enemy->m_dead) {
+    enemy->m_health--;
+    LINA_INFO("ENEMY TAKE HIT! Has {0}", enemy->m_health);
+  }
+  
+  wm->m_game->m_bubbleManager->KillBubble(bubble->_entity);
+}
+
+static void HandlePlayerDamage(WaveManager* wm, Player* player, Enemy* enemy) {
+  if (enemy->m_dead) return;
+  
+  player->UpdateHealth(-1.0f);
+  LINA_INFO("PLAYER TAKE HIT! Has {0}", player->m_health);
+}
+
   void WaveManager::HandleContact(Entity* e1, Entity* e2) {
     Player* player = m_game->m_player;
     
@@ -192,8 +208,8 @@ namespace Lina
     Player* player1 = nullptr;
     Player* player2 = nullptr;
     
-    BubbleManager::BubbleData* bubble1;
-    BubbleManager::BubbleData* bubble2;
+    BubbleManager::BubbleData* bubble1 = nullptr;
+    BubbleManager::BubbleData* bubble2 = nullptr;
     
     if (e1 == player->m_entity) player1 = player;
     if (e2 == player->m_entity) player2 = player;
@@ -205,24 +221,15 @@ namespace Lina
 
     for (uint32_t i = 0; i < m_game->m_bubbleManager->m_bubbles.size(); ++i) {
       auto* bubble = &m_game->m_bubbleManager->m_bubbles[i];
-      if (bubble->_entity == e1) bubble2 = bubble;
-      if (bubble->_entity == e2) bubble1 = bubble;
+      if (bubble->_entity == e1) bubble1 = bubble;
+      if (bubble->_entity == e2) bubble2 = bubble;
     }
     
-//    for (BubbleManager::BubbleData& bubble : m_game->m_bubbleManager->m_bubbles) {
-//      if (bubble._entity == e1) bubble2 = bubble;
-//      if (bubble._entity == e2) bubble1 = bubble;
-//    }
-      
-    if (enemy1 != nullptr && bubble2 != nullptr) {
-      enemy1->m_health--;
-      LINA_INFO("ENEMY TAKE HIT! Has {0}", enemy1->m_health);
-    }
+    if (enemy1 != nullptr && bubble2 != nullptr) HandleEnemyDamage(this, bubble2, enemy1);
+    if (enemy2 != nullptr && bubble1 != nullptr) HandleEnemyDamage(this, bubble1, enemy2);
     
-    if (enemy2 != nullptr && bubble2 != nullptr) {
-      LINA_INFO("ENEMY TAKE HIT! Has {0}", enemy2->m_health);
-      enemy2->m_health--;
-    }
+    if (enemy1 != nullptr && player2 != nullptr) HandlePlayerDamage(this, player2, enemy1);
+    if (enemy2 != nullptr && player1 != nullptr) HandlePlayerDamage(this, player1, enemy2);
   }
 	
   void WaveManager::Tick(float dt)
