@@ -142,7 +142,6 @@ namespace Lina
 
 	void GameLauncher::PreTick()
 	{
-
 		if (m_wr)
 			m_wr->Resize(m_window->GetSize() * m_window->GetDPIScale());
 
@@ -161,17 +160,18 @@ namespace Lina
 				m_gameBegun = true;
 				m_game.OnGameBegin(m_world, this);
 			}
+
+			m_game.OnGamePreTick();
 		}
 	}
 
 	void GameLauncher::Tick(float delta)
 	{
-		m_game.OnGamePreTick(delta);
-
 		if (m_world)
+		{
 			m_world->Tick(delta);
-
-		m_game.OnGameTick(delta);
+			m_game.OnGameTick(delta);
+		}
 
 		if (m_wr)
 			m_wr->Tick(delta);

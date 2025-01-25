@@ -32,6 +32,7 @@ SOFTWARE.
 #include "Core/Physics/PhysicsWorld.hpp"
 #include "Common/System/SystemInfo.hpp"
 #include "Weapon.hpp"
+#include "Game.hpp"
 
 #include <LinaGX/Core/InputMappings.hpp>
 #include <Jolt/Jolt.h>
@@ -40,10 +41,12 @@ SOFTWARE.
 namespace Lina
 {
 
-	Player::Player(EntityWorld* w) : m_world(w)
+	Player::Player(EntityWorld* world, BubbleManager* bm)
 	{
-		m_entity	= w->FindEntity("Player");
-		m_cameraRef = w->FindEntity("CameraReference");
+		m_world = world;
+
+		m_entity	= m_world->FindEntity("Player");
+		m_cameraRef = m_world->FindEntity("CameraReference");
 
 		JPH::Body*			body = m_entity->GetPhysicsBody();
 		JPH::MassProperties mp;
@@ -67,7 +70,7 @@ namespace Lina
 		m_movement.headbobYawSpeed = 7.5f;
 
 		m_movement.headSwayPower = 0.0f;
-		m_weapon				 = new WeaponMelee(this, m_world);
+		m_weapon				 = new WeaponMelee(m_world, this, bm);
 	}
 
 	Player::~Player()
@@ -79,6 +82,11 @@ namespace Lina
 	{
 		m_health += addition;
 		LINA_TRACE("HEALTH {0}", m_health);
+	}
+
+	void Player::PreTick()
+	{
+		m_weapon->PreTick();
 	}
 
 	void Player::Tick(float dt)

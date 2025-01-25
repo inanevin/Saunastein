@@ -42,6 +42,9 @@ namespace Lina
 	class EntityWorld;
 	class Entity;
 	class Player;
+	class EntityTemplate;
+	class BubbleManager;
+	class Game;
 
 	class Weapon
 	{
@@ -62,25 +65,31 @@ namespace Lina
 			Vector3 localPositionOffset = Vector3::Zero;
 		};
 
-		Weapon(Player* player, EntityWorld* weapon);
+		Weapon(EntityWorld* world, Player* player, BubbleManager* bm);
 		virtual ~Weapon();
 
+		virtual void PreTick();
 		virtual void Tick(float dt);
+		virtual void Fire() = 0;
 
-		Movement	 m_movement = {};
-		Runtime		 m_runtime	= {};
-		Entity*		 m_entity	= nullptr;
-		EntityWorld* m_world	= nullptr;
-		Player*		 m_player	= nullptr;
+		Movement	   m_movement	   = {};
+		Runtime		   m_runtime	   = {};
+		Entity*		   m_entity		   = nullptr;
+		EntityWorld*   m_world		   = nullptr;
+		Player*		   m_player		   = nullptr;
+		BubbleManager* m_bubbleManager = nullptr;
 	};
 
 	class WeaponMelee : public Weapon
 	{
 	public:
-		WeaponMelee(Player* player, EntityWorld* w) : Weapon(player, w){};
+		WeaponMelee(EntityWorld* world, Player* player, BubbleManager* bm) : Weapon(world, player, bm){};
 		virtual ~WeaponMelee() = default;
 
 		virtual void Tick(float dt) override;
+		virtual void Fire() override;
+
+	private:
 	};
 
 } // namespace Lina

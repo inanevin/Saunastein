@@ -30,6 +30,7 @@ SOFTWARE.
 #include "Player.hpp"
 #include "Enemy.hpp"
 #include "WaveManager.hpp"
+#include "BubbleManager.hpp"
 
 #include "Core/Resources/ResourceManager.hpp"
 #include "Core/World/EntityTemplate.hpp"
@@ -81,8 +82,11 @@ namespace Lina
 	{
 		m_gameLauncher = gl;
 		m_world		   = world;
-		m_player	   = new Player(m_world);
-		m_mouseLocked  = true;
+
+		m_bubbleManager = new BubbleManager(m_world);
+		m_player		= new Player(m_world, m_bubbleManager);
+		m_mouseLocked	= true;
+
 		// Find resources
 		Entity* res = m_world->FindEntity("Resources");
 
@@ -142,10 +146,12 @@ namespace Lina
 
 	void Game::OnGameEnd()
 	{
+		delete m_waveManager;
 		delete m_player;
+		delete m_bubbleManager;
 	}
 
-	void Game::OnGamePreTick(float dt)
+	void Game::OnGamePreTick()
 	{
 		if (m_mouseLocked)
 		{
@@ -155,6 +161,13 @@ namespace Lina
 		{
 			m_world->GetScreen().GetOwnerWindow()->FreeMouse();
 		}
+
+		if (m_gameState != GameState::Running)
+			return;
+
+		m_player->PreTick();
+    m_waveManager->PreTick();
+		m_bubbleManager->PreTick();
 	}
 
 	void Game::OnGameTick(float dt)
@@ -163,6 +176,7 @@ namespace Lina
 			return;
 
 		m_player->Tick(dt);
+		m_bubbleManager->Tick(dt);
 		m_waveManager->Tick(dt);
 
 		if (m_player->m_health < 0.0f && m_gameLostScreen != nullptr)
@@ -241,9 +255,9 @@ namespace Lina
 	{
 	}
 
-	void Game::OnEnemyWaveSpawned(uint32_t index)
+	void Game::OnEnemyWaveSpawned(uint32_t index, String name)
 	{
-		LINA_TRACE("OnEnemyWaveSpawned: {0}", index);
+		LINA_TRACE("OnEnemyWaveSpawned: {0} {1}", index, name);
 	}
 
 	void Game::UpdateHeat(float addition)
@@ -262,7 +276,7 @@ namespace Lina
 
 		if (m_metalMusicComp)
 		{
-			m_metalMusicComp->SetGain(Math::Lerp(0.0f, 1.5f, dangerRatio));
+			m_metalMusicComp->SetGain(Math::Lerp(0.0f, 0.8f, dangerRatio));
 			m_metalMusicComp->SetupProperties();
 		}
 

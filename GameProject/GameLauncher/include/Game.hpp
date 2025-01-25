@@ -46,6 +46,7 @@ namespace Lina
 	class GameLauncher;
 	class CompAudio;
 	class WaveManager;
+	class BubbleManager;
 
 	enum class GameState
 	{
@@ -59,7 +60,7 @@ namespace Lina
 	public:
 		void OnGameBegin(EntityWorld* world, GameLauncher* gl);
 		void OnGameEnd();
-		void OnGamePreTick(float dt);
+		void OnGamePreTick();
 		void OnGameTick(float dt);
 
 		void OnKey(uint32 keycode, int32 scancode, LinaGX::InputAction inputAction);
@@ -69,15 +70,16 @@ namespace Lina
 		void OnWindowFocus(bool focus);
 
 		void OnEnemySpawned(Enemy* enemy);
-		void OnEnemyWaveSpawned(uint32_t index);
+		void OnEnemyWaveSpawned(uint32_t index, String name);
 
 		void UpdateHeat(float addition);
 
 		EntityTemplate* GetEntityTemplate(String key);
 
-		WaveManager*					 m_waveManager = nullptr;
-		EntityWorld*					 m_world	   = nullptr;
-		Player*							 m_player	   = nullptr;
+		BubbleManager*					 m_bubbleManager = nullptr;
+		WaveManager*					 m_waveManager	 = nullptr;
+		EntityWorld*					 m_world		 = nullptr;
+		Player*							 m_player		 = nullptr;
 		HashMap<String, EntityParameter> m_resources;
 		bool							 m_mouseLocked	= false;
 		bool							 m_mouseVisible = true;

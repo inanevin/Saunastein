@@ -42,6 +42,8 @@ namespace Lina
 	class Weapon;
 	class EntityWorld;
 	class Entity;
+	class BubbleManager;
+	class Game;
 
 	class Player
 	{
@@ -66,9 +68,10 @@ namespace Lina
 			Vector3	   velocity		  = Vector3::Zero;
 		};
 
-		Player(EntityWorld* ew);
+		Player(EntityWorld* world, BubbleManager* bm);
 		~Player();
 
+		void PreTick();
 		void Tick(float dt);
 		void UpdateHealth(float addition);
 
