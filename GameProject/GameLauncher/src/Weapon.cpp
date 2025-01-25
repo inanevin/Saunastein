@@ -108,7 +108,7 @@ namespace Lina
 		}
 	}
 
-	Weapon::Weapon(EntityWorld* world, Player* player, BubbleManager* bm, Application* app)
+	Weapon::Weapon(EntityWorld* world, Player* player, BubbleManager* bm, Application* app, const String& idleStr, const String& fireStr, uint32 fireFrames, const Vector2& localOffset)
 	{
 		m_app			= app;
 		m_world			= world;
@@ -117,17 +117,22 @@ namespace Lina
 
 		m_entity = m_world->FindEntity("WeaponQuad");
 
-		m_movement.bobPower	  = 0.7f;
-		m_movement.bobSpeed	  = 12.0f;
-		m_movement.swaySpeed  = 0.8f;
-		m_movement.swayPowerX = 0.001f;
-		m_movement.swayPowerY = -0.001f;
+		m_movement.bobPower	   = 0.7f;
+		m_movement.bobSpeed	   = 12.0f;
+		m_movement.swaySpeed   = 0.8f;
+		m_movement.swayPowerX  = 0.001f;
+		m_movement.swayPowerY  = -0.001f;
+		m_movement.localOffset = localOffset;
 
 		if (!m_entity)
 			return;
 
 		m_runtime.startLocalPos	  = m_entity->GetLocalPosition();
 		m_runtime.startLocalEuler = m_entity->GetLocalRotationAngles();
+
+		Entity* idle = m_world->FindEntity(idleStr);
+		Entity* fire = m_world->FindEntity(fireStr);
+		m_animation	 = new WeaponAnimation(m_world, idle, fire, app, fireFrames);
 	}
 
 	Weapon::~Weapon()
@@ -152,22 +157,6 @@ namespace Lina
 		m_entity->SetLocalRotation(Quaternion::PitchYawRoll(Vector3(m_runtime.startLocalEuler.x, 0.0f, bob)));
 
 		m_animation->Tick(dt);
-	}
-
-	WeaponMelee::WeaponMelee(EntityWorld* world, Player* player, BubbleManager* bm, Application* app) : Weapon(world, player, bm, app)
-	{
-		Entity* idle			 = m_world->FindEntity("Weapon1_Idle");
-		Entity* fire			 = m_world->FindEntity("Weapon1_Fire");
-		m_animation				 = new WeaponAnimation(m_world, idle, fire, app, 12);
-		m_movement.localOffset.x = 0.08f;
-		m_movement.localOffset.y = -0.05f;
-	}
-
-	void WeaponMelee::Tick(float dt)
-	{
-		Weapon::Tick(dt);
-		if (!m_entity)
-			return;
 
 		if (m_world->GetInput().GetMouseButtonDown(LINAGX_MOUSE_0))
 		{
@@ -176,7 +165,7 @@ namespace Lina
 		}
 	}
 
-	void WeaponMelee::Fire()
+	void Weapon::Fire()
 	{
 		const Vector3&	  camPosition	= m_player->m_cameraRef->GetPosition();
 		const Quaternion& camRotation	= m_player->m_cameraRef->GetRotation();

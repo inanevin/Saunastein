@@ -100,10 +100,12 @@ namespace Lina
 			Vector3 localPositionOffset = Vector3::Zero;
 		};
 
-		Weapon(EntityWorld* world, Player* player, BubbleManager* bm, Application* app);
+		Weapon(EntityWorld* world, Player* player, BubbleManager* bm, Application* app, const String& idle, const String& fire, uint32 fireFrames, const Vector2& localOffset);
 		virtual ~Weapon();
 
 		virtual void Tick(float dt);
+
+		void Fire();
 
 		Movement		 m_movement		 = {};
 		Runtime			 m_runtime		 = {};
@@ -113,18 +115,6 @@ namespace Lina
 		BubbleManager*	 m_bubbleManager = nullptr;
 		Application*	 m_app			 = nullptr;
 		WeaponAnimation* m_animation	 = nullptr;
-	};
-
-	class WeaponMelee : public Weapon
-	{
-	public:
-		WeaponMelee(EntityWorld* world, Player* player, BubbleManager* bm, Application* app);
-		virtual ~WeaponMelee() = default;
-
-		virtual void Tick(float dt) override;
-		void		 Fire();
-
-	private:
 	};
 
 } // namespace Lina
