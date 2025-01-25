@@ -26,7 +26,6 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-
 #pragma once
 
 #include "Core/World/EntityWorld.hpp"
@@ -43,8 +42,8 @@ namespace Lina
 {
 	class EntityWorld;
 	class Player;
-  class Enemy;
-  class WaveManager;
+	class Enemy;
+	class WaveManager;
 
 	class Game
 	{
@@ -58,18 +57,18 @@ namespace Lina
 		void OnMouse(uint32 button, LinaGX::InputAction inputAction);
 		void OnMouseWheel(float amt);
 		void OnMouseMove(const LinaGX::LGXVector2&);
-    void OnWindowFocus(bool focus);
-    
-    void OnEnemySpawned(Enemy* enemy);
-    void OnEnemyWaveSpawned(uint32_t index);
-    
-    EntityTemplate* GetEntityTemplate(String key);
+		void OnWindowFocus(bool focus);
 
-    WaveManager* m_waveManager = nullptr;
-		EntityWorld* m_world  = nullptr;
-		Player*		 m_player = nullptr;
-    HashMap<String, EntityParameter> m_resources;
-		bool		 m_mouseLocked = false;
-    std::mt19937 m_rng;
+		void OnEnemySpawned(Enemy* enemy);
+		void OnEnemyWaveSpawned(uint32_t index);
+
+		EntityTemplate* GetEntityTemplate(String key);
+
+		WaveManager*					 m_waveManager = nullptr;
+		EntityWorld*					 m_world	   = nullptr;
+		Player*							 m_player	   = nullptr;
+		HashMap<String, EntityParameter> m_resources;
+		bool							 m_mouseLocked = false;
+		std::mt19937					 m_rng;
 	};
 } // namespace Lina
