@@ -84,6 +84,6 @@ namespace Lina
 		SwapchainRenderer* m_swapchainRenderer = nullptr;
 		ProjectData		   m_project		   = {};
 		LinaGX::Instance*  m_lgx			   = nullptr;
-        bool m_gameBegun = false;
+		bool			   m_gameBegun		   = false;
 	};
 } // namespace Lina
