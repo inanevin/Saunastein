@@ -34,6 +34,7 @@ SOFTWARE.
 #include "Core/Resources/ResourceManager.hpp"
 #include "Core/World/EntityTemplate.hpp"
 #include "Core/World/EntityWorld.hpp"
+#include "Core/World/Components/CompWidget.hpp"
 #include <LinaGX/Core/InputMappings.hpp>
 
 namespace Lina
@@ -44,18 +45,22 @@ namespace Lina
 		{
 			m_mouseLocked = false;
 			m_world->GetScreen().GetOwnerWindow()->SetMouseVisible(true);
-			//			LINA_TRACE("MOUSE UNLOCKED");
+			m_mouseVisible = true;
 		}
 	}
 
 	void Game::OnMouse(uint32 button, LinaGX::InputAction inputAction)
 	{
+		if (m_gameState != GameState::Running)
+			return;
+
 		m_mouseLocked = true;
 
 		if (inputAction == LinaGX::InputAction::Pressed)
+		{
 			m_world->GetScreen().GetOwnerWindow()->SetMouseVisible(false);
-
-		//		LINA_TRACE("MOUSE LOCKED");
+			m_mouseVisible = false;
+		}
 	}
 
 	void Game::OnMouseWheel(float amt)
@@ -92,6 +97,15 @@ namespace Lina
 
 		m_gameLostScreen = m_world->FindEntity("GUIGameLost");
 		m_gameWonScreen	 = m_world->FindEntity("GUIGameWon");
+
+		if (m_gameLostScreen)
+		{
+			CompWidget* w = m_world->GetComponent<Compidget>(m_gameLostScreen);
+			if (w)
+			{
+				Widget* w = w->GetWidgetManager().GetRoot()->FindChildWithDebugName("Restart");
+			}
+		}
 	}
 
 	void Game::OnGameEnd()
@@ -123,6 +137,13 @@ namespace Lina
 		{
 			m_gameState = GameState::Lost;
 			m_gameLostScreen->SetVisible(true);
+			m_mouseLocked = false;
+
+			if (!m_mouseVisible)
+			{
+				m_world->GetScreen().GetOwnerWindow()->SetMouseVisible(true);
+				m_mouseVisible = true;
+			}
 		}
 	}
 

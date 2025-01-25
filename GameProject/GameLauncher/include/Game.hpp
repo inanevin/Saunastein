@@ -75,7 +75,8 @@ namespace Lina
 		EntityWorld*					 m_world	   = nullptr;
 		Player*							 m_player	   = nullptr;
 		HashMap<String, EntityParameter> m_resources;
-		bool							 m_mouseLocked = false;
+		bool							 m_mouseLocked	= false;
+		bool							 m_mouseVisible = true;
 		std::mt19937					 m_rng;
 
 		Entity*	  m_gameLostScreen = nullptr;
