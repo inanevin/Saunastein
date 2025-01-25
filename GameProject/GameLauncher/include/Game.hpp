@@ -69,7 +69,7 @@ namespace Lina
 		void OnWindowFocus(bool focus);
 
 		void OnEnemySpawned(Enemy* enemy);
-		void OnEnemyWaveSpawned(uint32_t index);
+		void OnEnemyWaveSpawned(uint32_t index, String name);
 
 		void UpdateHeat(float addition);
 

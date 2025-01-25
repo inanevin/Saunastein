@@ -160,6 +160,7 @@ namespace Lina
 			return;
 
 		m_player->PreTick();
+
 	}
 
 	void Game::OnGameTick(float dt)
@@ -246,9 +247,9 @@ namespace Lina
 	{
 	}
 
-	void Game::OnEnemyWaveSpawned(uint32_t index)
+	void Game::OnEnemyWaveSpawned(uint32_t index, String name)
 	{
-		LINA_TRACE("OnEnemyWaveSpawned: {0}", index);
+		LINA_TRACE("OnEnemyWaveSpawned: {0} {1}", index, name);
 	}
 
 	void Game::UpdateHeat(float addition)
