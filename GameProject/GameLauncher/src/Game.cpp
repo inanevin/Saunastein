@@ -160,7 +160,6 @@ namespace Lina
 			return;
 
 		m_player->PreTick();
-
 	}
 
 	void Game::OnGameTick(float dt)
