@@ -28,6 +28,8 @@ namespace Lina
 			}
 			return false;
 		});
+    
+    SpawnWave();
 	}
 
 	WaveManager::~WaveManager()
