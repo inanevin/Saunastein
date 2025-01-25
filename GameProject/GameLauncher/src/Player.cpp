@@ -75,6 +75,12 @@ namespace Lina
 		delete m_weapon;
 	}
 
+	void Player::UpdateHealth(float addition)
+	{
+		m_health += addition;
+		LINA_TRACE("HEALTH {0}", m_health);
+	}
+
 	void Player::Tick(float dt)
 	{
 		static float test = 0.0f;
@@ -120,5 +126,9 @@ namespace Lina
 		m_world->GetWorldCamera().SetPosition(m_cameraRef->GetPosition());
 		m_world->GetWorldCamera().SetRotation(m_cameraRef->GetRotation());
 		m_world->GetWorldCamera().Calculate(m_world->GetScreen().GetRenderSize());
+
+		// DEBUG
+		if (m_world->GetInput().GetKey(LINAGX_KEY_K))
+			UpdateHealth(-10.0f);
 	}
 } // namespace Lina

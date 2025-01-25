@@ -459,7 +459,7 @@ namespace Lina
 					&m_pfd[1].lvgIdxBuffer,
 				},
 			.vertexSize	   = sizeof(LinaVG::Vertex),
-			.shaderHandle  = m_currentLVGDraw3D ? shader->GetGPUHandle() : shader->GetGPUHandle(DepthTesting::None),
+			.shaderHandle  = m_currentLVGDraw3D ? shader->GetGPUHandle() : shader->GetGPUHandle(DepthTesting::Always),
 			.baseVertex	   = static_cast<uint32>(m_cpuDrawData.lvgVertices.size()),
 			.vertexCount   = vtxCount,
 			.baseIndex	   = static_cast<uint32>(m_cpuDrawData.lvgIndices.size()),
@@ -469,8 +469,8 @@ namespace Lina
 			.pushConstant  = PushArgument(args),
 			.clip		   = Recti(buf->clip.x, buf->clip.y, buf->clip.z, buf->clip.w),
 			.useScissors   = true,
-			.sortOrder	   = m_currentLVGDraw3D,
-			.sortPosition  = m_currentLVGDrawEntity->GetPosition(),
+			.sortOrder	   = true,
+			.sortPosition  = m_currentLVGDraw3D ? m_currentLVGDrawEntity->GetPosition() : (m_gpuDrawData.worldCamera.GetPosition()),
 		};
 
 		m_forwardPass.AddDrawCall(drawCall);

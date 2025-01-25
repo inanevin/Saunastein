@@ -4,7 +4,6 @@
 #include "Common/Math/Quaternion.hpp"
 #include "Core/World/EntityWorld.hpp"
 
-
 namespace LinaGX
 {
 
@@ -14,8 +13,8 @@ namespace Lina
 {
 	class EntityWorld;
 	class Entity;
-  class Player;
-  
+	class Player;
+
 	class Enemy
 	{
 	public:
@@ -23,13 +22,13 @@ namespace Lina
 
 		void Tick(float dt);
 		~Enemy();
-    
-//	private:
-    EntityWorld* m_world = nullptr;
-		Entity* m_entity = nullptr;
-    Player* m_target = nullptr;
-    Entity* m_sprite = nullptr;
-    float m_timer = 0;
-    float m_origSpriteScale = 1;
+
+		//	private:
+		EntityWorld*	m_world			   = nullptr;
+		Entity*			m_entity		   = nullptr;
+		Player*			m_target		   = nullptr;
+		uint32_t		m_currentSpriteIdx = 0;
+		Vector<Entity*> m_sprites;
+		float			m_timer = 0.0f;
 	};
 } // namespace Lina

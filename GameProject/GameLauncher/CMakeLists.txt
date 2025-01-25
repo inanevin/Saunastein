@@ -26,6 +26,7 @@ src/Game.cpp
 src/Player.cpp
 src/Weapon.cpp
 src/Enemy.cpp
+src/WaveManager.cpp
 src/SwapchainRenderer.cpp
 )
 
@@ -35,6 +36,7 @@ include/Game.hpp
 include/Player.hpp
 include/Weapon.hpp
 include/Enemy.hpp
+include/WaveManager.hpp
 include/SwapchainRenderer.hpp
 )
 

@@ -47,7 +47,7 @@ SOFTWARE.
 #frag: Resources/Core/Shaders/Common/MainFragSimple.linashader
 #pass: Resources/Core/Shaders/Common/RenderPass_Forward.linashader
 #blend: LINA_BLEND_ALPHA
-#depth: LINA_DEPTH_NONE
+#depth: LINA_DEPTH_ALWAYS
 #depth_target: LINA_TARGET_D32
 #target: LINA_TARGET_HDR
 #cull: LINA_CULL_NONE
@@ -98,13 +98,9 @@ void LINA_FRAG_MAIN(out LinaFragOutput outFrag)
 
    vec4 color = inCol;
 
-   if(material.hasTexture == 1)
-   {
-      vec2 uv = inUV * material.tilingAndOffset.rg + material.tilingAndOffset.ba;
-      vec4 sampledTexture = LINA_SAMPLE_TEXTURE(material.diffuse, uv);
-      color *= sampledTexture;
-   }
-
+   vec2 uv = inUV * material.tilingAndOffset.rg + material.tilingAndOffset.ba;
+   vec4 sampledTexture = LINA_SAMPLE_TEXTURE(material.diffuse, uv);
+   color *= sampledTexture;
    outFrag.color = color;
 }
 

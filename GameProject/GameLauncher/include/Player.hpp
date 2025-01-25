@@ -70,11 +70,14 @@ namespace Lina
 		~Player();
 
 		void Tick(float dt);
+		void UpdateHealth(float addition);
 
 		EntityWorld* m_world	 = nullptr;
 		Entity*		 m_entity	 = nullptr;
 		Entity*		 m_cameraRef = nullptr;
 		Weapon*		 m_weapon	 = nullptr;
+
+		float m_health = 100.0f;
 
 		Movement m_movement = {};
 		Runtime	 m_runtime	= {};
