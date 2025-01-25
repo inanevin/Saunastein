@@ -45,7 +45,10 @@ namespace Lina
 		m_movement.swaySpeed  = 0.8f;
 		m_movement.swayPowerX = 0.001f;
 		m_movement.swayPowerY = -0.001f;
-
+    
+    if (!m_entity)
+      return;
+    
 		m_runtime.startLocalPos	  = m_entity->GetLocalPosition();
 		m_runtime.startLocalEuler = m_entity->GetLocalRotationAngles();
 	}
