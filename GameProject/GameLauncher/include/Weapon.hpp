@@ -46,11 +46,35 @@ namespace Lina
 	class BubbleManager;
 	class Game;
 	class Material;
+	class Application;
 
 	class WeaponAnimation
 	{
 	public:
 		void Tick(float dt, Material* weaponMaterial);
+
+		void AddTextureID(ResourceID id);
+
+		void SetApp(Application* app)
+		{
+			m_app = app;
+		}
+
+		void SetDisplayFrames(uint32 display)
+		{
+			m_displayFrames = display;
+		}
+
+	private:
+		void UpdateMaterial(Material* mat);
+
+	private:
+		uint32			   m_displayFrames = 0;
+		uint32			   m_index		   = 0;
+		Vector<ResourceID> m_textureIDs;
+		uint32			   m_frameCtr  = 0;
+		Application*	   m_app	   = nullptr;
+		ResourceID		   m_textureID = 0;
 	};
 
 	class Weapon
@@ -72,7 +96,7 @@ namespace Lina
 			Vector3 localPositionOffset = Vector3::Zero;
 		};
 
-		Weapon(EntityWorld* world, Player* player, BubbleManager* bm);
+		Weapon(EntityWorld* world, Player* player, BubbleManager* bm, Application* app);
 		virtual ~Weapon();
 
 		virtual void Tick(float dt);
@@ -84,18 +108,20 @@ namespace Lina
 		EntityWorld*   m_world		   = nullptr;
 		Player*		   m_player		   = nullptr;
 		BubbleManager* m_bubbleManager = nullptr;
+		Application*   m_app		   = nullptr;
 	};
 
 	class WeaponMelee : public Weapon
 	{
 	public:
-		WeaponMelee(EntityWorld* world, Player* player, BubbleManager* bm) : Weapon(world, player, bm){};
+		WeaponMelee(EntityWorld* world, Player* player, BubbleManager* bm, Application* app);
 		virtual ~WeaponMelee() = default;
 
 		virtual void Tick(float dt) override;
 		virtual void Fire() override;
 
 	private:
+		WeaponAnimation m_idleAnim;
 	};
 
 } // namespace Lina

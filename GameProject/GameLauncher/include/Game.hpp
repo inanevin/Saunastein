@@ -48,6 +48,8 @@ namespace Lina
 	class CompAudio;
 	class WaveManager;
 	class BubbleManager;
+	class HudManager;
+	class Application;
 
 	enum class GameState
 	{
@@ -59,7 +61,7 @@ namespace Lina
 	class Game : public PhysicsContactListener
 	{
 	public:
-		void OnGameBegin(EntityWorld* world, GameLauncher* gl);
+		void OnGameBegin(EntityWorld* world, GameLauncher* gl, Application* app);
 		void OnGameEnd();
 		void OnGamePreTick();
 		void OnGameTick(float dt);
@@ -71,7 +73,7 @@ namespace Lina
 		void OnWindowFocus(bool focus);
 
 		void OnEnemySpawned(Enemy* enemy);
-		void OnEnemyWaveSpawned(uint32_t index, String name);
+		void OnWaveSpawned(uint32_t index, String name);
 
 		void UpdateHeat(float addition);
 
@@ -85,6 +87,7 @@ namespace Lina
 		WaveManager*					 m_waveManager	 = nullptr;
 		EntityWorld*					 m_world		 = nullptr;
 		Player*							 m_player		 = nullptr;
+		HudManager*						 m_hudManager	 = nullptr;
 		HashMap<String, EntityParameter> m_resources;
 		bool							 m_mouseLocked	= false;
 		bool							 m_mouseVisible = true;
