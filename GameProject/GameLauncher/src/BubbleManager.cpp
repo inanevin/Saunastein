@@ -137,4 +137,11 @@ namespace Lina
 		m_bubbles.push_back(data);
 	}
 
+	void BubbleManager::KillBubble(Entity* e)
+	{
+		auto it = linatl::find_if(m_bubbles.begin(), m_bubbles.end(), [e](const BubbleData& data) -> bool { return data._entity == e; });
+		if (it != m_bubbles.end())
+			it->_kill = true;
+	}
+
 } // namespace Lina
