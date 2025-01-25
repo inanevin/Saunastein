@@ -89,6 +89,9 @@ namespace Lina
 		m_waveManager = new WaveManager(this);
 		std::random_device rd;
 		m_rng = std::mt19937(rd());
+
+		m_gameLostScreen = m_world->FindEntity("GUIGameLost");
+		m_gameWonScreen	 = m_world->FindEntity("GUIGameWon");
 	}
 
 	void Game::OnGameEnd()
@@ -110,8 +113,17 @@ namespace Lina
 
 	void Game::OnGameTick(float dt)
 	{
+		if (m_gameState != GameState::Running)
+			return;
+
 		m_player->Tick(dt);
 		m_waveManager->Tick(dt);
+
+		if (m_player->m_health < 0.0f && m_gameLostScreen != nullptr)
+		{
+			m_gameState = GameState::Lost;
+			m_gameLostScreen->SetVisible(true);
+		}
 	}
 
 	EntityTemplate* Game::GetEntityTemplate(String key)

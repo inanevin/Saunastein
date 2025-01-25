@@ -45,6 +45,13 @@ namespace Lina
 	class Enemy;
 	class WaveManager;
 
+	enum class GameState
+	{
+		Running,
+		Lost,
+		Won
+	};
+
 	class Game
 	{
 	public:
@@ -70,5 +77,9 @@ namespace Lina
 		HashMap<String, EntityParameter> m_resources;
 		bool							 m_mouseLocked = false;
 		std::mt19937					 m_rng;
+
+		Entity*	  m_gameLostScreen = nullptr;
+		Entity*	  m_gameWonScreen  = nullptr;
+		GameState m_gameState	   = GameState::Running;
 	};
 } // namespace Lina
