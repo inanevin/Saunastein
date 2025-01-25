@@ -29,6 +29,7 @@ SOFTWARE.
 #pragma once
 
 #include "Core/World/EntityWorld.hpp"
+#include "Core/Physics/PhysicsContactListener.hpp"
 
 namespace LinaGX
 {
@@ -55,7 +56,7 @@ namespace Lina
 		Won
 	};
 
-	class Game
+	class Game : public PhysicsContactListener
 	{
 	public:
 		void OnGameBegin(EntityWorld* world, GameLauncher* gl);
@@ -73,6 +74,10 @@ namespace Lina
 		void OnEnemyWaveSpawned(uint32_t index, String name);
 
 		void UpdateHeat(float addition);
+
+		virtual void OnContactBegin(Entity* e1, Entity* e2, const Vector3& p1, const Vector3& p2) override;
+		virtual void OnContact(Entity* e1, Entity* e2, const Vector3& p1, const Vector3& p2) override;
+		virtual void OnContactEnd(Entity* e1, Entity* e2) override;
 
 		EntityTemplate* GetEntityTemplate(String key);
 
