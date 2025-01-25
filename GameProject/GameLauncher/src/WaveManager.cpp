@@ -28,6 +28,8 @@ namespace Lina
 			}
 			return false;
 		});
+    
+    SpawnWave();
 	}
 
 	WaveManager::~WaveManager()
@@ -36,20 +38,28 @@ namespace Lina
 
 	void WaveManager::SpawnWave()
 	{
-		uint32_t	 waveIndex = m_waveCounter++;
-		EntityWorld* world	   = m_game->m_world;
+		uint32_t waveIndex = m_waveCounter++;
+		EntityWorld* world = m_game->m_world;
 
 		EntityTemplate* enemyTemplate = m_game->GetEntityTemplate("Enemy_1");
+    EntityTemplate* bossTemplate = m_game->GetEntityTemplate("Enemy_2");
 
 		std::shuffle(m_enemySpawns.begin(), m_enemySpawns.end(), m_game->m_rng);
 		//    m_enemySpawns
 
-		if (enemyTemplate != nullptr)
-		{
-			Entity* spawn = m_enemySpawns[0];
-			Enemy*	enemy = new Enemy(world, enemyTemplate, m_game->m_player, spawn->GetPosition(), spawn->GetRotation());
-			m_enemies.push_back(enemy);
-		}
+//		if (enemyTemplate != nullptr)
+//		{
+//			Entity* spawn = m_enemySpawns[0];
+//			Enemy*	enemy = new Enemy(world, enemyTemplate, m_game->m_player, spawn->GetPosition(), spawn->GetRotation());
+//			m_enemies.push_back(enemy);
+//		}
+    
+    if (bossTemplate != nullptr)
+    {
+      Entity* spawn = m_enemySpawns[1];
+      Enemy*  enemy = new Enemy(world, bossTemplate, m_game->m_player, spawn->GetPosition(), spawn->GetRotation());
+      m_enemies.push_back(enemy);
+    }
 
 		m_game->OnEnemyWaveSpawned(waveIndex);
 	}

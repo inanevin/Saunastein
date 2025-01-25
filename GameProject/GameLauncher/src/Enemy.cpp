@@ -14,7 +14,7 @@ namespace Lina
 	{
 		m_entity = w->SpawnTemplate(et, position, rotation);
 
-		JPH::Body*			body = m_entity->GetPhysicsBody();
+		JPH::Body* body = m_entity->GetPhysicsBody();
 		JPH::MassProperties mp;
 		mp.mMass = m_entity->GetPhysicsSettings().mass;
 
@@ -30,6 +30,8 @@ namespace Lina
 				m_sprites.push_back(child);
 			}
 		}
+    
+    LINA_INFO("Got {0} sprites", m_sprites.size());
 	}
 
 	Enemy::~Enemy()
@@ -42,13 +44,14 @@ namespace Lina
 		int animFrame = ((int)(m_timer / 0.2f) % 2);
 
 		m_currentSpriteIdx = animFrame;
+//    m_currentSpriteIdx = 1;
 
-		const float speed		 = 5.0f;
-		Vector3		selfPosition = m_entity->GetPosition();
-		selfPosition.y			 = 0.0f;
-		Vector3 targetPosition	 = m_target->m_entity->GetPosition();
-		targetPosition.y		 = 0.0f;
-		Vector3 targetDirection	 = (targetPosition - selfPosition).Normalized();
+		const float speed = 5.0f;
+		Vector3 selfPosition = m_entity->GetPosition();
+		selfPosition.y = 0.0f;
+		Vector3 targetPosition = m_target->m_entity->GetPosition();
+		targetPosition.y = 0.0f;
+		Vector3 targetDirection = (targetPosition - selfPosition).Normalized();
 
 		m_entity->GetPhysicsBody()->SetLinearVelocity(ToJoltVec3(targetDirection * speed));
 
@@ -56,6 +59,7 @@ namespace Lina
 		{
 			bool currentSprite = spriteIdx == m_currentSpriteIdx;
 			m_sprites[spriteIdx]->SetVisible(currentSprite);
+      
 			if (currentSprite)
 			{
 				m_sprites[spriteIdx]->SetRotation(Quaternion::LookAt(selfPosition, targetPosition, Vector3::Up));
