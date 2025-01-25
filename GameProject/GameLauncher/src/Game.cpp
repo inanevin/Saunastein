@@ -28,15 +28,12 @@ SOFTWARE.
 
 #include "Game.hpp"
 #include "Player.hpp"
-<<<<<<< HEAD
 #include "Enemy.hpp"
 
 #include "Core/Resources/ResourceManager.hpp"
 #include "Core/World/EntityTemplate.hpp"
-=======
 #include "Core/World/EntityWorld.hpp"
 #include <LinaGX/Core/InputMappings.hpp>
->>>>>>> origin/main
 
 namespace Lina
 {
