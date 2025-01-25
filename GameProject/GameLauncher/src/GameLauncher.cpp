@@ -50,9 +50,9 @@ namespace Lina
 	{
 		const SystemInitializationInfo outInfo = SystemInitializationInfo{
 			.appName	  = "Lina Game",
-			.windowWidth  = 800,
-			.windowHeight = 600,
-			.windowStyle  = WindowStyle::Borderless,
+			.windowWidth  = 1024,
+			.windowHeight = 768,
+      .windowStyle  = WindowStyle::WindowedApplication,
 			.appDelegate  = new GameLauncher(),
 		};
 		return outInfo;

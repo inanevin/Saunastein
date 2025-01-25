@@ -36,6 +36,7 @@ namespace LinaGX
 	class Window;
 	enum class InputAction;
 	struct LGXVector2;
+
 } // namespace LinaGX
 
 namespace Lina
@@ -43,6 +44,7 @@ namespace Lina
 	class EntityWorld;
 	class Player;
   class Enemy;
+  class WaveManager;
 
 	class Game
 	{
@@ -58,14 +60,16 @@ namespace Lina
 		void OnMouseMove(const LinaGX::LGXVector2&);
     void OnWindowFocus(bool focus);
     
+    void OnEnemySpawned(Enemy* enemy);
+    void OnEnemyWaveSpawned(uint32_t index);
+    
     EntityTemplate* GetEntityTemplate(String key);
 
-	private:
+    WaveManager* m_waveManager = nullptr;
 		EntityWorld* m_world  = nullptr;
 		Player*		 m_player = nullptr;
     HashMap<String, EntityParameter> m_resources;
-    Vector<Entity*> m_enemySpawns;
-    Vector<Enemy*> m_enemies;
 		bool		 m_mouseLocked = false;
+    std::mt19937 m_rng;
 	};
 } // namespace Lina

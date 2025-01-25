@@ -28,8 +28,8 @@ namespace Lina
     EntityWorld* m_world = nullptr;
 		Entity* m_entity = nullptr;
     Player* m_target = nullptr;
-    Entity* m_sprite = nullptr;
-    float m_timer = 0;
-    float m_origSpriteScale = 1;
+    uint32_t m_currentSpriteIdx = 0;
+    Vector<Entity*> m_sprites;
+    float m_timer = 0.0f;
 	};
 } // namespace Lina
