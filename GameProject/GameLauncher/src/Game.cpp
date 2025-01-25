@@ -80,14 +80,14 @@ namespace Lina
 	{
 	}
 
-	void Game::OnGameBegin(EntityWorld* world, GameLauncher* gl)
+void Game::OnGameBegin(EntityWorld* world, GameLauncher* gl, Application *app)
 	{
 		m_gameLauncher = gl;
 		m_world		   = world;
 
 		m_bubbleManager = new BubbleManager(m_world);
     m_hudManager = new HudManager(this);
-		m_player		= new Player(m_world, m_bubbleManager);
+		m_player		= new Player(m_world, m_bubbleManager, app);
 		m_mouseLocked	= true;
 
 		// Find resources
@@ -302,7 +302,7 @@ namespace Lina
 
 	void Game::OnContactBegin(Entity* e1, Entity* e2, const Vector3& p1, const Vector3& p2)
 	{
-		LINA_TRACE("CONTACT");
+		
 	}
 
 	void Game::OnContact(Entity* e1, Entity* e2, const Vector3& p1, const Vector3& p2)

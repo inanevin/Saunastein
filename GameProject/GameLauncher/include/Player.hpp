@@ -44,6 +44,7 @@ namespace Lina
 	class Entity;
 	class BubbleManager;
 	class Game;
+class Application;
 
 	class Player
 	{
@@ -68,7 +69,7 @@ namespace Lina
 			Vector3	   velocity		  = Vector3::Zero;
 		};
 
-		Player(EntityWorld* world, BubbleManager* bm);
+		Player(EntityWorld* world, BubbleManager* bm, Application* app);
 		~Player();
 
 		void PreTick();

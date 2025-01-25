@@ -41,7 +41,7 @@ SOFTWARE.
 namespace Lina
 {
 
-	Player::Player(EntityWorld* world, BubbleManager* bm)
+	Player::Player(EntityWorld* world, BubbleManager* bm, Application* app)
 	{
 		m_world = world;
 
@@ -70,7 +70,7 @@ namespace Lina
 		m_movement.headbobYawSpeed = 7.5f;
 
 		m_movement.headSwayPower = 0.0f;
-		m_weapon				 = new WeaponMelee(m_world, this, bm);
+		m_weapon				 = new WeaponMelee(m_world, this, bm, app);
 	}
 
 	Player::~Player()

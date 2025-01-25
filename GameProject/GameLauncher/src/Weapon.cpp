@@ -39,6 +39,7 @@ SOFTWARE.
 #include "Core/Physics/PhysicsWorld.hpp"
 #include "Core/Graphics/Resource/Material.hpp"
 #include "Common/Data/Vector.hpp"
+#include "Core/Application.hpp"
 
 #include <LinaGX/Core/InputMappings.hpp>
 #include <Jolt/Jolt.h>
@@ -46,13 +47,44 @@ SOFTWARE.
 
 namespace Lina
 {
+	void WeaponAnimation::AddTextureID(ResourceID id)
+	{
+		m_textureIDs.push_back(id);
+	}
 
 	void WeaponAnimation::Tick(float dt, Material* material)
 	{
+		m_frameCtr++;
+
+		if (m_frameCtr > m_displayFrames)
+		{
+			m_frameCtr = 0;
+			m_index	   = (m_index + 1) % static_cast<uint32>(m_textureIDs.size());
+		}
+
+		if (m_textureIDs.empty())
+			return;
+
+		m_textureID = m_textureIDs.at(m_index);
+		UpdateMaterial(material);
 	}
 
-	Weapon::Weapon(EntityWorld* world, Player* player, BubbleManager* bm)
+	void WeaponAnimation::UpdateMaterial(Material* mat)
 	{
+		if (mat->HasProperty<LinaTexture2D>("txtAlbedo"_hs))
+		{
+			LinaTexture2D* prop = mat->GetProperty<LinaTexture2D>("txtAlbedo"_hs);
+			if (prop->texture != m_textureID)
+			{
+				prop->texture = m_textureID;
+				m_app->GetGfxContext().MarkBindlessDirty();
+			}
+		}
+	}
+
+	Weapon::Weapon(EntityWorld* world, Player* player, BubbleManager* bm, Application* app)
+	{
+		m_app			= app;
 		m_world			= world;
 		m_player		= player;
 		m_bubbleManager = bm;
@@ -74,6 +106,20 @@ namespace Lina
 
 	Weapon::~Weapon()
 	{
+	}
+
+	WeaponMelee::WeaponMelee(EntityWorld* world, Player* player, BubbleManager* bm, Application* app) : Weapon(world, player, bm, app)
+	{
+		Entity* idle = m_world->FindEntity("Weapon0_Idle");
+		Entity* fire = m_world->FindEntity("Weapon0_Fire");
+
+		m_idleAnim = {};
+
+		for (const EntityParameter& p : idle->GetParams().params)
+		{
+			if (p.type != EntityParameterType::ResourceID)
+				continue;
+		}
 	}
 
 	void Weapon::Tick(float dt)

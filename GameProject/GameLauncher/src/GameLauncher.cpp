@@ -158,7 +158,7 @@ namespace Lina
 			if (!m_gameBegun)
 			{
 				m_gameBegun = true;
-				m_game.OnGameBegin(m_world, this);
+				m_game.OnGameBegin(m_world, this, m_app);
 			}
 
 			m_game.OnGamePreTick();
