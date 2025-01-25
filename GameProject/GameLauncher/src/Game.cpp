@@ -145,7 +145,7 @@ namespace Lina
 		delete m_player;
 	}
 
-	void Game::OnGamePreTick(float dt)
+	void Game::OnGamePreTick()
 	{
 		if (m_mouseLocked)
 		{
@@ -155,6 +155,11 @@ namespace Lina
 		{
 			m_world->GetScreen().GetOwnerWindow()->FreeMouse();
 		}
+
+		if (m_gameState != GameState::Running)
+			return;
+
+		m_player->PreTick();
 	}
 
 	void Game::OnGameTick(float dt)
@@ -262,7 +267,7 @@ namespace Lina
 
 		if (m_metalMusicComp)
 		{
-			m_metalMusicComp->SetGain(Math::Lerp(0.0f, 1.5f, dangerRatio));
+			m_metalMusicComp->SetGain(Math::Lerp(0.0f, 0.8f, dangerRatio));
 			m_metalMusicComp->SetupProperties();
 		}
 

@@ -81,6 +81,11 @@ namespace Lina
 		LINA_TRACE("HEALTH {0}", m_health);
 	}
 
+	void Player::PreTick()
+	{
+		m_weapon->PreTick();
+	}
+
 	void Player::Tick(float dt)
 	{
 		static float test = 0.0f;

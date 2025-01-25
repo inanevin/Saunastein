@@ -59,7 +59,7 @@ namespace Lina
 	public:
 		void OnGameBegin(EntityWorld* world, GameLauncher* gl);
 		void OnGameEnd();
-		void OnGamePreTick(float dt);
+		void OnGamePreTick();
 		void OnGameTick(float dt);
 
 		void OnKey(uint32 keycode, int32 scancode, LinaGX::InputAction inputAction);

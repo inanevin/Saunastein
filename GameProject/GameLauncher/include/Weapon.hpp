@@ -42,10 +42,21 @@ namespace Lina
 	class EntityWorld;
 	class Entity;
 	class Player;
+	class EntityTemplate;
 
 	class Weapon
 	{
 	public:
+		struct BubbleData
+		{
+			Entity* e		  = nullptr;
+			float	force	  = 100.0f;
+			float	destroyIn = 3.0f;
+			float	_counter  = 0.0f;
+			bool	_inited	  = false;
+			bool	_kill	  = false;
+		};
+
 		struct Movement
 		{
 			float bobPower	 = 4.0f;
@@ -65,13 +76,20 @@ namespace Lina
 		Weapon(Player* player, EntityWorld* weapon);
 		virtual ~Weapon();
 
+		virtual void PreTick();
 		virtual void Tick(float dt);
+		virtual void Fire() = 0;
 
-		Movement	 m_movement = {};
-		Runtime		 m_runtime	= {};
-		Entity*		 m_entity	= nullptr;
-		EntityWorld* m_world	= nullptr;
-		Player*		 m_player	= nullptr;
+		virtual Entity* SpawnBuble();
+
+		Movement		m_movement		 = {};
+		Runtime			m_runtime		 = {};
+		Entity*			m_entity		 = nullptr;
+		EntityWorld*	m_world			 = nullptr;
+		Player*			m_player		 = nullptr;
+		EntityTemplate* m_bubbleTemplate = nullptr;
+
+		Vector<BubbleData> m_bubbles;
 	};
 
 	class WeaponMelee : public Weapon
@@ -81,6 +99,9 @@ namespace Lina
 		virtual ~WeaponMelee() = default;
 
 		virtual void Tick(float dt) override;
+		virtual void Fire() override;
+
+	private:
 	};
 
 } // namespace Lina

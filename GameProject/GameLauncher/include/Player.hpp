@@ -69,6 +69,7 @@ namespace Lina
 		Player(EntityWorld* ew);
 		~Player();
 
+		void PreTick();
 		void Tick(float dt);
 		void UpdateHealth(float addition);
 
