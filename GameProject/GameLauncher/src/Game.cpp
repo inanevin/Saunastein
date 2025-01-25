@@ -30,6 +30,7 @@ SOFTWARE.
 #include "Player.hpp"
 #include "Enemy.hpp"
 #include "WaveManager.hpp"
+#include "BubbleManager.hpp"
 
 #include "Core/Resources/ResourceManager.hpp"
 #include "Core/World/EntityTemplate.hpp"
@@ -81,8 +82,11 @@ namespace Lina
 	{
 		m_gameLauncher = gl;
 		m_world		   = world;
-		m_player	   = new Player(m_world);
-		m_mouseLocked  = true;
+
+		m_bubbleManager = new BubbleManager(m_world);
+		m_player		= new Player(m_world, m_bubbleManager);
+		m_mouseLocked	= true;
+
 		// Find resources
 		Entity* res = m_world->FindEntity("Resources");
 
@@ -142,7 +146,9 @@ namespace Lina
 
 	void Game::OnGameEnd()
 	{
+		delete m_waveManager;
 		delete m_player;
+		delete m_bubbleManager;
 	}
 
 	void Game::OnGamePreTick()

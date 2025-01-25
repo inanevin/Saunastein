@@ -43,20 +43,12 @@ namespace Lina
 	class Entity;
 	class Player;
 	class EntityTemplate;
+	class BubbleManager;
+	class Game;
 
 	class Weapon
 	{
 	public:
-		struct BubbleData
-		{
-			Entity* e		  = nullptr;
-			float	force	  = 100.0f;
-			float	destroyIn = 3.0f;
-			float	_counter  = 0.0f;
-			bool	_inited	  = false;
-			bool	_kill	  = false;
-		};
-
 		struct Movement
 		{
 			float bobPower	 = 4.0f;
@@ -73,29 +65,25 @@ namespace Lina
 			Vector3 localPositionOffset = Vector3::Zero;
 		};
 
-		Weapon(Player* player, EntityWorld* weapon);
+		Weapon(EntityWorld* world, Player* player, BubbleManager* bm);
 		virtual ~Weapon();
 
 		virtual void PreTick();
 		virtual void Tick(float dt);
 		virtual void Fire() = 0;
 
-		virtual Entity* SpawnBuble();
-
-		Movement		m_movement		 = {};
-		Runtime			m_runtime		 = {};
-		Entity*			m_entity		 = nullptr;
-		EntityWorld*	m_world			 = nullptr;
-		Player*			m_player		 = nullptr;
-		EntityTemplate* m_bubbleTemplate = nullptr;
-
-		Vector<BubbleData> m_bubbles;
+		Movement	   m_movement	   = {};
+		Runtime		   m_runtime	   = {};
+		Entity*		   m_entity		   = nullptr;
+		EntityWorld*   m_world		   = nullptr;
+		Player*		   m_player		   = nullptr;
+		BubbleManager* m_bubbleManager = nullptr;
 	};
 
 	class WeaponMelee : public Weapon
 	{
 	public:
-		WeaponMelee(Player* player, EntityWorld* w) : Weapon(player, w){};
+		WeaponMelee(EntityWorld* world, Player* player, BubbleManager* bm) : Weapon(world, player, bm){};
 		virtual ~WeaponMelee() = default;
 
 		virtual void Tick(float dt) override;

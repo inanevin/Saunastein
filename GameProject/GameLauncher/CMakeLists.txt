@@ -26,8 +26,9 @@ src/Game.cpp
 src/Player.cpp
 src/Weapon.cpp
 src/Enemy.cpp
-src/WaveManager.cpp
 src/SwapchainRenderer.cpp
+src/BubbleManager.cpp
+src/WaveManager.cpp
 )
 
 set(HEADERS
@@ -36,8 +37,8 @@ include/Game.hpp
 include/Player.hpp
 include/Weapon.hpp
 include/Enemy.hpp
-include/WaveManager.hpp
 include/SwapchainRenderer.hpp
+include/BubbleManager.hpp
 )
 
 #--------------------------------------------------------------------
