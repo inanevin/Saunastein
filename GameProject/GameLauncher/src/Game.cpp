@@ -98,9 +98,8 @@ namespace Lina
     EntityTemplate* enemyTemplate = GetEntityTemplate("Enemy_1");
     if (enemyTemplate != nullptr) {
       for (Entity* spawn : m_enemySpawns) {
-        Enemy* enemy = new Enemy(m_world, enemyTemplate, m_player);
-        enemy->m_entity->SetPosition(spawn->GetPosition());
-        enemy->m_entity->SetRotation(spawn->GetRotation());
+        Enemy* enemy = new Enemy(m_world, enemyTemplate, m_player, spawn->GetPosition(), spawn->GetRotation());
+        m_enemies.push_back(enemy);
       }
     }
     
@@ -135,6 +134,10 @@ namespace Lina
 	void Game::OnGameTick(float dt)
 	{
 		m_player->Tick(dt);
+    
+    for (Enemy* enemy : m_enemies) {
+      enemy->Tick(dt);
+    }
 	}
   
   EntityTemplate* Game::GetEntityTemplate(String key) {

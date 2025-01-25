@@ -10,9 +10,9 @@
 
 namespace Lina
 {
-  Enemy::Enemy(EntityWorld* w, EntityTemplate* et, Player* p) : m_world(w), m_target(p)
+  Enemy::Enemy(EntityWorld* w, EntityTemplate* et, Player* p, Vector3 position, Quaternion rotation) : m_world(w), m_target(p)
 	{
-    m_entity = w->SpawnTemplate(et);
+    m_entity = w->SpawnTemplate(et, position, rotation);
     
     JPH::Body* body = m_entity->GetPhysicsBody();
     JPH::MassProperties mp;
@@ -20,7 +20,6 @@ namespace Lina
 
     body->SetFriction(0.1f);
     body->SetRestitution(0.1f);
-
     body->GetMotionProperties()->SetMassProperties(JPH::EAllowedDOFs::TranslationX | JPH::EAllowedDOFs::TranslationY | JPH::EAllowedDOFs::TranslationZ | JPH::EAllowedDOFs::RotationY, mp);
     m_entity->GetPhysicsBody()->SetAllowSleeping(false);
     
@@ -41,7 +40,9 @@ namespace Lina
 	{
     const float speed = 5.0f;
     Vector3 selfPosition = m_entity->GetPosition();
+    selfPosition.y = 0.0f;
     Vector3 targetPosition = m_target->m_entity->GetPosition();
+    targetPosition.y = 0.0f;
     Vector3 targetDirection = (targetPosition - selfPosition).Normalized();
     
     m_entity->GetPhysicsBody()->SetLinearVelocity(ToJoltVec3(targetDirection * speed));

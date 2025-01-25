@@ -19,7 +19,7 @@ namespace Lina
 	class Enemy
 	{
 	public:
-		Enemy(EntityWorld* ew, EntityTemplate* et, Player* p);
+		Enemy(EntityWorld* ew, EntityTemplate* et, Player* p, Vector3 position, Quaternion rotation);
 
 		void Tick(float dt);
 		~Enemy();
