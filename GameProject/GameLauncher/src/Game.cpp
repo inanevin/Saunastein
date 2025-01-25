@@ -29,6 +29,7 @@ SOFTWARE.
 #include "Game.hpp"
 #include "Player.hpp"
 #include "Enemy.hpp"
+#include "WaveManager.hpp"
 
 #include "Core/Resources/ResourceManager.hpp"
 #include "Core/World/EntityTemplate.hpp"
@@ -43,7 +44,7 @@ namespace Lina
 		{
 			m_mouseLocked = false;
 			m_world->GetScreen().GetOwnerWindow()->SetMouseVisible(true);
-			LINA_TRACE("MOUSE UNLOCKED");
+			//			LINA_TRACE("MOUSE UNLOCKED");
 		}
 	}
 
@@ -54,7 +55,7 @@ namespace Lina
 		if (inputAction == LinaGX::InputAction::Pressed)
 			m_world->GetScreen().GetOwnerWindow()->SetMouseVisible(false);
 
-		LINA_TRACE("MOUSE LOCKED");
+		//		LINA_TRACE("MOUSE LOCKED");
 	}
 
 	void Game::OnMouseWheel(float amt)
@@ -67,55 +68,27 @@ namespace Lina
 
 	void Game::OnGameBegin(EntityWorld* world)
 	{
-		m_world	 = world;
-		m_player = new Player(m_world);
-        m_mouseLocked = true;
-        
-        m_gameLostScreen = m_world->FindEntity("GameLost");
-        m_gameWonScreen = m_world->FindEntity("GameWon");
-        
-    // Find resources
-    Entity *res = m_world->FindEntity("Resources");
-    
-    if (res == NULL) {
-      LINA_ERR("Resources entity not found");
-      return;
-    }
-    
-    for (auto param : res->GetParams().params) {
-      m_resources[param.name] = param;
-      LINA_INFO("Resource: {0}", param.name);
-    }
-    
-    // Find enemy spawns
-    m_world->ViewEntities([&](Entity* e, uint32 index) -> bool {
-      LINA_INFO("Entity: {0}", e->GetName());
-      if (e->GetName().compare("EnemySpawn") == 0) {
-        this->m_enemySpawns.push_back(e);
-      }
-      return false;
-    });
-    
-    LINA_INFO("EnemySpawns: {0}", m_enemySpawns.size());
-    
-    // Placeholder: spawn a single enemy at each enemy spawner
-    EntityTemplate* enemyTemplate = GetEntityTemplate("Enemy_1");
-    if (enemyTemplate != nullptr) {
-      for (Entity* spawn : m_enemySpawns) {
-        Enemy* enemy = new Enemy(m_world, enemyTemplate, m_player, spawn->GetPosition(), spawn->GetRotation());
-        m_enemies.push_back(enemy);
-      }
-    }
-    
-//    if (m_resources.contains("Enemy_1")) {
-////      ResourceID rid = m_resources["Enemy_1"].valRes;
-////      EntityTemplate* enemyTemplate = m_resources["Enemy_1"].valRes;
-//      for (Entity* spawn : m_enemySpawns) {
-//        Enemy* enemy = new Enemy(m_world, enemyTemplate);
-//      }
-//    } else {
-//      LINA_ERROR("No Enemy_1 template resource found");
-//    }
+		m_world		  = world;
+		m_player	  = new Player(m_world);
+		m_mouseLocked = true;
+		// Find resources
+		Entity* res = m_world->FindEntity("Resources");
+
+		if (res == NULL)
+		{
+			LINA_ERR("Resources entity not found");
+			return;
+		}
+
+		for (auto param : res->GetParams().params)
+		{
+			m_resources[param.name] = param;
+			LINA_INFO("Resource: {0}", param.name);
+		}
+
+		m_waveManager = new WaveManager(this);
+		std::random_device rd;
+		m_rng = std::mt19937(rd());
 	}
 
 	void Game::OnGameEnd()
@@ -137,44 +110,38 @@ namespace Lina
 
 	void Game::OnGameTick(float dt)
 	{
-        if(m_gameState != GameState::Running)
-            return;
-        
 		m_player->Tick(dt);
-    
-        for (Enemy* enemy : m_enemies) {
-            enemy->Tick(dt);
-        }
-        
-        if(m_player->m_health < 0.0f && m_gameLostScreen)
-        {
-            m_gameState = GameState::Lost;
-            m_gameLostScreen->SetVisible(true);
-        }
+		m_waveManager->Tick(dt);
 	}
-  
-  EntityTemplate* Game::GetEntityTemplate(String key) {
-    if (m_resources.contains(key)) {
-      EntityParameter param = m_resources[key];
-      if (param.type != EntityParameterType::ResourceID) {
-        LINA_ERR("Parameter {0} is not a resource", key);
-        return nullptr;
-      }
-      
-      ResourceID rid = m_resources[key].valRes;
-      ResourceManagerV2 *rm = m_world->GetResourceManager();
-      EntityTemplate *entity_template = rm->GetIfExists<EntityTemplate>(rid);
-      
-      if (entity_template == nullptr) {
-        LINA_ERR("Failed to get EntityTemplate for key {0} ", key);
-        return nullptr;
-      }
-      
-      return entity_template;
-    } else {
-      LINA_ERR("No resource {0} found", key);
-    }
-  }
+
+	EntityTemplate* Game::GetEntityTemplate(String key)
+	{
+		if (m_resources.contains(key))
+		{
+			EntityParameter param = m_resources[key];
+			if (param.type != EntityParameterType::ResourceID)
+			{
+				LINA_ERR("Parameter {0} is not a resource", key);
+				return nullptr;
+			}
+
+			ResourceID		   rid			   = m_resources[key].valRes;
+			ResourceManagerV2* rm			   = m_world->GetResourceManager();
+			EntityTemplate*	   entity_template = rm->GetIfExists<EntityTemplate>(rid);
+
+			if (entity_template == nullptr)
+			{
+				LINA_ERR("Failed to get EntityTemplate for key {0} ", key);
+				return nullptr;
+			}
+
+			return entity_template;
+		}
+		else
+		{
+			LINA_ERR("No resource {0} found", key);
+		}
+	}
 
 	void Game::OnWindowFocus(bool focus)
 	{
@@ -191,6 +158,15 @@ namespace Lina
 			// m_world->GetScreen().GetOwnerWindow()->SetMouseVisible(true);
 			// m_world->GetScreen().GetOwnerWindow()->SetWrapMouse(false);
 		}
+	}
+
+	void Game::OnEnemySpawned(Enemy* enemy)
+	{
+	}
+
+	void Game::OnEnemyWaveSpawned(uint32_t index)
+	{
+		LINA_TRACE("OnEnemyWaveSpawned: {0}", index);
 	}
 
 } // namespace Lina
