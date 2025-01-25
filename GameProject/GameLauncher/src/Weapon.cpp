@@ -27,12 +27,14 @@ SOFTWARE.
 */
 
 #include "Weapon.hpp"
+#include "Player.hpp"
 #include "Core/World/EntityWorld.hpp"
 
 namespace Lina
 {
-	Weapon::Weapon(EntityWorld* w)
+	Weapon::Weapon(Player* player, EntityWorld* w)
 	{
+        m_player = player;
 		m_world	 = w;
 		m_entity = w->FindEntity("WeaponQuad");
 	}
@@ -40,4 +42,24 @@ namespace Lina
 	Weapon::~Weapon()
 	{
 	}
+
+    void Weapon::Tick(float dt)
+    {
+        if(!m_entity)
+            return;
+        
+       // const Vector3& camPosition = m_player->m_cameraRef->GetPosition();
+       // const Quaternion& camRotation = m_player->m_cameraRef->GetRotation();
+       //
+       // m_entity->SetPosition(camPosition + camRotation.GetForward() * 0.5f);
+       // m_entity->SetRotation(Quaternion::LookAt(m_entity->GetPosition(), -camPosition, Vector3::Up));
+    }
+
+    void WeaponMelee::Tick(float dt)
+    {
+        Weapon::Tick(dt);
+        
+        if(!m_entity)
+            return;
+    }
 } // namespace Lina

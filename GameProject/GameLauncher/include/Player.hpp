@@ -39,6 +39,7 @@ namespace LinaGX
 namespace Lina
 {
 
+	class Weapon;
 	class EntityWorld;
 	class Entity;
 
@@ -74,6 +75,7 @@ namespace Lina
 		EntityWorld* m_world	 = nullptr;
 		Entity*		 m_entity	 = nullptr;
 		Entity*		 m_cameraRef = nullptr;
+		Weapon*		 m_weapon	 = nullptr;
 
 		Movement m_movement = {};
 		Runtime	 m_runtime	= {};

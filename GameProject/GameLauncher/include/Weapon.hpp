@@ -41,15 +41,28 @@ namespace Lina
 
 	class EntityWorld;
 	class Entity;
+	class Player;
 
 	class Weapon
 	{
 	public:
-		Weapon(EntityWorld* weapon);
+		Weapon(Player* player, EntityWorld* weapon);
 		virtual ~Weapon();
+
+		virtual void Tick(float dt);
 
 		Entity*		 m_entity = nullptr;
 		EntityWorld* m_world  = nullptr;
+		Player*		 m_player = nullptr;
+	};
+
+	class WeaponMelee : public Weapon
+	{
+	public:
+		WeaponMelee(Player* player, EntityWorld* w) : Weapon(player, w){};
+		virtual ~WeaponMelee() = default;
+
+		virtual void Tick(float dt) override;
 	};
 
 } // namespace Lina

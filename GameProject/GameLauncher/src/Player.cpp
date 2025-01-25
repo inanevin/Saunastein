@@ -31,6 +31,7 @@ SOFTWARE.
 #include "Common/Math/Math.hpp"
 #include "Core/Physics/PhysicsWorld.hpp"
 #include "Common/System/SystemInfo.hpp"
+#include "Weapon.hpp"
 
 #include <LinaGX/Core/InputMappings.hpp>
 #include <Jolt/Jolt.h>
@@ -64,10 +65,13 @@ namespace Lina
 
 		m_movement.headbobYawPower = 0.3f;
 		m_movement.headbobYawSpeed = 7.5f;
+
+		m_weapon = new WeaponMelee(this, m_world);
 	}
 
 	Player::~Player()
 	{
+		delete m_weapon;
 	}
 
 	void Player::Tick(float dt)
@@ -105,6 +109,8 @@ namespace Lina
 
 		m_cameraRef->SetRotation(m_runtime.targetRotation);
 		m_cameraRef->SetPosition(m_entity->GetPosition() + m_entity->GetRotation().GetForward() * 0.1f);
+
+		m_weapon->Tick(dt);
 
 		// Camera.
 		m_world->GetWorldCamera().SetPosition(m_cameraRef->GetPosition());
