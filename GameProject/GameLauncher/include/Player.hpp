@@ -51,27 +51,31 @@ namespace Lina
 			float movementPower = 10.5f;
 			float rotationSpeed = 20.0f;
 			float rotationPower = 5.0f;
+
+			float headbobPitchPower = 4.0f;
+			float headbobYawPower	= 2.0f;
+			float headbobPitchSpeed = 4.0f;
+			float headbobYawSpeed	= 2.0f;
+			float headSwayPower		= 0.5f;
 		};
 
 		struct Runtime
 		{
 			Vector3	   targetPosition = Vector3::Zero;
 			Quaternion targetRotation = Quaternion::Identity();
+			Vector3	   cameraAngles	  = Vector2::Zero;
 		};
 
 		Player(EntityWorld* ew);
-
-		void Tick(float dt);
 		~Player();
 
-	private:
+		void Tick(float dt);
+
 		EntityWorld* m_world	 = nullptr;
 		Entity*		 m_entity	 = nullptr;
 		Entity*		 m_cameraRef = nullptr;
 
 		Movement m_movement = {};
 		Runtime	 m_runtime	= {};
-
-		Vector2 m_cameraAngles = Vector2::Zero;
 	};
 } // namespace Lina

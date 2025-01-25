@@ -30,6 +30,7 @@ SOFTWARE.
 #include "Core/World/EntityWorld.hpp"
 #include "Common/Math/Math.hpp"
 #include "Core/Physics/PhysicsWorld.hpp"
+#include "Common/System/SystemInfo.hpp"
 
 #include <LinaGX/Core/InputMappings.hpp>
 #include <Jolt/Jolt.h>
@@ -57,6 +58,12 @@ namespace Lina
 		m_movement.movementPower = 10.5f;
 		m_movement.rotationSpeed = 30.0f;
 		m_movement.rotationPower = 5.0f;
+
+		m_movement.headbobPitchPower = 0.15f;
+		m_movement.headbobPitchSpeed = 15.0f;
+
+		m_movement.headbobYawPower = 0.3f;
+		m_movement.headbobYawSpeed = 7.5f;
 	}
 
 	Player::~Player()
@@ -79,14 +86,21 @@ namespace Lina
 		const Vector3 velocity = (m_runtime.targetPosition - m_entity->GetPosition()) * m_movement.movementPower;
 		m_entity->GetPhysicsBody()->SetLinearVelocity(ToJoltVec3(velocity));
 
+		// Mouse camera movement.
 		const Vector2 mouseDelta = m_world->GetInput().GetMouseDelta();
+		m_runtime.cameraAngles.x += mouseDelta.x * dt * 10.0f;
+		m_runtime.cameraAngles.y += mouseDelta.y * dt * 10.0f;
+		m_runtime.cameraAngles.y = Math::Clamp(m_runtime.cameraAngles.y, -89.0f, 89.0f);
+		m_runtime.cameraAngles.z = -m_movement.headSwayPower * input.x;
 
-		m_cameraAngles.x += mouseDelta.x * dt * 10.0f;
-		m_cameraAngles.y += mouseDelta.y * dt * 10.0f;
-		m_cameraAngles.y				= Math::Clamp(m_cameraAngles.y, -89.0f, 89.0f);
-		const Quaternion qX				= Quaternion::AngleAxis(m_cameraAngles.x, Vector3::Up);
-		const Quaternion qY				= Quaternion::AngleAxis(m_cameraAngles.y, Vector3::Right);
-		const Quaternion cameraRotation = qX * qY;
+		// Head-bob
+		Vector3 headbob = Vector3(Math::Sin(SystemInfo::GetAppTimeF() * m_movement.headbobYawSpeed) * m_movement.headbobYawPower, Math::Cos(SystemInfo::GetAppTimeF() * m_movement.headbobPitchSpeed) * m_movement.headbobPitchPower, 0.0f);
+		headbob *= velocity.Magnitude() * 0.2f;
+
+		const Quaternion qX				= Quaternion::AngleAxis(m_runtime.cameraAngles.x + headbob.x, Vector3::Up);
+		const Quaternion qY				= Quaternion::AngleAxis(m_runtime.cameraAngles.y + headbob.y, Vector3::Right);
+		const Quaternion qZ				= Quaternion::AngleAxis(m_runtime.cameraAngles.z, Vector3::Forward);
+		const Quaternion cameraRotation = qX * qY * qZ;
 		m_runtime.targetRotation		= Quaternion::Slerp(m_runtime.targetRotation, cameraRotation, dt * m_movement.rotationSpeed);
 
 		m_cameraRef->SetRotation(m_runtime.targetRotation);
