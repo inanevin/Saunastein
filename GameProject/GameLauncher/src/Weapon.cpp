@@ -112,7 +112,7 @@ namespace Lina
 	{
 		Entity* idle = m_world->FindEntity("Weapon0_Idle");
 		Entity* fire = m_world->FindEntity("Weapon0_Fire");
-
+		return;
 		m_idleAnim = {};
 
 		for (const EntityParameter& p : idle->GetParams().params)
