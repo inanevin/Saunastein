@@ -21,6 +21,7 @@ namespace Lina
 		Enemy(EntityWorld* ew, EntityTemplate* et, Player* p, Vector3 position, Quaternion rotation);
 
 		void Tick(float dt);
+    bool IsAlive();
 		~Enemy();
 
 		//	private:

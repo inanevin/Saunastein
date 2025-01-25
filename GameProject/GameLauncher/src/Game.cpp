@@ -160,6 +160,7 @@ namespace Lina
 			return;
 
 		m_player->PreTick();
+    m_waveManager->PreTick();
 	}
 
 	void Game::OnGameTick(float dt)

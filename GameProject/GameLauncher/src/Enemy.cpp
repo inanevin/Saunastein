@@ -36,7 +36,13 @@ namespace Lina
 
 	Enemy::~Enemy()
 	{
+    m_world->DestroyEntity(m_entity);
 	}
+  
+  bool Enemy::IsAlive() {
+    return true;
+//    return m_timer < 5.0f;
+  }
 
 	void Enemy::Tick(float dt)
 	{
@@ -44,7 +50,7 @@ namespace Lina
 		JPH::Body* physicsBody		   = m_entity->GetPhysicsBody();
 		float	   currentPhysicsSpeed = physicsBody->GetLinearVelocity().Length();
 		float	   animFrameTime	   = 0.1f + (0.5f / currentPhysicsSpeed);
-		LINA_INFO("currentPhysicsSpeed: {0}", currentPhysicsSpeed);
+//		LINA_INFO("currentPhysicsSpeed: {0}", currentPhysicsSpeed);
 
 		int animFrame = ((int)(m_timer / animFrameTime) % 2);
 

@@ -34,5 +34,6 @@ namespace Lina
 		bool			m_currentWaveHasWaited		= 0;
 		float			m_currentWaveLastSpawnedAt	= 0;
 		uint32_t		m_currentWaveEnemiesSpawned = 0;
+    uint32_t    m_entitySpawnerCounter = 0;
 	};
 } // namespace Lina
