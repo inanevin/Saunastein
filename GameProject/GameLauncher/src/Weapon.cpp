@@ -40,6 +40,7 @@ SOFTWARE.
 #include "Core/Graphics/Resource/Material.hpp"
 #include "Common/Data/Vector.hpp"
 #include "Core/Application.hpp"
+#include "Core/World/Components/CompModel.hpp"
 
 #include <LinaGX/Core/InputMappings.hpp>
 #include <Jolt/Jolt.h>
@@ -47,36 +48,61 @@ SOFTWARE.
 
 namespace Lina
 {
-	void WeaponAnimation::AddTextureID(ResourceID id)
-	{
-		m_textureIDs.push_back(id);
-	}
 
-	void WeaponAnimation::Tick(float dt, Material* material)
+	WeaponAnimation::WeaponAnimation(EntityWorld* world, Entity* idle, Entity* fire, Application* app, uint32 fireDisp)
 	{
-		m_frameCtr++;
+		m_app						   = app;
+		m_fireDisplay				   = fireDisp;
+		Entity*					 wep   = world->FindEntity("WeaponQuad");
+		CompModel*				 model = world->GetComponent<CompModel>(wep);
+		const Vector<ResourceID> mats  = model->GetMaterials();
 
-		if (m_frameCtr > m_displayFrames)
+		if (!mats.empty())
+			m_material = m_app->GetResourceManager().GetIfExists<Material>(mats.at(0));
+
+		if (idle)
 		{
-			m_frameCtr = 0;
-			m_index	   = (m_index + 1) % static_cast<uint32>(m_textureIDs.size());
+			for (const EntityParameter& p : idle->GetParams().params)
+			{
+				m_idle = p.valRes;
+			}
 		}
 
-		if (m_textureIDs.empty())
-			return;
-
-		m_textureID = m_textureIDs.at(m_index);
-		UpdateMaterial(material);
+		if (fire)
+		{
+			for (const EntityParameter& p : fire->GetParams().params)
+			{
+				m_fire = p.valRes;
+			}
+		}
 	}
 
-	void WeaponAnimation::UpdateMaterial(Material* mat)
+	void WeaponAnimation::Tick(float dt)
 	{
-		if (mat->HasProperty<LinaTexture2D>("txtAlbedo"_hs))
+		if (m_used == m_fire)
 		{
-			LinaTexture2D* prop = mat->GetProperty<LinaTexture2D>("txtAlbedo"_hs);
-			if (prop->texture != m_textureID)
+			if (m_ctr > m_fireDisplay)
 			{
-				prop->texture = m_textureID;
+				m_ctr = 0;
+				Idle();
+			}
+			m_ctr++;
+		}
+
+		UpdateMaterial();
+	}
+
+	void WeaponAnimation::UpdateMaterial()
+	{
+		if (!m_material)
+			return;
+
+		if (m_material->HasProperty<LinaTexture2D>("txtAlbedo"_hs))
+		{
+			LinaTexture2D* prop = m_material->GetProperty<LinaTexture2D>("txtAlbedo"_hs);
+			if (prop->texture != m_used)
+			{
+				prop->texture = m_used;
 				m_app->GetGfxContext().MarkBindlessDirty();
 			}
 		}
@@ -106,38 +132,8 @@ namespace Lina
 
 	Weapon::~Weapon()
 	{
-	}
-
-	WeaponMelee::WeaponMelee(EntityWorld* world, Player* player, BubbleManager* bm, Application* app) : Weapon(world, player, bm, app)
-	{
-		Entity* idle = m_world->FindEntity("Weapon0_Idle");
-		Entity* fire = m_world->FindEntity("Weapon0_Fire");
-
-		m_idleAnim = {};
-		m_fireAnim = {};
-
-		m_idleAnim.SetApp(app);
-		m_fireAnim.SetApp(app);
-
-		if (idle)
-		{
-			for (const EntityParameter& p : idle->GetParams().params)
-			{
-				if (p.type != EntityParameterType::ResourceID)
-					continue;
-				m_idleAnim.AddTextureID(p.valRes);
-			}
-		}
-
-		if (fire)
-		{
-			for (const EntityParameter& p : fire->GetParams().params)
-			{
-				if (p.type != EntityParameterType::ResourceID)
-					continue;
-				m_fireAnim.AddTextureID(p.valRes);
-			}
-		}
+		if (m_animation)
+			delete m_animation;
 	}
 
 	void Weapon::Tick(float dt)
@@ -150,15 +146,21 @@ namespace Lina
 
 		const Vector2 md = m_world->GetInput().GetMouseDelta();
 
-		const Vector3 targetLocalPositionOffset = Vector3(md.x * m_movement.swayPowerX, md.y * m_movement.swayPowerY, 0.0f);
+		const Vector3 targetLocalPositionOffset = Vector3(md.x * m_movement.swayPowerX + m_movement.localOffset.x, md.y * m_movement.swayPowerY + m_movement.localOffset.y, 0.0f);
 		m_runtime.localPositionOffset			= Math::Lerp(m_runtime.localPositionOffset, targetLocalPositionOffset, m_movement.swaySpeed * dt);
 		m_entity->SetLocalPosition(m_runtime.startLocalPos + m_runtime.localPositionOffset);
 		m_entity->SetLocalRotation(Quaternion::PitchYawRoll(Vector3(m_runtime.startLocalEuler.x, 0.0f, bob)));
 
-		if (m_world->GetInput().GetMouseButtonDown(LINAGX_MOUSE_0))
-		{
-			Fire();
-		}
+		m_animation->Tick(dt);
+	}
+
+	WeaponMelee::WeaponMelee(EntityWorld* world, Player* player, BubbleManager* bm, Application* app) : Weapon(world, player, bm, app)
+	{
+		Entity* idle			 = m_world->FindEntity("Weapon1_Idle");
+		Entity* fire			 = m_world->FindEntity("Weapon1_Fire");
+		m_animation				 = new WeaponAnimation(m_world, idle, fire, app, 12);
+		m_movement.localOffset.x = 0.08f;
+		m_movement.localOffset.y = -0.05f;
 	}
 
 	void WeaponMelee::Tick(float dt)
@@ -166,6 +168,12 @@ namespace Lina
 		Weapon::Tick(dt);
 		if (!m_entity)
 			return;
+
+		if (m_world->GetInput().GetMouseButtonDown(LINAGX_MOUSE_0))
+		{
+			LINA_TRACE("Firing!");
+			Fire();
+		}
 	}
 
 	void WeaponMelee::Fire()
@@ -176,5 +184,7 @@ namespace Lina
 		const Quaternion  spawnRotation = Quaternion::LookAt(spawnPosition, camPosition, Vector3::Up);
 		const Vector3	  shootForce	= camRotation.GetForward() * 500.0f;
 		m_bubbleManager->SpawnBubble(shootForce, spawnPosition, spawnRotation);
+		m_animation->Fire();
 	}
+
 } // namespace Lina
