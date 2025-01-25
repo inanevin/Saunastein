@@ -109,7 +109,7 @@ namespace Lina
 		const Vector3&	  camPosition = m_player->m_cameraRef->GetPosition();
 		const Quaternion& camRotation = m_player->m_cameraRef->GetRotation();
 
-		const Vector3	 spawnPosition = camPosition + camRotation.GetForward() * 0.5f;
+		const Vector3	 spawnPosition = camPosition + camRotation.GetForward() * 5.5f;
 		const Quaternion spawnRotation = Quaternion::LookAt(spawnPosition, camPosition, Vector3::Up);
 		const Vector3	 shootForce	   = camRotation.GetForward() * 100.0f;
 		m_bubbleManager->SpawnBubble(shootForce, spawnPosition, spawnRotation);

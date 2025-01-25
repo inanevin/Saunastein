@@ -166,6 +166,7 @@ namespace Lina
 			return;
 
 		m_player->PreTick();
+		m_bubbleManager->PreTick();
 	}
 
 	void Game::OnGameTick(float dt)
@@ -174,6 +175,7 @@ namespace Lina
 			return;
 
 		m_player->Tick(dt);
+		m_bubbleManager->Tick(dt);
 		m_waveManager->Tick(dt);
 
 		if (m_player->m_health < 0.0f && m_gameLostScreen != nullptr)
