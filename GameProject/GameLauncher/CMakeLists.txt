@@ -20,7 +20,7 @@ project(GameLauncher)
 # Set sources
 #--------------------------------------------------------------------
 
-set(SOURCES 
+set(SOURCES
 src/GameLauncher.cpp
 src/Game.cpp
 src/Player.cpp
@@ -29,6 +29,7 @@ src/Enemy.cpp
 src/SwapchainRenderer.cpp
 src/BubbleManager.cpp
 src/WaveManager.cpp
+src/HudManager.cpp
 )
 
 set(HEADERS
@@ -39,6 +40,7 @@ include/Weapon.hpp
 include/Enemy.hpp
 include/SwapchainRenderer.hpp
 include/BubbleManager.hpp
+include/HudManager.hpp
 )
 
 #--------------------------------------------------------------------

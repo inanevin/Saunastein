@@ -40,8 +40,8 @@ namespace Lina
 	}
   
   bool Enemy::IsAlive() {
-    return true;
-//    return m_timer < 5.0f;
+//    return true;
+    return m_timer < 20.0f;
   }
 
 	void Enemy::Tick(float dt)

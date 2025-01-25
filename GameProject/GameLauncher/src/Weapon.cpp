@@ -37,7 +37,7 @@ SOFTWARE.
 #include "Core/Resources/ResourceManager.hpp"
 #include "Core/World/EntityTemplate.hpp"
 #include "Core/Physics/PhysicsWorld.hpp"
-#include "Core/Graphics/Resource/Material.hpp"d
+#include "Core/Graphics/Resource/Material.hpp"
 #include "Common/Data/Vector.hpp"
 
 #include <LinaGX/Core/InputMappings.hpp>

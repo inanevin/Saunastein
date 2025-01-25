@@ -31,6 +31,7 @@ SOFTWARE.
 #include "Enemy.hpp"
 #include "WaveManager.hpp"
 #include "BubbleManager.hpp"
+#include "HudManager.hpp"
 
 #include "Core/Resources/ResourceManager.hpp"
 #include "Core/World/EntityTemplate.hpp"
@@ -84,6 +85,7 @@ namespace Lina
 		m_world		   = world;
 
 		m_bubbleManager = new BubbleManager(m_world);
+    m_hudManager = new HudManager(this);
 		m_player		= new Player(m_world, m_bubbleManager);
 		m_mouseLocked	= true;
 
@@ -178,6 +180,7 @@ namespace Lina
 		m_player->Tick(dt);
 		m_bubbleManager->Tick(dt);
 		m_waveManager->Tick(dt);
+    m_hudManager->Tick(dt);
 
 		if (m_player->m_health < 0.0f && m_gameLostScreen != nullptr)
 		{
@@ -255,9 +258,10 @@ namespace Lina
 	{
 	}
 
-	void Game::OnEnemyWaveSpawned(uint32_t index, String name)
+	void Game::OnWaveSpawned(uint32_t index, String name)
 	{
-		LINA_TRACE("OnEnemyWaveSpawned: {0} {1}", index, name);
+    m_hudManager->SetMainText(name);
+//		LINA_TRACE("OnEnemyWaveSpawned: {0} {1}", index, name);
 	}
 
 	void Game::UpdateHeat(float addition)

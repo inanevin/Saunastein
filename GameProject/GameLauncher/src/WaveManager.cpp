@@ -36,7 +36,7 @@ namespace Lina
 			.name			= "Get ready",
 			.waitTimeBefore = 1.0f,
 		},
-		WaveDesc{.waitTimeBefore = 1.0f,
+		WaveDesc{.waitTimeBefore = 3.0f,
 				 .name			 = "Wave 1",
 				 .enemies =
 					 {
@@ -52,10 +52,10 @@ namespace Lina
 //             WaveEnemyDesc{.resourceKey = "Enemy_1", .health = 100, .speed = 5, .waitTimeBefore = 0.0f},
 					 }},
 		WaveDesc{
-			.waitTimeBefore = 2.0f,
+			.waitTimeBefore = 0.5f,
 			.name			= "Well done!",
 		},
-		WaveDesc{.waitTimeBefore = 2.0f,
+		WaveDesc{.waitTimeBefore = 3.0f,
 				 .name			 = "Wave 2",
 				 .enemies =
 					 {
@@ -109,16 +109,17 @@ namespace Lina
 
 		WaveDesc& currentWave = waves[currentWaveIdx];
 
-		bool currentWaveAllSpawned		 = m_currentWaveEnemiesSpawned >= currentWave.enemies.size();
+		bool currentWaveAllSpawned = m_currentWaveEnemiesSpawned >= currentWave.enemies.size();
 		bool currentWaveHasActiveEnemies = m_enemies.size() > 0;
-		bool currentWaveIsWaiting		 = currentWaveTime < currentWave.waitTimeBefore;
-		bool currentWaveIsDone			 = !currentWaveIsWaiting && currentWaveAllSpawned;
+		bool currentWaveIsWaiting = currentWaveTime < currentWave.waitTimeBefore;
+		bool currentWaveIsDone = !currentWaveIsWaiting && currentWaveAllSpawned && !currentWaveHasActiveEnemies;
 
 		if (!currentWaveIsWaiting && !m_currentWaveHasWaited)
 		{
 			LINA_INFO("[{0}] Start Wave {1}", m_globalTimer, m_waveCounter);
 			m_currentWaveHasWaited	   = true;
 			m_currentWaveLastSpawnedAt = m_globalTimer;
+      m_game->OnWaveSpawned(m_waveCounter, currentWave.name);
 			return;
 		}
 
@@ -163,6 +164,7 @@ namespace Lina
             Entity* spawn = m_enemySpawns[m_entitySpawnerCounter++%m_enemySpawns.size()];
             Enemy* enemy = new Enemy(world, templ, m_game->m_player, spawn->GetPosition(), spawn->GetRotation());
             m_enemies.push_back(enemy);
+            m_game->OnEnemySpawned(enemy);
           }
 				}
 			}
