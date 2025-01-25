@@ -129,6 +129,10 @@ namespace Lina
 
 	void GameLauncher::PreTick()
 	{
+		if (m_wr)
+			m_wr->Resize(m_window->GetSize() * m_window->GetDPIScale());
+		m_swapchainRenderer->OnWindowSizeChanged(m_window, m_window->GetSize() * m_window->GetDPIScale());
+
 		m_swapchainRenderer->CheckVisibility();
 
 		if (m_world)
@@ -235,7 +239,7 @@ namespace Lina
 		if (m_wr)
 			m_wr->Resize(sz * m_window->GetDPIScale());
 
-		m_swapchainRenderer->OnWindowSizeChanged(window, sz);
+		m_swapchainRenderer->OnWindowSizeChanged(window, sz * m_window->GetDPIScale());
 	}
 
 	void GameLauncher::OnWindowKey(LinaGX::Window* window, uint32 keycode, int32 scancode, LinaGX::InputAction inputAction)

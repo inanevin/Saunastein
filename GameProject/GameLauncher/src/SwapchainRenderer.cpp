@@ -125,6 +125,10 @@ namespace Lina
 	{
 		if (window != m_window)
 			return;
+
+		if (m_size == newSize)
+			return;
+
 		const LinaGX::VSyncStyle vsync = {
 			.vulkanVsync = m_vsync ? LinaGX::VKVsync::FIFO : LinaGX::VKVsync::None,
 			.dx12Vsync	 = m_vsync ? LinaGX::DXVsync::EveryVBlank : LinaGX::DXVsync::None,
@@ -142,7 +146,7 @@ namespace Lina
 		};
 
 		m_lgx->RecreateSwapchain(desc);
-		m_size = newSize;
+		m_size = newSize * window->GetDPIScale();
 
 		m_renderPass.SetSize(m_size);
 		m_app->GetGfxContext().MarkBindlessDirty();
