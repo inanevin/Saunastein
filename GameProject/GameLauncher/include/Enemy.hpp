@@ -32,5 +32,6 @@ namespace Lina
 		Vector<Entity*> m_sprites;
 		float			m_timer	 = 0.0f;
 		uint32_t		m_health = 0;
+    bool        m_dead = false;
 	};
 } // namespace Lina

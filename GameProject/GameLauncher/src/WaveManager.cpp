@@ -110,7 +110,7 @@ namespace Lina
 		WaveDesc& currentWave = waves[currentWaveIdx];
 
 		bool currentWaveAllSpawned = m_currentWaveEnemiesSpawned >= currentWave.enemies.size();
-		bool currentWaveHasActiveEnemies = m_enemies.size() > 0;
+		bool currentWaveHasActiveEnemies = m_currentEnemies.size() > 0;
 		bool currentWaveIsWaiting = currentWaveTime < currentWave.waitTimeBefore;
 		bool currentWaveIsDone = !currentWaveIsWaiting && currentWaveAllSpawned && !currentWaveHasActiveEnemies;
 
@@ -163,7 +163,7 @@ namespace Lina
           {
             Entity* spawn = m_enemySpawns[m_entitySpawnerCounter++%m_enemySpawns.size()];
             Enemy* enemy = new Enemy(world, templ, m_game->m_player, spawn->GetPosition(), spawn->GetRotation());
-            m_enemies.push_back(enemy);
+            m_currentEnemies.push_back(enemy);
             m_game->OnEnemySpawned(enemy);
           }
 				}
@@ -185,24 +185,21 @@ namespace Lina
 		m_globalTimer += dt;
 		EntityWorld* world = m_game->m_world;
     
-    Vector<Enemy*> deadEnemies;
-		for (Enemy* enemy : m_enemies)
+		for (Enemy* enemy : m_currentEnemies)
 		{
 			enemy->Tick(dt);
       if (!enemy->IsAlive()) {
-        deadEnemies.push_back(enemy);
+        m_deadEnemies.push_back(enemy);
       }
 		}
     
-    uint32_t enemyCount = m_enemies.size();
-    
-    for (Enemy* deadEnemy : deadEnemies) {
-      delete deadEnemy;
-      m_enemies.erase(std::remove(m_enemies.begin(), m_enemies.end(), deadEnemy), m_enemies.end());
+    for (Enemy* deadEnemy : m_deadEnemies) {
+      deadEnemy->Tick(dt);
+      m_currentEnemies.erase(std::remove(m_currentEnemies.begin(), m_currentEnemies.end(), deadEnemy), m_currentEnemies.end());
     }
     
-    if (deadEnemies.size() > 0) {
-      LINA_INFO("Destroyed {0} enemies. Had: {1}, Has: {2}", deadEnemies.size(), enemyCount, m_enemies.size());
-    }
+//    if (deadEnemies.size() > 0) {
+//      LINA_INFO("Destroyed {0} enemies. Had: {1}, Has: {2}", deadEnemies.size(), enemyCount, m_currentEnemies.size());
+//    }
 	}
 } // namespace Lina
