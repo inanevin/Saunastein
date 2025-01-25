@@ -173,6 +173,7 @@ namespace Lina
 		else
 		{
 			LINA_ERR("No resource {0} found", key);
+      return nullptr;
 		}
 	}
 

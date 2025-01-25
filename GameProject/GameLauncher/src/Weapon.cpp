@@ -68,7 +68,7 @@ namespace Lina
 		const Vector2 md = m_world->GetInput().GetMouseDelta();
 
 		const Vector3 targetLocalPositionOffset = Vector3(md.x * m_movement.swayPowerX, md.y * m_movement.swayPowerY, 0.0f);
-		m_runtime.localPositionOffset			= Math::Lerp(m_runtime.localPositionOffset, targetLocalPositionOffset, m_movement.swaySpeed * dt);
+		m_runtime.localPositionOffset = Math::Lerp(m_runtime.localPositionOffset, targetLocalPositionOffset, m_movement.swaySpeed * dt);
 		m_entity->SetLocalPosition(m_runtime.startLocalPos + m_runtime.localPositionOffset);
 		m_entity->SetLocalRotation(Quaternion::PitchYawRoll(Vector3(m_runtime.startLocalEuler.x, 0.0f, bob)));
 	}
