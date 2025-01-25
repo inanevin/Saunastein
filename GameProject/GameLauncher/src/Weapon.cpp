@@ -45,6 +45,10 @@ SOFTWARE.
 
 namespace Lina
 {
+
+	void WeaponAnimation::Tick(float dt, Material* material)
+	{
+	}
 	Weapon::Weapon(EntityWorld* world, Player* player, BubbleManager* bm)
 	{
 		m_world			= world;
@@ -70,17 +74,6 @@ namespace Lina
 	{
 	}
 
-	void Weapon::PreTick()
-	{
-		if (!m_entity)
-			return;
-
-		if (m_world->GetInput().GetMouseButtonDown(LINAGX_MOUSE_0))
-		{
-			Fire();
-		}
-	}
-
 	void Weapon::Tick(float dt)
 	{
 		if (!m_entity)
@@ -95,6 +88,11 @@ namespace Lina
 		m_runtime.localPositionOffset			= Math::Lerp(m_runtime.localPositionOffset, targetLocalPositionOffset, m_movement.swaySpeed * dt);
 		m_entity->SetLocalPosition(m_runtime.startLocalPos + m_runtime.localPositionOffset);
 		m_entity->SetLocalRotation(Quaternion::PitchYawRoll(Vector3(m_runtime.startLocalEuler.x, 0.0f, bob)));
+
+		if (m_world->GetInput().GetMouseButtonDown(LINAGX_MOUSE_0))
+		{
+			Fire();
+		}
 	}
 
 	void WeaponMelee::Tick(float dt)
@@ -106,12 +104,11 @@ namespace Lina
 
 	void WeaponMelee::Fire()
 	{
-		const Vector3&	  camPosition = m_player->m_cameraRef->GetPosition();
-		const Quaternion& camRotation = m_player->m_cameraRef->GetRotation();
-
-		const Vector3	 spawnPosition = camPosition + camRotation.GetForward() * 5.5f;
-		const Quaternion spawnRotation = Quaternion::LookAt(spawnPosition, camPosition, Vector3::Up);
-		const Vector3	 shootForce	   = camRotation.GetForward() * 100.0f;
+		const Vector3&	  camPosition	= m_player->m_cameraRef->GetPosition();
+		const Quaternion& camRotation	= m_player->m_cameraRef->GetRotation();
+		const Vector3	  spawnPosition = camPosition + camRotation.GetForward() * 5.5f;
+		const Quaternion  spawnRotation = Quaternion::LookAt(spawnPosition, camPosition, Vector3::Up);
+		const Vector3	  shootForce	= camRotation.GetForward() * 500.0f;
 		m_bubbleManager->SpawnBubble(shootForce, spawnPosition, spawnRotation);
 	}
 } // namespace Lina

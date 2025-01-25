@@ -50,12 +50,15 @@ namespace Lina
 	public:
 		struct BubbleData
 		{
-			Entity* e		   = nullptr;
-			Vector3 shootForce = Vector3::Zero;
-			float	destroyIn  = 3.0f;
-			float	_counter   = 0.0f;
-			bool	_inited	   = false;
-			bool	_kill	   = false;
+			Vector3	   shootForce	 = Vector3::Zero;
+			Vector3	   spawnPosition = Vector3::Zero;
+			Quaternion spawnRotation = Quaternion::Identity();
+			float	   destroyIn	 = 3.0f;
+			float	   _counter		 = 0.0f;
+			bool	   _inited		 = false;
+			bool	   _spawned		 = false;
+			bool	   _kill		 = false;
+			Entity*	   _entity		 = nullptr;
 		};
 
 		BubbleManager(EntityWorld* world);

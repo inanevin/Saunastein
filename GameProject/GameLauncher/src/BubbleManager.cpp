@@ -57,18 +57,39 @@ namespace Lina
 	void BubbleManager::PreTick()
 	{
 		Vector<Entity*> killList;
-		for (const BubbleData& data : m_bubbles)
+
+		for (BubbleData& data : m_bubbles)
 		{
+			if (!data._spawned)
+			{
+				data._spawned = true;
+
+				Entity* spawnedBubble = m_world->SpawnTemplate(m_bubbleTemplate, data.spawnPosition, data.spawnRotation);
+				spawnedBubble->GetPhysicsBody()->SetAllowSleeping(false);
+				data._entity = spawnedBubble;
+
+				JPH::Body*			body = spawnedBubble->GetPhysicsBody();
+				JPH::MassProperties mp;
+				mp.mMass = spawnedBubble->GetPhysicsSettings().mass;
+
+				// body->SetFriction(10.0f);
+				// body->SetRestitution(0.1f);
+				// body->GetMotionProperties()->SetLinearDamping(1.0f);
+
+				body->GetMotionProperties()->SetMassProperties(JPH::EAllowedDOFs::TranslationX | JPH::EAllowedDOFs::TranslationY | JPH::EAllowedDOFs::TranslationZ, mp);
+				spawnedBubble->GetPhysicsBody()->SetAllowSleeping(false);
+			}
+
 			if (data._kill)
-				killList.push_back(data.e);
+				killList.push_back(data._entity);
 		}
 
 		for (Entity* e : killList)
 		{
-			auto it = linatl::find_if(m_bubbles.begin(), m_bubbles.end(), [e](const BubbleData& data) -> bool { return data.e == e; });
+			auto it = linatl::find_if(m_bubbles.begin(), m_bubbles.end(), [e](const BubbleData& data) -> bool { return data._entity == e; });
 			if (it != m_bubbles.end())
 			{
-				m_world->DestroyEntity(it->e);
+				m_world->DestroyEntity(it->_entity);
 				m_bubbles.erase(it);
 			}
 		}
@@ -78,7 +99,7 @@ namespace Lina
 	{
 		for (BubbleData& bubble : m_bubbles)
 		{
-			if (bubble._kill)
+			if (!bubble._spawned || bubble._kill)
 				continue;
 
 			if (bubble._counter > bubble.destroyIn)
@@ -89,7 +110,7 @@ namespace Lina
 
 			if (!bubble._inited)
 			{
-				bubble.e->GetPhysicsBody()->AddForce(ToJoltVec3(bubble.shootForce));
+				bubble._entity->GetPhysicsBody()->AddForce(ToJoltVec3(bubble.shootForce));
 				bubble._inited = true;
 				continue;
 			}
@@ -103,23 +124,11 @@ namespace Lina
 		if (!m_bubbleTemplate)
 			return nullptr;
 
-		Entity* spawnedBubble = m_world->SpawnTemplate(m_bubbleTemplate, position, rotation);
-
-		JPH::Body*			body = spawnedBubble->GetPhysicsBody();
-		JPH::MassProperties mp;
-		mp.mMass = spawnedBubble->GetPhysicsSettings().mass;
-
-		body->SetFriction(10.0f);
-		body->SetRestitution(0.1f);
-		body->GetMotionProperties()->SetLinearDamping(3.0f);
-
-		body->GetMotionProperties()->SetMassProperties(JPH::EAllowedDOFs::TranslationX | JPH::EAllowedDOFs::TranslationY | JPH::EAllowedDOFs::TranslationZ, mp);
-		spawnedBubble->GetPhysicsBody()->SetAllowSleeping(false);
-
 		const BubbleData data = {
-			.e			= spawnedBubble,
-			.shootForce = shootForce,
-			.destroyIn	= destroyIn,
+			.shootForce	   = shootForce,
+			.spawnPosition = position,
+			.spawnRotation = rotation,
+			.destroyIn	   = destroyIn,
 		};
 		m_bubbles.push_back(data);
 	}

@@ -45,6 +45,13 @@ namespace Lina
 	class EntityTemplate;
 	class BubbleManager;
 	class Game;
+	class Material;
+
+	class WeaponAnimation
+	{
+	public:
+		void Tick(float dt, Material* weaponMaterial);
+	};
 
 	class Weapon
 	{
@@ -68,7 +75,6 @@ namespace Lina
 		Weapon(EntityWorld* world, Player* player, BubbleManager* bm);
 		virtual ~Weapon();
 
-		virtual void PreTick();
 		virtual void Tick(float dt);
 		virtual void Fire() = 0;
 

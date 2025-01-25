@@ -86,7 +86,6 @@ namespace Lina
 
 	void Player::PreTick()
 	{
-		m_weapon->PreTick();
 	}
 
 	void Player::Tick(float dt)
