@@ -45,17 +45,32 @@ namespace Lina
 	class Player
 	{
 	public:
+		struct Movement
+		{
+			float movementSpeed = 12.0f;
+			float movementPower = 10.5f;
+			float rotationSpeed = 20.0f;
+			float rotationPower = 5.0f;
+		};
+
+		struct Runtime
+		{
+			Vector3	   targetPosition = Vector3::Zero;
+			Quaternion targetRotation = Quaternion::Identity();
+		};
+
 		Player(EntityWorld* ew);
 
 		void Tick(float dt);
 		~Player();
 
 	private:
-		EntityWorld* m_world		  = nullptr;
-		Entity*		 m_entity		  = nullptr;
-		Entity*		 m_cameraRef	  = nullptr;
-		Vector3		 m_targetPosition = Vector3::Zero;
-		Quaternion	 m_targetRotation = Quaternion::Identity();
+		EntityWorld* m_world	 = nullptr;
+		Entity*		 m_entity	 = nullptr;
+		Entity*		 m_cameraRef = nullptr;
+
+		Movement m_movement = {};
+		Runtime	 m_runtime	= {};
 
 		Vector2 m_cameraAngles = Vector2::Zero;
 	};

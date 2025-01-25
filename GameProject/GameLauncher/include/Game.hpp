@@ -52,9 +52,11 @@ namespace Lina
 		void OnMouse(uint32 button, LinaGX::InputAction inputAction);
 		void OnMouseWheel(float amt);
 		void OnMouseMove(const LinaGX::LGXVector2&);
+		void OnWindowFocus(bool focus);
 
 	private:
-		EntityWorld* m_world  = nullptr;
-		Player*		 m_player = nullptr;
+		bool		 m_mouseLocked = false;
+		EntityWorld* m_world	   = nullptr;
+		Player*		 m_player	   = nullptr;
 	};
 } // namespace Lina

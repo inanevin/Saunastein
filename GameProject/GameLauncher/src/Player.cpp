@@ -47,7 +47,16 @@ namespace Lina
 		JPH::MassProperties mp;
 		mp.mMass = m_entity->GetPhysicsSettings().mass;
 
+		body->SetFriction(0.1f);
+		body->SetRestitution(0.1f);
+
 		body->GetMotionProperties()->SetMassProperties(JPH::EAllowedDOFs::TranslationX | JPH::EAllowedDOFs::TranslationY | JPH::EAllowedDOFs::TranslationZ | JPH::EAllowedDOFs::RotationY, mp);
+		m_entity->GetPhysicsBody()->SetAllowSleeping(false);
+
+		m_movement.movementSpeed = 12.0f;
+		m_movement.movementPower = 10.5f;
+		m_movement.rotationSpeed = 30.0f;
+		m_movement.rotationPower = 5.0f;
 	}
 
 	Player::~Player()
@@ -59,22 +68,16 @@ namespace Lina
 		static float test = 0.0f;
 		test += dt;
 
-		const float verticalTarget	 = m_world->GetInput().GetKey(LINAGX_KEY_W) ? 1.0f : (m_world->GetInput().GetKey(LINAGX_KEY_S) ? -1.0f : 0.0f);
-		const float horizontalTarget = m_world->GetInput().GetKey(LINAGX_KEY_D) ? 1.0f : (m_world->GetInput().GetKey(LINAGX_KEY_A) ? -1.0f : 0.0f);
+		const float	  verticalTarget   = m_world->GetInput().GetKey(LINAGX_KEY_W) ? 1.0f : (m_world->GetInput().GetKey(LINAGX_KEY_S) ? -1.0f : 0.0f);
+		const float	  horizontalTarget = m_world->GetInput().GetKey(LINAGX_KEY_D) ? 1.0f : (m_world->GetInput().GetKey(LINAGX_KEY_A) ? -1.0f : 0.0f);
+		const Vector2 input			   = Vector2(horizontalTarget, verticalTarget);
+		const Vector3 direction		   = (m_cameraRef->GetRotation().GetForward() * verticalTarget + m_cameraRef->GetRotation().GetRight() * horizontalTarget);
 
-		if (m_world->GetInput().GetKey(LINAGX_KEY_W))
-		{
-			int a = 5;
-		}
+		m_runtime.targetPosition += direction * dt * m_movement.movementSpeed;
+		m_runtime.targetPosition.y = 2.0f;
 
-		const Vector3 direction = (m_cameraRef->GetRotation().GetForward() * verticalTarget + m_cameraRef->GetRotation().GetRight() * horizontalTarget) * dt * 15.0f;
-
-		m_targetPosition += direction;
-		m_targetPosition.y = 2.0f;
-
-		Vector3 targetDirection = Vector3::Zero;
-
-		m_entity->GetPhysicsBody()->SetLinearVelocity(ToJoltVec3(m_targetPosition - m_entity->GetPosition()));
+		const Vector3 velocity = (m_runtime.targetPosition - m_entity->GetPosition()) * m_movement.movementPower;
+		m_entity->GetPhysicsBody()->SetLinearVelocity(ToJoltVec3(velocity));
 
 		const Vector2 mouseDelta = m_world->GetInput().GetMouseDelta();
 
@@ -84,9 +87,10 @@ namespace Lina
 		const Quaternion qX				= Quaternion::AngleAxis(m_cameraAngles.x, Vector3::Up);
 		const Quaternion qY				= Quaternion::AngleAxis(m_cameraAngles.y, Vector3::Right);
 		const Quaternion cameraRotation = qX * qY;
-		m_cameraRef->SetRotation(cameraRotation);
+		m_runtime.targetRotation		= Quaternion::Slerp(m_runtime.targetRotation, cameraRotation, dt * m_movement.rotationSpeed);
 
-		m_cameraRef->SetPosition(m_entity->GetPosition() + m_entity->GetRotation().GetForward() * 0.5f);
+		m_cameraRef->SetRotation(m_runtime.targetRotation);
+		m_cameraRef->SetPosition(m_entity->GetPosition() + m_entity->GetRotation().GetForward() * 0.1f);
 
 		// Camera.
 		m_world->GetWorldCamera().SetPosition(m_cameraRef->GetPosition());

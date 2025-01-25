@@ -44,13 +44,15 @@ namespace Lina
 #define PACKAGE_0_PATH "LinaPackage0.linapkg"
 #define PACKAGE_1_PATH "LinaPackage1.linapkg"
 
+#define FULLSCREEN 0
+
 	SystemInitializationInfo Lina_GetInitInfo()
 	{
 		const SystemInitializationInfo outInfo = SystemInitializationInfo{
 			.appName	  = "Lina Game",
 			.windowWidth  = 800,
 			.windowHeight = 600,
-			.windowStyle  = WindowStyle::WindowedApplication,
+			.windowStyle  = WindowStyle::Borderless,
 			.appDelegate  = new GameLauncher(),
 		};
 		return outInfo;
@@ -113,9 +115,15 @@ namespace Lina
 		m_world->GetWorldCamera().SetPosition(Vector3(0, 0, 0));
 		m_world->GetWorldCamera().Calculate(m_wr->GetSize());
 
-		// m_world->GetScreen().GetOwnerWindow()->ConfineMouseToCenter();
-		// m_world->GetScreen().GetOwnerWindow()->SetWrapMouse(true);
-		// m_world->GetScreen().GetOwnerWindow()->SetMouseVisible(false);
+		if (FULLSCREEN)
+		{
+#ifdef LINA_PLATFORM_APPLE
+			m_window->SetSize(m_window->GetMonitorWorkSize());
+#else
+			m_window->SetSize(m_window->GetMonitorSize());
+#endif
+			m_window->SetPosition({});
+		}
 	}
 
 	void GameLauncher::OnWorldUnloaded(ResourceID id)
@@ -248,6 +256,8 @@ namespace Lina
 		if (window != m_window)
 			return;
 
+		m_game.OnKey(keycode, scancode, inputAction);
+
 		if (m_world)
 			m_world->GetInput().OnKey(keycode, scancode, inputAction);
 	}
@@ -256,6 +266,8 @@ namespace Lina
 	{
 		if (window != m_window)
 			return;
+
+		m_game.OnMouse(button, inputAction);
 
 		if (m_world)
 			m_world->GetInput().OnMouse(button, inputAction);
@@ -281,19 +293,7 @@ namespace Lina
 
 	void GameLauncher::OnWindowFocus(LinaGX::Window* window, bool gainedFocus)
 	{
-		if (!m_world)
-			return;
-
-		//  if(!gainedFocus)
-		//  {
-		//      m_world->GetScreen().GetOwnerWindow()->SetWrapMouse(false);
-		//      m_world->GetScreen().GetOwnerWindow()->SetMouseVisible(true);
-		//  }
-		//  else
-		//  {
-		//      m_world->GetScreen().GetOwnerWindow()->SetWrapMouse(true);
-		//      m_world->GetScreen().GetOwnerWindow()->SetMouseVisible(false);
-		//  }
+		m_game.OnWindowFocus(gainedFocus);
 	}
 
 	void GameLauncher::OnWindowHoverBegin(LinaGX::Window* window)

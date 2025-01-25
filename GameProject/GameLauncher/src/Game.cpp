@@ -28,16 +28,29 @@ SOFTWARE.
 
 #include "Game.hpp"
 #include "Player.hpp"
+#include "Core/World/EntityWorld.hpp"
+#include <LinaGX/Core/InputMappings.hpp>
 
 namespace Lina
 {
-
-	void Game::OnKey(glm::uint32 keycode, glm::int32 scancode, LinaGX::InputAction inputAction)
+	void Game::OnKey(uint32 keycode, int32 scancode, LinaGX::InputAction inputAction)
 	{
+		if (keycode == LINAGX_KEY_ESCAPE && inputAction == LinaGX::InputAction::Pressed)
+		{
+			m_mouseLocked = false;
+			m_world->GetScreen().GetOwnerWindow()->SetMouseVisible(true);
+			LINA_TRACE("MOUSE UNLOCKED");
+		}
 	}
 
-	void Game::OnMouse(glm::uint32 button, LinaGX::InputAction inputAction)
+	void Game::OnMouse(uint32 button, LinaGX::InputAction inputAction)
 	{
+		m_mouseLocked = true;
+
+		if (inputAction == LinaGX::InputAction::Pressed)
+			m_world->GetScreen().GetOwnerWindow()->SetMouseVisible(false);
+
+		LINA_TRACE("MOUSE LOCKED");
 	}
 
 	void Game::OnMouseWheel(float amt)
@@ -50,8 +63,9 @@ namespace Lina
 
 	void Game::OnGameBegin(EntityWorld* world)
 	{
-		m_world	 = world;
-		m_player = new Player(m_world);
+		m_world		  = world;
+		m_player	  = new Player(m_world);
+		m_mouseLocked = true;
 	}
 
 	void Game::OnGameEnd()
@@ -61,11 +75,36 @@ namespace Lina
 
 	void Game::OnGamePreTick(float dt)
 	{
+		if (m_mouseLocked)
+		{
+			m_world->GetScreen().GetOwnerWindow()->ConfineMouseToCenter();
+		}
+		else
+		{
+			m_world->GetScreen().GetOwnerWindow()->FreeMouse();
+		}
 	}
 
 	void Game::OnGameTick(float dt)
 	{
 		m_player->Tick(dt);
+	}
+
+	void Game::OnWindowFocus(bool focus)
+	{
+		if (!m_world)
+			return;
+
+		if (focus)
+		{
+			// m_world->GetScreen().GetOwnerWindow()->SetMouseVisible(false);
+			// m_world->GetScreen().GetOwnerWindow()->SetWrapMouse(true);
+		}
+		else
+		{
+			// m_world->GetScreen().GetOwnerWindow()->SetMouseVisible(true);
+			// m_world->GetScreen().GetOwnerWindow()->SetWrapMouse(false);
+		}
 	}
 
 } // namespace Lina
