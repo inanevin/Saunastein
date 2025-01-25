@@ -131,7 +131,8 @@ namespace Lina
 	{
 		if (m_wr)
 			m_wr->Resize(m_window->GetSize() * m_window->GetDPIScale());
-		m_swapchainRenderer->OnWindowSizeChanged(m_window, m_window->GetSize() * m_window->GetDPIScale());
+
+		m_swapchainRenderer->OnWindowSizeChanged(m_window, m_window->GetSize());
 
 		m_swapchainRenderer->CheckVisibility();
 

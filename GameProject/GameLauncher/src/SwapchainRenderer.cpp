@@ -53,7 +53,7 @@ namespace Lina
 				 .setDescription = setDesc,
 		 };
 		m_renderPass.Create(GfxHelpers::GetRenderPassDescription(RenderPassType::RENDER_PASS_SWAPCHAIN));
-		m_renderPass.SetSize(m_size);
+		m_renderPass.SetSize(m_size * m_window->GetDPIScale());
 
 		m_shaderSwapchain  = m_rm->GetResource<Shader>(ENGINE_SHADER_SWAPCHAIN_ID);
 		m_samplerSwapchain = m_rm->CreateResource<TextureSampler>(m_rm->ConsumeResourceID());
@@ -146,9 +146,9 @@ namespace Lina
 		};
 
 		m_lgx->RecreateSwapchain(desc);
-		m_size = newSize * window->GetDPIScale();
+		m_size = newSize;
 
-		m_renderPass.SetSize(m_size);
+		m_renderPass.SetSize(m_size * m_window->GetDPIScale());
 		m_app->GetGfxContext().MarkBindlessDirty();
 	}
 
