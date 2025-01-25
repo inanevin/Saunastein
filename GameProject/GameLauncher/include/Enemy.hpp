@@ -15,8 +15,7 @@ namespace Lina
 	class EntityWorld;
 	class Entity;
   class Player;
-
-
+  
 	class Enemy
 	{
 	public:
@@ -29,5 +28,6 @@ namespace Lina
     EntityWorld* m_world = nullptr;
 		Entity* m_entity = nullptr;
     Player* m_target = nullptr;
+    Entity* m_sprite = nullptr;
 	};
 } // namespace Lina
