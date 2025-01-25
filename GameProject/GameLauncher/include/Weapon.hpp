@@ -50,6 +50,6 @@ namespace Lina
 
 		Entity*		 m_entity = nullptr;
 		EntityWorld* m_world  = nullptr;
-	}
+	};
 
 } // namespace Lina
