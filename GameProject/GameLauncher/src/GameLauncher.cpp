@@ -48,7 +48,7 @@ namespace Lina
 #define PACKAGE_0_PATH "LinaPackage0.linapkg"
 #define PACKAGE_1_PATH "LinaPackage1.linapkg"
 
-#define FULLSCREEN 1
+#define FULLSCREEN 0
 
 	SystemInitializationInfo Lina_GetInitInfo()
 	{
@@ -142,6 +142,7 @@ namespace Lina
 
 	void GameLauncher::PreTick()
 	{
+
 		if (m_wr)
 			m_wr->Resize(m_window->GetSize() * m_window->GetDPIScale());
 
@@ -158,7 +159,7 @@ namespace Lina
 			if (!m_gameBegun)
 			{
 				m_gameBegun = true;
-				m_game.OnGameBegin(m_world);
+				m_game.OnGameBegin(m_world, this);
 			}
 		}
 	}
@@ -244,6 +245,15 @@ namespace Lina
 	void GameLauncher::OnWindowClose(LinaGX::Window* window)
 	{
 		m_app->Quit();
+	}
+
+	void GameLauncher::Quit()
+	{
+		m_app->Quit();
+	}
+
+	void GameLauncher::Restart()
+	{
 	}
 
 	void GameLauncher::OnWindowSizeChanged(LinaGX::Window* window, const LinaGX::LGXVector2ui& sz)

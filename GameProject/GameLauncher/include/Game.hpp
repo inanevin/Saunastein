@@ -43,6 +43,8 @@ namespace Lina
 	class EntityWorld;
 	class Player;
 	class Enemy;
+	class GameLauncher;
+	class CompAudio;
 	class WaveManager;
 
 	enum class GameState
@@ -55,7 +57,7 @@ namespace Lina
 	class Game
 	{
 	public:
-		void OnGameBegin(EntityWorld* world);
+		void OnGameBegin(EntityWorld* world, GameLauncher* gl);
 		void OnGameEnd();
 		void OnGamePreTick(float dt);
 		void OnGameTick(float dt);
@@ -69,6 +71,8 @@ namespace Lina
 		void OnEnemySpawned(Enemy* enemy);
 		void OnEnemyWaveSpawned(uint32_t index, String name);
 
+		void UpdateHeat(float addition);
+
 		EntityTemplate* GetEntityTemplate(String key);
 
 		WaveManager*					 m_waveManager = nullptr;
@@ -79,8 +83,15 @@ namespace Lina
 		bool							 m_mouseVisible = true;
 		std::mt19937					 m_rng;
 
-		Entity*	  m_gameLostScreen = nullptr;
-		Entity*	  m_gameWonScreen  = nullptr;
-		GameState m_gameState	   = GameState::Running;
+		GameLauncher* m_gameLauncher;
+		Entity*		  m_gameLostScreen = nullptr;
+		Entity*		  m_gameWonScreen  = nullptr;
+		GameState	  m_gameState	   = GameState::Running;
+		Entity*		  m_metalMusic	   = nullptr;
+		CompAudio*	  m_metalMusicComp = nullptr;
+
+		float	m_heatLevel		  = 50.0f;
+		Vector3 m_skyTopColor	  = Vector3::Zero;
+		Vector3 m_skyHorizonColor = Vector3::Zero;
 	};
 } // namespace Lina

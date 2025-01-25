@@ -35,6 +35,12 @@ SOFTWARE.
 #include "Core/World/EntityTemplate.hpp"
 #include "Core/World/EntityWorld.hpp"
 #include "Core/World/Components/CompWidget.hpp"
+#include "Core/GUI/Widgets/Primitives/Button.hpp"
+#include "GameLauncher.hpp"
+#include "Common/Math/Math.hpp"
+#include "Core/Graphics/Resource/Material.hpp"
+#include "Core/Application.hpp"
+#include "Core/World/Components/CompAudio.hpp"
 #include <LinaGX/Core/InputMappings.hpp>
 
 namespace Lina
@@ -71,11 +77,12 @@ namespace Lina
 	{
 	}
 
-	void Game::OnGameBegin(EntityWorld* world)
+	void Game::OnGameBegin(EntityWorld* world, GameLauncher* gl)
 	{
-		m_world		  = world;
-		m_player	  = new Player(m_world);
-		m_mouseLocked = true;
+		m_gameLauncher = gl;
+		m_world		   = world;
+		m_player	   = new Player(m_world);
+		m_mouseLocked  = true;
 		// Find resources
 		Entity* res = m_world->FindEntity("Resources");
 
@@ -95,6 +102,12 @@ namespace Lina
 		std::random_device rd;
 		m_rng = std::mt19937(rd());
 
+		m_metalMusic = m_world->FindEntity("MetalMusic");
+
+		if (m_metalMusic)
+		{
+			m_metalMusicComp = m_world->GetComponent<CompAudio>(m_metalMusic);
+		}
 		m_gameLostScreen = m_world->FindEntity("GUIGameLost");
 		m_gameWonScreen	 = m_world->FindEntity("GUIGameWon");
 
@@ -103,8 +116,27 @@ namespace Lina
 			CompWidget* w = m_world->GetComponent<CompWidget>(m_gameLostScreen);
 			if (w)
 			{
-				// Widget* w = w->GetWidgetManager()->GetRoot()->FindChildWithDebugName("Restart");
+				WidgetManager& wm	   = w->GetWidgetManager();
+				Widget*		   restart = wm.GetRoot()->FindChildWithDebugName("Restart");
+				if (restart)
+				{
+					static_cast<Button*>(restart)->GetProps().onClicked = [this]() { m_gameLauncher->Restart(); };
+				}
+
+				Widget* quit = wm.GetRoot()->FindChildWithDebugName("Quit");
+				if (quit)
+				{
+
+					static_cast<Button*>(quit)->GetProps().onClicked = [this]() { m_gameLauncher->Quit(); };
+				}
 			}
+		}
+
+		Material* skyMat = m_world->GetResourceManager()->GetIfExists<Material>(m_world->GetGfxSettings().skyMaterial);
+		if (skyMat)
+		{
+			m_skyTopColor	  = *skyMat->GetProperty<Vector3>("skyColor"_hs);
+			m_skyHorizonColor = *skyMat->GetProperty<Vector3>("horizonColor"_hs);
 		}
 	}
 
@@ -145,6 +177,17 @@ namespace Lina
 				m_mouseVisible = true;
 			}
 		}
+
+		// DEBUG
+		if (m_world->GetInput().GetKeyDown(LINAGX_KEY_H))
+		{
+			UpdateHeat(10.0f);
+		}
+
+		if (m_world->GetInput().GetKeyDown(LINAGX_KEY_N))
+		{
+			UpdateHeat(-10.0f);
+		}
 	}
 
 	EntityTemplate* Game::GetEntityTemplate(String key)
@@ -173,7 +216,7 @@ namespace Lina
 		else
 		{
 			LINA_ERR("No resource {0} found", key);
-      return nullptr;
+			return nullptr;
 		}
 	}
 
@@ -201,6 +244,37 @@ namespace Lina
 	void Game::OnEnemyWaveSpawned(uint32_t index, String name)
 	{
 		LINA_TRACE("OnEnemyWaveSpawned: {0} {1}", index, name);
+	}
+
+	void Game::UpdateHeat(float addition)
+	{
+		m_heatLevel += addition;
+		LINA_TRACE("HeatLevel {0}", m_heatLevel);
+
+		const float	  dangerRatio				   = Math::Clamp(Math::Remap(m_heatLevel, 50.0f, 100.0f, 0.0f, 1.0f), 0.0f, 1.0f);
+		const Vector4 ambientCold				   = Vector4(1, 1, 1, 1);
+		const Vector4 ambientHot				   = Vector4(0.9f, 0.1f, 0.1f, 1.0f);
+		const Vector4 ambient					   = Math::Lerp(ambientCold, ambientHot, dangerRatio);
+		m_world->GetGfxSettings().ambientTop	   = ambient;
+		m_world->GetGfxSettings().ambientBot	   = ambient;
+		m_world->GetGfxSettings().ambientMid	   = ambient;
+		m_world->GetGfxSettings().ambientIntensity = Math::Lerp(1.0f, 2.0f, dangerRatio);
+
+		if (m_metalMusicComp)
+		{
+			m_metalMusicComp->SetGain(Math::Lerp(0.0f, 1.5f, dangerRatio));
+			m_metalMusicComp->SetupProperties();
+		}
+
+		Material* skyMat = m_world->GetResourceManager()->GetIfExists<Material>(m_world->GetGfxSettings().skyMaterial);
+		if (skyMat)
+		{
+			const Vector3 skyColor	   = Math::Lerp(m_skyTopColor, Vector3(0.8f, 0.1f, 0.1f), dangerRatio);
+			const Vector3 horizonColor = Math::Lerp(m_skyTopColor, Vector3(1.0f, 0.1f, 0.1f), dangerRatio);
+			skyMat->SetProperty<Vector3>("skyColor"_hs, skyColor);
+			skyMat->SetProperty<Vector3>("horizonColor"_hs, horizonColor);
+			m_gameLauncher->GetApp()->GetGfxContext().MarkBindlessDirty();
+		}
 	}
 
 } // namespace Lina

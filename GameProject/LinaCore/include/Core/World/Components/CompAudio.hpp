@@ -47,6 +47,7 @@ namespace Lina
 		void Stop();
 		void Pause();
 		void Rewind();
+		void SetupProperties();
 
 		virtual void SaveToStream(OStream& stream) const override
 		{
@@ -73,14 +74,47 @@ namespace Lina
 			return m_audioPtr;
 		}
 
+		inline void SetGain(float gain)
+		{
+			m_gain = gain;
+		}
+
+		inline void SetPitch(float pitch)
+		{
+			m_pitch = pitch;
+		}
+
+		inline void SetIs3D(bool is3D)
+		{
+			m_is3D = is3D;
+		}
+
+		inline void SetIsLooping(bool looping)
+		{
+			m_isLooping = looping;
+		}
+
+		inline float GetGain() const
+		{
+			return m_gain;
+		}
+
+		inline float GetPitch() const
+		{
+			return m_pitch;
+		}
+
 		inline bool GetIs3D() const
 		{
 			return m_is3D;
 		}
 
-	private:
-		void SetupProperties();
+		inline bool GetIsLooping() const
+		{
+			return m_isLooping;
+		}
 
+	private:
 	private:
 		LINA_REFLECTION_ACCESS(CompAudio);
 		ResourceID m_audio = 0;
