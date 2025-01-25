@@ -9,6 +9,7 @@
 #include <Jolt/Physics/Body/Body.h>
 #include "Player.hpp"
 #include "Enemy.hpp"
+#include "BubbleManager.hpp"
 
 #include <algorithm>
 #include <random>
@@ -40,8 +41,8 @@ namespace Lina
 				 .name			 = "Wave 1",
 				 .enemies =
 					 {
-             WaveEnemyDesc{.resourceKey = "Enemy_1", .health = 100, .speed = 5, .waitTimeBefore = 0.0f},
-             WaveEnemyDesc{.resourceKey = "Enemy_1", .health = 100, .speed = 5, .waitTimeBefore = 0.0f},
+             WaveEnemyDesc{.resourceKey = "Enemy_1", .health = 10, .speed = 5, .waitTimeBefore = 0.0f},
+             WaveEnemyDesc{.resourceKey = "Enemy_1", .health = 10, .speed = 5, .waitTimeBefore = 0.0f},
 //             WaveEnemyDesc{.resourceKey = "Enemy_1", .health = 100, .speed = 5, .waitTimeBefore = 0.0f},
 //             WaveEnemyDesc{.resourceKey = "Enemy_1", .health = 100, .speed = 5, .waitTimeBefore = 0.0f},
 //             WaveEnemyDesc{.resourceKey = "Enemy_1", .health = 100, .speed = 5, .waitTimeBefore = 0.0f},
@@ -59,8 +60,8 @@ namespace Lina
 				 .name			 = "Wave 2",
 				 .enemies =
 					 {
-             WaveEnemyDesc{.resourceKey = "Enemy_2", .health = 100, .speed = 5, .waitTimeBefore = 0.1f},
-						 WaveEnemyDesc{.resourceKey = "Enemy_2", .health = 100, .speed = 5, .waitTimeBefore = 0.1f},
+             WaveEnemyDesc{.resourceKey = "Enemy_2", .health = 10, .speed = 5, .waitTimeBefore = 0.1f},
+						 WaveEnemyDesc{.resourceKey = "Enemy_2", .health = 10, .speed = 5, .waitTimeBefore = 0.1f},
 //             WaveEnemyDesc{.resourceKey = "Enemy_1", .health = 100, .speed = 5, .waitTimeBefore = 0.1f},
 //             WaveEnemyDesc{.resourceKey = "Enemy_1", .health = 100, .speed = 5, .waitTimeBefore = 0.1f},
 //             WaveEnemyDesc{.resourceKey = "Enemy_1", .health = 100, .speed = 5, .waitTimeBefore = 0.1f},
@@ -163,6 +164,8 @@ namespace Lina
           {
             Entity* spawn = m_enemySpawns[m_entitySpawnerCounter++%m_enemySpawns.size()];
             Enemy* enemy = new Enemy(world, templ, m_game->m_player, spawn->GetPosition(), spawn->GetRotation());
+            enemy->m_health = enemyDesc.health;
+            
             m_currentEnemies.push_back(enemy);
             m_game->OnEnemySpawned(enemy);
           }
@@ -180,7 +183,49 @@ namespace Lina
     UpdateWaves();
 	}
 
-	void WaveManager::Tick(float dt)
+  void WaveManager::HandleContact(Entity* e1, Entity* e2) {
+    Player* player = m_game->m_player;
+    
+    Enemy* enemy1 = nullptr;
+    Enemy* enemy2 = nullptr;
+    
+    Player* player1 = nullptr;
+    Player* player2 = nullptr;
+    
+    BubbleManager::BubbleData* bubble1;
+    BubbleManager::BubbleData* bubble2;
+    
+    if (e1 == player->m_entity) player1 = player;
+    if (e2 == player->m_entity) player2 = player;
+    
+    for (Enemy* enemy : m_currentEnemies) {
+      if (enemy->m_entity == e1) enemy1 = enemy;
+      if (enemy->m_entity == e2) enemy2 = enemy;
+    }
+
+    for (uint32_t i = 0; i < m_game->m_bubbleManager->m_bubbles.size(); ++i) {
+      auto* bubble = &m_game->m_bubbleManager->m_bubbles[i];
+      if (bubble->_entity == e1) bubble2 = bubble;
+      if (bubble->_entity == e2) bubble1 = bubble;
+    }
+    
+//    for (BubbleManager::BubbleData& bubble : m_game->m_bubbleManager->m_bubbles) {
+//      if (bubble._entity == e1) bubble2 = bubble;
+//      if (bubble._entity == e2) bubble1 = bubble;
+//    }
+      
+    if (enemy1 != nullptr && bubble2 != nullptr) {
+      enemy1->m_health--;
+      LINA_INFO("ENEMY TAKE HIT! Has {0}", enemy1->m_health);
+    }
+    
+    if (enemy2 != nullptr && bubble2 != nullptr) {
+      LINA_INFO("ENEMY TAKE HIT! Has {0}", enemy2->m_health);
+      enemy2->m_health--;
+    }
+  }
+	
+  void WaveManager::Tick(float dt)
 	{
 		m_globalTimer += dt;
 		EntityWorld* world = m_game->m_world;

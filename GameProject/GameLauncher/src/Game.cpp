@@ -302,6 +302,7 @@ namespace Lina
 
 	void Game::OnContactBegin(Entity* e1, Entity* e2, const Vector3& p1, const Vector3& p2)
 	{
+    m_waveManager->HandleContact(e1, e1);
 	}
 
 	void Game::OnContact(Entity* e1, Entity* e2, const Vector3& p1, const Vector3& p2)
