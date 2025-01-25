@@ -70,6 +70,14 @@ namespace Lina
 		virtual void OnWindowHoverBegin(LinaGX::Window* window) override;
 		virtual void OnWindowHoverEnd(LinaGX::Window* window) override;
 
+		void Quit();
+		void Restart();
+
+		Application* GetApp()
+		{
+			return m_app;
+		}
+
 	private:
 		bool LoadGamePlugin(String& errString);
 		bool VerifyPackages(String& errString);
