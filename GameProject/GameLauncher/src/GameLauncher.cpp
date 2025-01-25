@@ -113,7 +113,7 @@ namespace Lina
 		m_world->GetWorldCamera().SetPosition(Vector3(0, 0, 0));
 		m_world->GetWorldCamera().Calculate(m_wr->GetSize());
 
-		m_world->GetScreen().GetOwnerWindow()->ConfineMouseToCenter();
+		// m_world->GetScreen().GetOwnerWindow()->ConfineMouseToCenter();
 		// m_world->GetScreen().GetOwnerWindow()->SetWrapMouse(true);
 		// m_world->GetScreen().GetOwnerWindow()->SetMouseVisible(false);
 	}
@@ -233,7 +233,7 @@ namespace Lina
 		m_app->JoinRender();
 
 		if (m_wr)
-			m_wr->Resize(sz);
+			m_wr->Resize(sz * m_window->GetDPIScale());
 
 		m_swapchainRenderer->OnWindowSizeChanged(window, sz);
 	}
