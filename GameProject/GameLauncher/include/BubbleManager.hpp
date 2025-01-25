@@ -39,50 +39,34 @@ namespace LinaGX
 namespace Lina
 {
 
-	class Weapon;
 	class EntityWorld;
 	class Entity;
-	class BubbleManager;
+	class Player;
+	class EntityTemplate;
 	class Game;
 
-	class Player
+	class BubbleManager
 	{
 	public:
-		struct Movement
+		struct BubbleData
 		{
-			float movementPower = 10.5f;
-			float rotationSpeed = 20.0f;
-			float rotationPower = 5.0f;
-
-			float headbobPitchPower = 4.0f;
-			float headbobYawPower	= 2.0f;
-			float headbobPitchSpeed = 4.0f;
-			float headbobYawSpeed	= 2.0f;
-			float headSwayPower		= 0.5f;
+			Entity* e		   = nullptr;
+			Vector3 shootForce = Vector3::Zero;
+			float	destroyIn  = 3.0f;
+			float	_counter   = 0.0f;
+			bool	_inited	   = false;
+			bool	_kill	   = false;
 		};
 
-		struct Runtime
-		{
-			Quaternion targetRotation = Quaternion::Identity();
-			Vector3	   cameraAngles	  = Vector2::Zero;
-			Vector3	   velocity		  = Vector3::Zero;
-		};
-
-		Player(EntityWorld* world, BubbleManager* bm);
-		~Player();
+		BubbleManager(EntityWorld* world);
 
 		void PreTick();
 		void Tick(float dt);
-		void UpdateHealth(float addition);
+		void SpawnBubble(const Vector3& shootForce, const Vector3& position, const Quaternion& rotation, float destroyIn = 3.0f);
 
-		EntityWorld* m_world	 = nullptr;
-		Entity*		 m_entity	 = nullptr;
-		Entity*		 m_cameraRef = nullptr;
-		Weapon*		 m_weapon	 = nullptr;
-
-		float m_health = 100.0f;
-
-		Movement m_movement = {};
-		Runtime	 m_runtime	= {};
+		EntityTemplate*	   m_bubbleTemplate = nullptr;
+		Vector<BubbleData> m_bubbles;
+		EntityWorld*	   m_world = nullptr;
 	};
+
 } // namespace Lina

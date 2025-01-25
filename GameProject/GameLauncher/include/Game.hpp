@@ -46,6 +46,7 @@ namespace Lina
 	class GameLauncher;
 	class CompAudio;
 	class WaveManager;
+	class BubbleManager;
 
 	enum class GameState
 	{
@@ -75,9 +76,10 @@ namespace Lina
 
 		EntityTemplate* GetEntityTemplate(String key);
 
-		WaveManager*					 m_waveManager = nullptr;
-		EntityWorld*					 m_world	   = nullptr;
-		Player*							 m_player	   = nullptr;
+		BubbleManager*					 m_bubbleManager = nullptr;
+		WaveManager*					 m_waveManager	 = nullptr;
+		EntityWorld*					 m_world		 = nullptr;
+		Player*							 m_player		 = nullptr;
 		HashMap<String, EntityParameter> m_resources;
 		bool							 m_mouseLocked	= false;
 		bool							 m_mouseVisible = true;
