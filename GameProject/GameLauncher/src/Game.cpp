@@ -262,6 +262,9 @@ namespace Lina
 
 		if (m_metalMusicComp)
 		{
+			m_metalMusicComp->SetGain(Math::Lerp(0.0f, 1.5f, dangerRatio));
+			m_metalMusicComp->Pause();
+			m_metalMusicComp->Play();
 		}
 
 		Material* skyMat = m_world->GetResourceManager()->GetIfExists<Material>(m_world->GetGfxSettings().skyMaterial);
