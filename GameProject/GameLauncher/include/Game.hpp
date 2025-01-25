@@ -56,6 +56,7 @@ namespace Lina
 		void OnMouse(uint32 button, LinaGX::InputAction inputAction);
 		void OnMouseWheel(float amt);
 		void OnMouseMove(const LinaGX::LGXVector2&);
+    void OnWindowFocus(bool focus);
     
     EntityTemplate* GetEntityTemplate(String key);
 
@@ -65,5 +66,6 @@ namespace Lina
     HashMap<String, EntityParameter> m_resources;
     Vector<Entity*> m_enemySpawns;
     Vector<Enemy*> m_enemies;
+		bool		 m_mouseLocked = false;
 	};
 } // namespace Lina
