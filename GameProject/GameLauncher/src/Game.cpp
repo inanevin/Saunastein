@@ -40,6 +40,7 @@ SOFTWARE.
 #include "Common/Math/Math.hpp"
 #include "Core/Graphics/Resource/Material.hpp"
 #include "Core/Application.hpp"
+#include "Core/World/Components/CompAudio.hpp"
 #include <LinaGX/Core/InputMappings.hpp>
 
 namespace Lina
@@ -101,7 +102,12 @@ namespace Lina
 		std::random_device rd;
 		m_rng = std::mt19937(rd());
 
-		m_metalMusic	 = m_world->FindEntity("MetalMusic");
+		m_metalMusic = m_world->FindEntity("MetalMusic");
+
+		if (m_metalMusic)
+		{
+			m_metalMusicComp = m_world->GetComponent<CompAudio>(m_metalMusic);
+		}
 		m_gameLostScreen = m_world->FindEntity("GUIGameLost");
 		m_gameWonScreen	 = m_world->FindEntity("GUIGameWon");
 
@@ -253,6 +259,10 @@ namespace Lina
 		m_world->GetGfxSettings().ambientBot	   = ambient;
 		m_world->GetGfxSettings().ambientMid	   = ambient;
 		m_world->GetGfxSettings().ambientIntensity = Math::Lerp(1.0f, 2.0f, dangerRatio);
+
+		if (m_metalMusicComp)
+		{
+		}
 
 		Material* skyMat = m_world->GetResourceManager()->GetIfExists<Material>(m_world->GetGfxSettings().skyMaterial);
 		if (skyMat)
