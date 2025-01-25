@@ -42,8 +42,8 @@ namespace Lina
 	class Weapon;
 	class EntityWorld;
 	class Entity;
-    class BubbleManager;
-    class Game;
+	class BubbleManager;
+	class Game;
 
 	class Player
 	{
@@ -68,7 +68,7 @@ namespace Lina
 			Vector3	   velocity		  = Vector3::Zero;
 		};
 
-        Player(EntityWorld* world, BubbleManager* bm);
+		Player(EntityWorld* world, BubbleManager* bm);
 		~Player();
 
 		void PreTick();
@@ -79,7 +79,7 @@ namespace Lina
 		Entity*		 m_entity	 = nullptr;
 		Entity*		 m_cameraRef = nullptr;
 		Weapon*		 m_weapon	 = nullptr;
-        
+
 		float m_health = 100.0f;
 
 		Movement m_movement = {};
