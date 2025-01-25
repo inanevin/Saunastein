@@ -30,6 +30,7 @@ SOFTWARE.
 
 #include "Common/Math/Vector.hpp"
 #include "Common/Math/Quaternion.hpp"
+#include "Common/SizeDefinitions.hpp"
 
 namespace LinaGX
 {
@@ -71,10 +72,10 @@ namespace Lina
 	private:
 		uint32			   m_displayFrames = 0;
 		uint32			   m_index		   = 0;
+		uint32			   m_frameCtr	   = 0;
+		Application*	   m_app		   = nullptr;
+		ResourceID		   m_textureID	   = 0;
 		Vector<ResourceID> m_textureIDs;
-		uint32			   m_frameCtr  = 0;
-		Application*	   m_app	   = nullptr;
-		ResourceID		   m_textureID = 0;
 	};
 
 	class Weapon
@@ -122,6 +123,7 @@ namespace Lina
 
 	private:
 		WeaponAnimation m_idleAnim;
+		WeaponAnimation m_fireAnim;
 	};
 
 } // namespace Lina

@@ -112,13 +112,31 @@ namespace Lina
 	{
 		Entity* idle = m_world->FindEntity("Weapon0_Idle");
 		Entity* fire = m_world->FindEntity("Weapon0_Fire");
-		return;
-		m_idleAnim = {};
 
-		for (const EntityParameter& p : idle->GetParams().params)
+		m_idleAnim = {};
+		m_fireAnim = {};
+
+		m_idleAnim.SetApp(app);
+		m_fireAnim.SetApp(app);
+
+		if (idle)
 		{
-			if (p.type != EntityParameterType::ResourceID)
-				continue;
+			for (const EntityParameter& p : idle->GetParams().params)
+			{
+				if (p.type != EntityParameterType::ResourceID)
+					continue;
+				m_idleAnim.AddTextureID(p.valRes);
+			}
+		}
+
+		if (fire)
+		{
+			for (const EntityParameter& p : fire->GetParams().params)
+			{
+				if (p.type != EntityParameterType::ResourceID)
+					continue;
+				m_fireAnim.AddTextureID(p.valRes);
+			}
 		}
 	}
 
