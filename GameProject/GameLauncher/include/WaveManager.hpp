@@ -24,6 +24,7 @@ namespace Lina
 		~WaveManager();
 
 		void UpdateWaves();
+    void HandleContact(Entity* e1, Entity* e2);
 
 		Game*			m_game = nullptr;
 		Vector<Enemy*>	m_currentEnemies;

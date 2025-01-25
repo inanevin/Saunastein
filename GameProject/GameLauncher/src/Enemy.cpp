@@ -49,7 +49,8 @@ namespace Lina
 	{
 		m_timer += dt;
     
-    if (m_timer >= 15.0f) m_dead = true;
+    if (m_health <= 0) m_dead = true;
+//    if (m_timer >= 15.0f) m_dead = true;
     
 		JPH::Body* physicsBody		   = m_entity->GetPhysicsBody();
 		float	   currentPhysicsSpeed = physicsBody->GetLinearVelocity().Length();
