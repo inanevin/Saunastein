@@ -28,9 +28,41 @@ SOFTWARE.
 
 #pragma once
 
-namespace Lina {
-class Player {
-public:
-};
+#include "Common/Math/Vector.hpp"
+#include "Common/Math/Quaternion.hpp"
+
+namespace LinaGX
+{
+
+} // namespace LinaGX
+
+namespace Lina
+{
+
+	class EntityWorld;
+	class Entity;
+	class Player;
+
+	class Weapon
+	{
+	public:
+		Weapon(Player* player, EntityWorld* weapon);
+		virtual ~Weapon();
+
+		virtual void Tick(float dt);
+
+		Entity*		 m_entity = nullptr;
+		EntityWorld* m_world  = nullptr;
+		Player*		 m_player = nullptr;
+	};
+
+	class WeaponMelee : public Weapon
+	{
+	public:
+		WeaponMelee(Player* player, EntityWorld* w) : Weapon(player, w){};
+		virtual ~WeaponMelee() = default;
+
+		virtual void Tick(float dt) override;
+	};
 
 } // namespace Lina

@@ -44,13 +44,15 @@ namespace Lina
 #define PACKAGE_0_PATH "LinaPackage0.linapkg"
 #define PACKAGE_1_PATH "LinaPackage1.linapkg"
 
+#define FULLSCREEN 0
+
 	SystemInitializationInfo Lina_GetInitInfo()
 	{
 		const SystemInitializationInfo outInfo = SystemInitializationInfo{
 			.appName	  = "Lina Game",
 			.windowWidth  = 800,
 			.windowHeight = 600,
-			.windowStyle  = WindowStyle::WindowedApplication,
+			.windowStyle  = WindowStyle::Borderless,
 			.appDelegate  = new GameLauncher(),
 		};
 		return outInfo;
@@ -66,13 +68,17 @@ namespace Lina
 		if (!VerifyPackages(errString))
 			return false;
 
-		IStream stream = Serialization::LoadFromFile(PACKAGE_0_PATH);
+		const String config	  = LINA_CONFIGURATION;
+		const String pkg0Path = config.compare("Debug") == 0 ? "../Release/LinaPackage0.linapkg" : "LinaPackage0.linapkg";
+		const String pkg1Path = config.compare("Debug") == 0 ? "../Release/LinaPackage1.linapkg" : "LinaPackage1.linapkg";
+
+		IStream stream = Serialization::LoadFromFile(pkg0Path.c_str());
 		uint32	pjSize = 0;
 		stream >> pjSize;
 		m_project.LoadFromStream(stream);
 		stream.Destroy();
 
-		m_app->GetResourceManager().SetUsePackages(PACKAGE_0_PATH, PACKAGE_1_PATH);
+		m_app->GetResourceManager().SetUsePackages(pkg0Path, pkg1Path);
 		m_app->GetResourceManager().LoadResourcesFromProject(&m_project, {ENGINE_SHADER_SWAPCHAIN_ID}, NULL, 0);
 
 		// Check for Game Plugin
@@ -109,7 +115,15 @@ namespace Lina
 		m_world->GetWorldCamera().SetPosition(Vector3(0, 0, 0));
 		m_world->GetWorldCamera().Calculate(m_wr->GetSize());
 
-		m_game.OnGameBegin(m_world);
+		if (FULLSCREEN)
+		{
+#ifdef LINA_PLATFORM_APPLE
+			m_window->SetSize(m_window->GetMonitorWorkSize());
+#else
+			m_window->SetSize(m_window->GetMonitorSize());
+#endif
+			m_window->SetPosition({});
+		}
 	}
 
 	void GameLauncher::OnWorldUnloaded(ResourceID id)
@@ -123,7 +137,25 @@ namespace Lina
 
 	void GameLauncher::PreTick()
 	{
+		if (m_wr)
+			m_wr->Resize(m_window->GetSize() * m_window->GetDPIScale());
+
+		m_swapchainRenderer->OnWindowSizeChanged(m_window, m_window->GetSize());
+
 		m_swapchainRenderer->CheckVisibility();
+
+		if (m_world)
+		{
+			m_world->GetScreen().SetRenderSize(m_wr->GetSize());
+			m_world->GetScreen().SetDisplaySize(m_wr->GetSize());
+			m_world->GetScreen().SetOwnerWindow(m_window);
+
+			if (!m_gameBegun)
+			{
+				m_gameBegun = true;
+				m_game.OnGameBegin(m_world);
+			}
+		}
 	}
 
 	void GameLauncher::Tick(float delta)
@@ -214,15 +246,17 @@ namespace Lina
 		m_app->JoinRender();
 
 		if (m_wr)
-			m_wr->Resize(sz);
+			m_wr->Resize(sz * m_window->GetDPIScale());
 
-		m_swapchainRenderer->OnWindowSizeChanged(window, sz);
+		m_swapchainRenderer->OnWindowSizeChanged(window, sz * m_window->GetDPIScale());
 	}
 
 	void GameLauncher::OnWindowKey(LinaGX::Window* window, uint32 keycode, int32 scancode, LinaGX::InputAction inputAction)
 	{
 		if (window != m_window)
 			return;
+
+		m_game.OnKey(keycode, scancode, inputAction);
 
 		if (m_world)
 			m_world->GetInput().OnKey(keycode, scancode, inputAction);
@@ -232,6 +266,8 @@ namespace Lina
 	{
 		if (window != m_window)
 			return;
+
+		m_game.OnMouse(button, inputAction);
 
 		if (m_world)
 			m_world->GetInput().OnMouse(button, inputAction);
@@ -257,6 +293,7 @@ namespace Lina
 
 	void GameLauncher::OnWindowFocus(LinaGX::Window* window, bool gainedFocus)
 	{
+		m_game.OnWindowFocus(gainedFocus);
 	}
 
 	void GameLauncher::OnWindowHoverBegin(LinaGX::Window* window)
@@ -269,6 +306,7 @@ namespace Lina
 
 	bool GameLauncher::LoadGamePlugin(String& errString)
 	{
+		return true;
 #ifdef LINA_PLATFORM_WINDOWS
 		const String path = "GamePlugin.dll";
 #endif
@@ -295,13 +333,18 @@ namespace Lina
 
 	bool GameLauncher::VerifyPackages(String& errString)
 	{
-		if (!FileSystem::FileOrPathExists(PACKAGE_0_PATH))
+		const String config = LINA_CONFIGURATION;
+
+		const String pkg0Path = config.compare("Debug") == 0 ? "../Release/LinaPackage0.linapkg" : "LinaPackage0.linapkg";
+		const String pkg1Path = config.compare("Debug") == 0 ? "../Release/LinaPackage1.linapkg" : "LinaPackage1.linapkg";
+
+		if (!FileSystem::FileOrPathExists(pkg0Path))
 		{
 			errString = "Could not locate package LinaPackage0.linapkg";
 			return false;
 		}
 
-		if (!FileSystem::FileOrPathExists(PACKAGE_1_PATH))
+		if (!FileSystem::FileOrPathExists(pkg1Path))
 		{
 			errString = "Could not locate package LinaPackage1.linapkg";
 			return false;

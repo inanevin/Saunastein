@@ -84,7 +84,7 @@ namespace Lina
 		Entity* GetEntity(EntityID guid);
 		void	DestroyEntity(Entity* e);
 		Entity* FindEntity(const String& name);
-		Entity* SpawnTemplate(EntityTemplate* tmp);
+		Entity* SpawnTemplate(EntityTemplate* tmp, const Vector3& pos = Vector3::Zero, const Quaternion& q = Quaternion::Identity());
 
 		// Components
 		void	   GetComponents(Entity* e, Vector<Component*>& outComponents) const;
@@ -96,6 +96,8 @@ namespace Lina
 		// Misc
 		void AddListener(EntityWorldListener* listener);
 		void RemoveListener(EntityWorldListener* listener);
+
+		EntityID ConsumeEntityGUID();
 
 		template <typename T> T* GetComponent(Entity* e)
 		{
@@ -191,11 +193,6 @@ namespace Lina
 		inline WorldInput& GetInput()
 		{
 			return m_worldInput;
-		}
-
-		inline EntityID ConsumeEntityGUID()
-		{
-			return m_entityGUIDCounter++;
 		}
 
 		inline Camera& GetWorldCamera()

@@ -26,46 +26,40 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-
-#pragma once
-
+#include "Weapon.hpp"
+#include "Player.hpp"
 #include "Core/World/EntityWorld.hpp"
-
-namespace LinaGX
-{
-	class Window;
-	enum class InputAction;
-	struct LGXVector2;
-} // namespace LinaGX
 
 namespace Lina
 {
-	class EntityWorld;
-	class Player;
-  class Enemy;
-
-	class Game
+	Weapon::Weapon(Player* player, EntityWorld* w)
 	{
-	public:
-		void OnGameBegin(EntityWorld* world);
-		void OnGameEnd();
-		void OnGamePreTick(float dt);
-		void OnGameTick(float dt);
+        m_player = player;
+		m_world	 = w;
+		m_entity = w->FindEntity("WeaponQuad");
+	}
 
-		void OnKey(uint32 keycode, int32 scancode, LinaGX::InputAction inputAction);
-		void OnMouse(uint32 button, LinaGX::InputAction inputAction);
-		void OnMouseWheel(float amt);
-		void OnMouseMove(const LinaGX::LGXVector2&);
-    void OnWindowFocus(bool focus);
-    
-    EntityTemplate* GetEntityTemplate(String key);
+	Weapon::~Weapon()
+	{
+	}
 
-	private:
-		EntityWorld* m_world  = nullptr;
-		Player*		 m_player = nullptr;
-    HashMap<String, EntityParameter> m_resources;
-    Vector<Entity*> m_enemySpawns;
-    Vector<Enemy*> m_enemies;
-		bool		 m_mouseLocked = false;
-	};
+    void Weapon::Tick(float dt)
+    {
+        if(!m_entity)
+            return;
+        
+       // const Vector3& camPosition = m_player->m_cameraRef->GetPosition();
+       // const Quaternion& camRotation = m_player->m_cameraRef->GetRotation();
+       //
+       // m_entity->SetPosition(camPosition + camRotation.GetForward() * 0.5f);
+       // m_entity->SetRotation(Quaternion::LookAt(m_entity->GetPosition(), -camPosition, Vector3::Up));
+    }
+
+    void WeaponMelee::Tick(float dt)
+    {
+        Weapon::Tick(dt);
+        
+        if(!m_entity)
+            return;
+    }
 } // namespace Lina

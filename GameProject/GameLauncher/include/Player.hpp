@@ -26,6 +26,58 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include "Player.hpp"
+#pragma once
 
-namespace Lina {} // namespace Lina
+#include "Common/Math/Vector.hpp"
+#include "Common/Math/Quaternion.hpp"
+
+namespace LinaGX
+{
+
+} // namespace LinaGX
+
+namespace Lina
+{
+
+	class Weapon;
+	class EntityWorld;
+	class Entity;
+
+	class Player
+	{
+	public:
+		struct Movement
+		{
+			float movementSpeed = 12.0f;
+			float movementPower = 10.5f;
+			float rotationSpeed = 20.0f;
+			float rotationPower = 5.0f;
+
+			float headbobPitchPower = 4.0f;
+			float headbobYawPower	= 2.0f;
+			float headbobPitchSpeed = 4.0f;
+			float headbobYawSpeed	= 2.0f;
+			float headSwayPower		= 0.5f;
+		};
+
+		struct Runtime
+		{
+			Vector3	   targetPosition = Vector3::Zero;
+			Quaternion targetRotation = Quaternion::Identity();
+			Vector3	   cameraAngles	  = Vector2::Zero;
+		};
+
+		Player(EntityWorld* ew);
+		~Player();
+
+		void Tick(float dt);
+
+		EntityWorld* m_world	 = nullptr;
+		Entity*		 m_entity	 = nullptr;
+		Entity*		 m_cameraRef = nullptr;
+		Weapon*		 m_weapon	 = nullptr;
+
+		Movement m_movement = {};
+		Runtime	 m_runtime	= {};
+	};
+} // namespace Lina
