@@ -69,7 +69,8 @@ namespace Lina
 
 		EntityTemplate*	   m_bubbleTemplate = nullptr;
 		Vector<BubbleData> m_bubbles;
-		EntityWorld*	   m_world = nullptr;
+		EntityWorld*	   m_world	  = nullptr;
+		ResourceID		   m_bubbleID = 0;
 	};
 
 } // namespace Lina

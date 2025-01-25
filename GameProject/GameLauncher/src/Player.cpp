@@ -70,7 +70,7 @@ namespace Lina
 		m_movement.headbobYawSpeed = 7.5f;
 
 		m_movement.headSwayPower = 0.0f;
-		m_weapon				 = new WeaponMelee(m_world, this, bm, app);
+		m_weapon				 = new Weapon(m_world, this, bm, app, "Weapon1_Idle", "Weapon1_Fire", 2, Vector2(0.08f, -0.01f));
 	}
 
 	Player::~Player()

@@ -49,8 +49,8 @@ namespace Lina
 		Entity* bubbleRes = m_world->FindEntity("InanResources");
 		if (bubbleRes)
 		{
-			const ResourceID id = bubbleRes->GetParameter("Bubble"_hs)->valRes;
-			m_bubbleTemplate	= m_world->GetResourceManager()->GetIfExists<EntityTemplate>(id);
+			m_bubbleID		 = bubbleRes->GetParameter("Bubble"_hs)->valRes;
+			m_bubbleTemplate = m_world->GetResourceManager()->GetIfExists<EntityTemplate>(m_bubbleID);
 		}
 	}
 
@@ -122,7 +122,11 @@ namespace Lina
 	void BubbleManager::SpawnBubble(const Vector3& shootForce, const Vector3& position, const Quaternion& rotation, float destroyIn)
 	{
 		if (!m_bubbleTemplate)
-			return nullptr;
+		{
+			m_bubbleTemplate = m_world->GetResourceManager()->GetIfExists<EntityTemplate>(m_bubbleID);
+			if (!m_bubbleTemplate)
+				return nullptr;
+		}
 
 		const BubbleData data = {
 			.shootForce	   = shootForce,

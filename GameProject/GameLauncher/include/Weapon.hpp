@@ -52,30 +52,32 @@ namespace Lina
 	class WeaponAnimation
 	{
 	public:
-		void Tick(float dt, Material* weaponMaterial);
+		WeaponAnimation(EntityWorld* world, Entity* idle, Entity* fire, Application* app, uint32 fireDisplay);
 
-		void AddTextureID(ResourceID id);
-
-		void SetApp(Application* app)
+		inline void Idle()
 		{
-			m_app = app;
+			m_used = m_idle;
 		}
 
-		void SetDisplayFrames(uint32 display)
+		inline void Fire()
 		{
-			m_displayFrames = display;
+			m_ctr  = 0;
+			m_used = m_fire;
 		}
 
-	private:
-		void UpdateMaterial(Material* mat);
+		void Tick(float dt);
 
 	private:
-		uint32			   m_displayFrames = 0;
-		uint32			   m_index		   = 0;
-		uint32			   m_frameCtr	   = 0;
-		Application*	   m_app		   = nullptr;
-		ResourceID		   m_textureID	   = 0;
-		Vector<ResourceID> m_textureIDs;
+		void UpdateMaterial();
+
+	private:
+		uint32		 m_ctr		   = 0;
+		uint32		 m_fireDisplay = 0;
+		ResourceID	 m_idle		   = 0;
+		ResourceID	 m_fire		   = 0;
+		ResourceID	 m_used		   = 0;
+		Material*	 m_material	   = nullptr;
+		Application* m_app		   = nullptr;
 	};
 
 	class Weapon
@@ -83,11 +85,12 @@ namespace Lina
 	public:
 		struct Movement
 		{
-			float bobPower	 = 4.0f;
-			float bobSpeed	 = 8.0f;
-			float swayPowerX = 0.5f;
-			float swayPowerY = 0.5f;
-			float swaySpeed	 = 15.0f;
+			float	bobPower	= 4.0f;
+			float	bobSpeed	= 8.0f;
+			float	swayPowerX	= 0.5f;
+			float	swayPowerY	= 0.5f;
+			float	swaySpeed	= 15.0f;
+			Vector2 localOffset = Vector2::Zero;
 		};
 
 		struct Runtime
@@ -97,33 +100,21 @@ namespace Lina
 			Vector3 localPositionOffset = Vector3::Zero;
 		};
 
-		Weapon(EntityWorld* world, Player* player, BubbleManager* bm, Application* app);
+		Weapon(EntityWorld* world, Player* player, BubbleManager* bm, Application* app, const String& idle, const String& fire, uint32 fireFrames, const Vector2& localOffset);
 		virtual ~Weapon();
 
 		virtual void Tick(float dt);
-		virtual void Fire() = 0;
 
-		Movement	   m_movement	   = {};
-		Runtime		   m_runtime	   = {};
-		Entity*		   m_entity		   = nullptr;
-		EntityWorld*   m_world		   = nullptr;
-		Player*		   m_player		   = nullptr;
-		BubbleManager* m_bubbleManager = nullptr;
-		Application*   m_app		   = nullptr;
-	};
+		void Fire();
 
-	class WeaponMelee : public Weapon
-	{
-	public:
-		WeaponMelee(EntityWorld* world, Player* player, BubbleManager* bm, Application* app);
-		virtual ~WeaponMelee() = default;
-
-		virtual void Tick(float dt) override;
-		virtual void Fire() override;
-
-	private:
-		WeaponAnimation m_idleAnim;
-		WeaponAnimation m_fireAnim;
+		Movement		 m_movement		 = {};
+		Runtime			 m_runtime		 = {};
+		Entity*			 m_entity		 = nullptr;
+		EntityWorld*	 m_world		 = nullptr;
+		Player*			 m_player		 = nullptr;
+		BubbleManager*	 m_bubbleManager = nullptr;
+		Application*	 m_app			 = nullptr;
+		WeaponAnimation* m_animation	 = nullptr;
 	};
 
 } // namespace Lina
