@@ -222,6 +222,13 @@ namespace Lina
 		UpdateWaves();
 	}
 
+  static void HandleEnemyFrying(WaveManager* wm, Enemy* enemy) {
+    if (!enemy->m_dead) return;
+    enemy->m_isFried = true;
+    wm->m_game->AddScore(100);
+//    LINA_INFO("HandleEnemyFrying {0} isDead {1}", enemy->m_entity->GetName(), enemy->IsAlive());
+  }
+
 	static void HandleEnemyDamage(WaveManager* wm, BubbleManager::BubbleData* bubble, Enemy* enemy)
 	{
 		if (!enemy->m_dead && enemy->m_hitFrameTime <= 0.00001f)
@@ -258,7 +265,8 @@ namespace Lina
 
 		BubbleManager::BubbleData* bubble1 = nullptr;
 		BubbleManager::BubbleData* bubble2 = nullptr;
-
+  
+      
 		if (e1 == player->m_entity)
 			player1 = player;
 		if (e2 == player->m_entity)
@@ -272,6 +280,14 @@ namespace Lina
 				enemy2 = enemy;
 		}
 
+    for (Enemy* enemy : m_deadEnemies)
+    {
+      if (enemy->m_entity == e1)
+        enemy1 = enemy;
+      if (enemy->m_entity == e2)
+        enemy2 = enemy;
+    }
+    
 		for (uint32_t i = 0; i < m_game->m_bubbleManager->m_bubbles.size(); ++i)
 		{
 			auto* bubble = &m_game->m_bubbleManager->m_bubbles[i];
@@ -291,6 +307,14 @@ namespace Lina
 
 		if (enemy2 != nullptr && player1 != nullptr)
 			HandlePlayerDamage(this, player1, enemy2);
+    
+    if (enemy1 != nullptr && e2->GetName().contains("Fire")) {
+      HandleEnemyFrying(this, enemy1);
+    }
+    
+    if (enemy2 != nullptr && e1->GetName().contains("Fire")) {
+      HandleEnemyFrying(this, enemy2);
+    }
 	}
 
 	void WaveManager::Tick(float dt)
@@ -298,24 +322,31 @@ namespace Lina
 		m_globalTimer += dt;
 		EntityWorld* world = m_game->m_world;
 
+    Vector<Enemy*> fried;
 		for (Enemy* enemy : m_currentEnemies)
 		{
 			enemy->Tick(dt);
+
 			if (!enemy->IsAlive())
 			{
 				m_game->AddScore(enemy->m_score);
 				m_deadEnemies.push_back(enemy);
 			}
 		}
-
+    
 		for (Enemy* deadEnemy : m_deadEnemies)
 		{
 			deadEnemy->Tick(dt);
 			m_currentEnemies.erase(std::remove(m_currentEnemies.begin(), m_currentEnemies.end(), deadEnemy), m_currentEnemies.end());
+      
+      if (deadEnemy->m_isFried) {
+        fried.push_back(deadEnemy);
+      }
 		}
-
-		//    if (deadEnemies.size() > 0) {
-		//      LINA_INFO("Destroyed {0} enemies. Had: {1}, Has: {2}", deadEnemies.size(), enemyCount, m_currentEnemies.size());
-		//    }
+    
+    for (Enemy* friedEnemy: fried) {
+      m_deadEnemies.erase(std::remove(m_deadEnemies.begin(), m_deadEnemies.end(), friedEnemy), m_deadEnemies.end());
+      delete friedEnemy;
+    }
 	}
 } // namespace Lina
