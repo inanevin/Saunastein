@@ -127,6 +127,7 @@ namespace Lina
 		m_audioManager	= new AudioManager(m_world);
 		m_player		= new Player(m_world, m_bubbleManager, app, m_audioManager, this);
 		m_mouseLocked	= true;
+    
 
 		// Find resources
 		Entity* res = m_world->FindEntity("Resources");
@@ -154,8 +155,14 @@ namespace Lina
 		m_gameWonScreen	 = m_world->FindEntity("GUIGameWon");
 		m_fireVisuals	 = m_world->FindEntity("Fire");
 
+    if (m_gameWonScreen) {
+      m_gameLostScreen->SetVisible(false);
+    }
+    
 		if (m_gameLostScreen)
 		{
+      m_gameLostScreen->SetVisible(false);
+      
 			CompWidget* w = m_world->GetComponent<CompWidget>(m_gameLostScreen);
 			if (w)
 			{

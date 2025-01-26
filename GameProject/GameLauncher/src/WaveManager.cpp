@@ -119,6 +119,15 @@ namespace Lina
 
 	WaveManager::~WaveManager()
 	{
+    for (Enemy* enemy : m_deadEnemies)
+    {
+      delete enemy;
+    }
+    
+    for (Enemy* enemy : m_currentEnemies)
+    {
+      delete enemy;
+    }
 	}
 
 	void WaveManager::UpdateWaves()
