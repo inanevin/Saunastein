@@ -47,48 +47,59 @@ namespace Lina
 				 .heatAddition	 = 1.5f,
 				 .enemies =
 					 {
-						 WaveEnemyDesc{.resourceKey = "Enemy_1", .health = 3, .speed = 5, .waitTimeBefore = 0.0f, .score = 100},
-						 WaveEnemyDesc{.resourceKey = "Enemy_1", .health = 3, .speed = 5, .waitTimeBefore = 0.0f, .score = 100},
+						 WaveEnemyDesc{.resourceKey = "Enemy_1", .health = 3, .speed = 5, .waitTimeBefore = 0.1f, .score = 100},
+						 WaveEnemyDesc{.resourceKey = "Enemy_1", .health = 3, .speed = 5, .waitTimeBefore = 0.1f, .score = 100},
 					 }},
 		WaveDesc{.name			 = "Wave 2",
 				 .waitTimeBefore = 3.0f,
 				 .heatAddition	 = 2.5f,
 				 .enemies =
 					 {
-						 WaveEnemyDesc{.resourceKey = "Enemy_1", .health = 3, .speed = 5, .waitTimeBefore = 0.0f, .score = 100},
-						 WaveEnemyDesc{.resourceKey = "Enemy_1", .health = 3, .speed = 5, .waitTimeBefore = 0.0f, .score = 100},
-						 WaveEnemyDesc{.resourceKey = "Enemy_2", .health = 10, .speed = 5, .waitTimeBefore = 0.0f, .score = 300},
-						 WaveEnemyDesc{.resourceKey = "Enemy_1", .health = 3, .speed = 5, .waitTimeBefore = 0.0f, .score = 100},
+						 WaveEnemyDesc{.resourceKey = "Enemy_1", .health = 3, .speed = 5, .waitTimeBefore = 0.1f, .score = 100},
+						 WaveEnemyDesc{.resourceKey = "Enemy_1", .health = 3, .speed = 5, .waitTimeBefore = 0.1f, .score = 100},
+						 WaveEnemyDesc{.resourceKey = "Enemy_2", .health = 10, .speed = 5, .waitTimeBefore = 0.1f, .score = 300},
+						 WaveEnemyDesc{.resourceKey = "Enemy_1", .health = 3, .speed = 5, .waitTimeBefore = 0.1f, .score = 100},
 					 }},
 
-		WaveDesc{.name			 = "Wave 2",
+		WaveDesc{.name			 = "Wave 3",
 				 .waitTimeBefore = 3.0f,
-				 .heatAddition	 = 5.5f,
+				 .heatAddition	 = 3.5f,
 				 .enemies =
 					 {
-						 WaveEnemyDesc{.resourceKey = "Enemy_2", .health = 3, .speed = 5, .waitTimeBefore = 0.0f, .score = 300},
-						 WaveEnemyDesc{.resourceKey = "Enemy_2", .health = 3, .speed = 5, .waitTimeBefore = 0.0f, .score = 300},
-						 WaveEnemyDesc{.resourceKey = "Enemy_3", .health = 20, .speed = 5, .waitTimeBefore = 0.0f, .score = 500},
+						 WaveEnemyDesc{.resourceKey = "Enemy_2", .health = 10, .speed = 5, .waitTimeBefore = 0.1f, .score = 300},
+						 WaveEnemyDesc{.resourceKey = "Enemy_2", .health = 10, .speed = 5, .waitTimeBefore = 0.1f, .score = 300},
+						 WaveEnemyDesc{.resourceKey = "Enemy_3", .health = 20, .speed = 5, .waitTimeBefore = 0.1f, .score = 500},
 					 }},
-
+    WaveDesc{.name       = "Wave 4",
+         .waitTimeBefore = 3.0f,
+         .heatAddition   = 5.5f,
+         .enemies =
+           {
+             WaveEnemyDesc{.resourceKey = "Enemy_1", .health = 3, .speed = 5, .waitTimeBefore = 0.1f, .score = 100},
+             WaveEnemyDesc{.resourceKey = "Enemy_1", .health = 3, .speed = 5, .waitTimeBefore = 0.1f, .score = 100},
+             WaveEnemyDesc{.resourceKey = "Enemy_2", .health = 10, .speed = 5, .waitTimeBefore = 0.1f, .score = 300},
+             WaveEnemyDesc{.resourceKey = "Enemy_2", .health = 10, .speed = 5, .waitTimeBefore = 0.1f, .score = 300},
+             WaveEnemyDesc{.resourceKey = "Enemy_3", .health = 20, .speed = 5, .waitTimeBefore = 0.1f, .score = 500},
+             WaveEnemyDesc{.resourceKey = "Enemy_3", .health = 20, .speed = 5, .waitTimeBefore = 0.1f, .score = 500},
+           }},
 		WaveDesc{
 			.waitTimeBefore = 0.5f,
 			.name			= "Well done!",
 		},
 
 		WaveDesc{.waitTimeBefore = 10.0f,
-				 .name			 = "Here's some more!",
+				 .name			 = "FINAL WAVE",
 				 .heatAddition	 = 50.0f,
 				 .enemies =
 					 {
-						 WaveEnemyDesc{.resourceKey = "Enemy_3", .health = 20, .speed = 5, .waitTimeBefore = 0.0f, .score = 500},
-						 WaveEnemyDesc{.resourceKey = "Enemy_3", .health = 20, .speed = 5, .waitTimeBefore = 0.0f, .score = 500},
-						 WaveEnemyDesc{.resourceKey = "Enemy_3", .health = 20, .speed = 5, .waitTimeBefore = 0.0f, .score = 500},
-						 WaveEnemyDesc{.resourceKey = "Enemy_3", .health = 20, .speed = 5, .waitTimeBefore = 0.0f, .score = 500},
-						 WaveEnemyDesc{.resourceKey = "Enemy_3", .health = 20, .speed = 5, .waitTimeBefore = 0.0f, .score = 500},
-						 WaveEnemyDesc{.resourceKey = "Enemy_3", .health = 20, .speed = 5, .waitTimeBefore = 0.0f, .score = 500},
-						 WaveEnemyDesc{.resourceKey = "Enemy_3", .health = 20, .speed = 5, .waitTimeBefore = 0.0f, .score = 500},
-						 WaveEnemyDesc{.resourceKey = "Enemy_3", .health = 20, .speed = 5, .waitTimeBefore = 0.0f, .score = 500},
+						 WaveEnemyDesc{.resourceKey = "Enemy_3", .health = 20, .speed = 5, .waitTimeBefore = 0.1f, .score = 500},
+						 WaveEnemyDesc{.resourceKey = "Enemy_3", .health = 20, .speed = 5, .waitTimeBefore = 0.1f, .score = 500},
+						 WaveEnemyDesc{.resourceKey = "Enemy_3", .health = 20, .speed = 5, .waitTimeBefore = 0.1f, .score = 500},
+						 WaveEnemyDesc{.resourceKey = "Enemy_3", .health = 20, .speed = 5, .waitTimeBefore = 0.1f, .score = 500},
+						 WaveEnemyDesc{.resourceKey = "Enemy_3", .health = 20, .speed = 5, .waitTimeBefore = 0.1f, .score = 500},
+						 WaveEnemyDesc{.resourceKey = "Enemy_3", .health = 20, .speed = 5, .waitTimeBefore = 0.1f, .score = 500},
+						 WaveEnemyDesc{.resourceKey = "Enemy_3", .health = 20, .speed = 5, .waitTimeBefore = 0.1f, .score = 500},
+						 WaveEnemyDesc{.resourceKey = "Enemy_3", .health = 20, .speed = 5, .waitTimeBefore = 0.1f, .score = 500},
 					 }},
 	};
 
