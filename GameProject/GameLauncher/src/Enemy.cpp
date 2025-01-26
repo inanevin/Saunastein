@@ -36,52 +36,58 @@ namespace Lina
 
 	Enemy::~Enemy()
 	{
-    m_world->DestroyEntity(m_entity);
+		m_world->DestroyEntity(m_entity);
 	}
-  
-  bool Enemy::IsAlive() {
-//    return true;
-    return !m_dead;
-//    return m_timer < 20.0f;
-  }
-  
-void Enemy::TakeDamage(int amount) {
-  m_health -= amount;
-  m_hitFrameTime = 0.5f;
-}
-	
-  void Enemy::Tick(float dt)
+
+	bool Enemy::IsAlive()
+	{
+		//    return true;
+		return !m_dead;
+		//    return m_timer < 20.0f;
+	}
+
+	void Enemy::TakeDamage(int amount)
+	{
+		m_health -= amount;
+		m_hitFrameTime = 0.5f;
+	}
+
+	void Enemy::Tick(float dt)
 	{
 		m_timer += dt;
-    m_hitFrameTime -= dt;
-    
-    if (m_health <= 0) m_dead = true;
-    
+		m_hitFrameTime -= dt;
+
+		if (m_health <= 0)
+			m_dead = true;
+
 		JPH::Body* physicsBody		   = m_entity->GetPhysicsBody();
 		float	   currentPhysicsSpeed = physicsBody->GetLinearVelocity().Length();
 		float	   animFrameTime	   = 0.1f + (0.5f / currentPhysicsSpeed);
 
 		int animFrame = ((int)(m_timer / animFrameTime) % 2);
-    if (m_dead) animFrame = 2;
-    else if (m_hitFrameTime > 0.0f) {
-      animFrame = 3;
-    }
-    
+		if (m_dead)
+			animFrame = 2;
+		else if (m_hitFrameTime > 0.0f)
+		{
+			animFrame = 3;
+		}
+
 		m_currentSpriteIdx = animFrame;
 
-    Vector3 selfPosition  = m_entity->GetPosition();
-    selfPosition.y      = 0.0f;
-    Vector3 targetPosition  = m_target->m_entity->GetPosition();
-    targetPosition.y    = 0.0f;
-    
-    if (!m_dead) {
-      float  forceFactor    = Math::Clamp(1.0f / currentPhysicsSpeed, 0.0f, 1.0f);
-      float  force      = 8.0f * forceFactor;
+		Vector3 selfPosition   = m_entity->GetPosition();
+		selfPosition.y		   = 0.0f;
+		Vector3 targetPosition = m_target->m_entity->GetPosition();
+		targetPosition.y	   = 0.0f;
 
-      Vector3 targetDirection = (targetPosition - selfPosition).Normalized();
-      physicsBody->AddForce(ToJoltVec3(targetDirection * force));
-    }
-		
+		if (!m_dead)
+		{
+			float forceFactor = Math::Clamp(1.0f / currentPhysicsSpeed, 0.0f, 1.0f);
+			float force		  = 14.0f * forceFactor;
+
+			Vector3 targetDirection = (targetPosition - selfPosition).Normalized();
+			physicsBody->AddForce(ToJoltVec3(targetDirection * force));
+		}
+
 		for (uint32_t spriteIdx = 0; spriteIdx < m_sprites.size(); ++spriteIdx)
 		{
 			bool currentSprite = spriteIdx == m_currentSpriteIdx;
