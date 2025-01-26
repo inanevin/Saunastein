@@ -218,7 +218,7 @@ namespace Lina
 		if (enemy->m_dead)
 			return;
 
-		player->UpdateHealth(-1.0f);
+		player->UpdateHealth(-5.0f);
 		LINA_INFO("PLAYER TAKE HIT! Has {0}", player->m_health);
 	}
 

@@ -23,17 +23,19 @@ namespace Lina
 
 		void Tick(float dt);
 		~HudManager();
-    
-    void SetMainText(String text);
-    void SetTopText(String text);
-    void SetTopRight(String text);
-    
+
+		void SetMainText(String text);
+		void SetTopText(String text);
+		void SetTopRight(String text);
+
 		//	private:
-    float m_timer = 0;
-    String m_text = "";
-    String m_topText = "";
-    String m_topRightText = "";
-		Game* m_game = nullptr;
-    Entity* m_hudEntity = nullptr;
+		float		   m_timer		  = 0;
+		String		   m_text		  = "";
+		String		   m_topText	  = "";
+		String		   m_topRightText = "";
+		Game*		   m_game		  = nullptr;
+		Entity*		   m_hudEntity	  = nullptr;
+		Entity*		   m_playerHud	  = nullptr;
+		WidgetManager* m_plHudManager = nullptr;
 	};
 } // namespace Lina
