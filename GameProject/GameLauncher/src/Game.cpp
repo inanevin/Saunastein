@@ -125,7 +125,7 @@ namespace Lina
 		m_bubbleManager = new BubbleManager(m_world);
 		m_hudManager	= new HudManager(this);
 		m_audioManager	= new AudioManager(m_world);
-		m_player		= new Player(m_world, m_bubbleManager, app, m_audioManager);
+		m_player		= new Player(m_world, m_bubbleManager, app, m_audioManager, this);
 		m_mouseLocked	= true;
     
 

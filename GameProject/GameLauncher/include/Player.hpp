@@ -67,6 +67,9 @@ namespace Lina
 			float headbobPitchSpeed = 4.0f;
 			float headbobYawSpeed	= 2.0f;
 			float headSwayPower		= 0.5f;
+
+			Vector3 recoilMove	= Vector3::Zero;
+			Vector3 recoilEuler = Vector3::Zero;
 		};
 
 		struct Runtime
@@ -74,14 +77,16 @@ namespace Lina
 			Quaternion targetRotation = Quaternion::Identity();
 			Vector3	   cameraAngles	  = Vector2::Zero;
 			Vector3	   velocity		  = Vector3::Zero;
+			float	   recoilAlpha	  = 0.0f;
 		};
 
-		Player(EntityWorld* world, BubbleManager* bm, Application* app, AudioManager* am);
+		Player(EntityWorld* world, BubbleManager* bm, Application* app, AudioManager* am, Game* game);
 		~Player();
 
 		void PreTick();
 		void Tick(float dt);
 		void UpdateHealth(float addition);
+		void Recoil();
 
 		void SwitchWeapon(PlayerWeaponType type);
 		void CreateWeapon(PlayerWeaponType type, float holsterAlpha);
@@ -101,11 +106,11 @@ namespace Lina
 		bool			 m_switchingWeaponStage1 = false;
 		PlayerWeaponType m_switchWeaponTo		 = PlayerWeaponType::Melee;
 
-		Movement		 m_movement	  = {};
-		Runtime			 m_runtime	  = {};
-		PlayerWeaponType m_weaponType = PlayerWeaponType::Melee;
-		AudioManager*	 m_audManager = nullptr;
-    float   m_invincibilityTimer = 0.0f;
-    
+		Movement		 m_movement			  = {};
+		Runtime			 m_runtime			  = {};
+		PlayerWeaponType m_weaponType		  = PlayerWeaponType::Melee;
+		AudioManager*	 m_audManager		  = nullptr;
+		float			 m_invincibilityTimer = 0.0f;
+		Game*			 m_game				  = nullptr;
 	};
 } // namespace Lina

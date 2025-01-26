@@ -57,10 +57,19 @@ namespace Lina
 			m_bubbleFire = m_world->GetComponent<CompAudio>(bubbleFire);
 
 		if (chillMusic)
+		{
 			m_chillMusic = m_world->GetComponent<CompAudio>(chillMusic);
+			m_chillMusic->SetGain(1.0f);
+			m_chillMusic->Rewind();
+			m_chillMusic->Play();
+		}
 
 		if (metalMusic)
+		{
 			m_metalMusic = m_world->GetComponent<CompAudio>(metalMusic);
+			m_metalMusic->SetGain(0.0f);
+			m_metalMusic->SetupProperties();
+		}
 	}
 
 	void AudioManager::Play(CompAudio* audio, float varyPitch)
