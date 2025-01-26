@@ -33,6 +33,7 @@ SOFTWARE.
 #include "BubbleManager.hpp"
 #include "HudManager.hpp"
 #include "AudioManager.hpp"
+#include "Weapon.hpp"
 
 #include "Core/Resources/ResourceManager.hpp"
 #include "Core/World/EntityTemplate.hpp"
@@ -127,7 +128,7 @@ namespace Lina
 		m_audioManager	= new AudioManager(m_world);
 		m_player		= new Player(m_world, m_bubbleManager, app, m_audioManager, this);
 		m_mouseLocked	= true;
-    
+		m_gameState		= GameState::Waiting;
 
 		// Find resources
 		Entity* res = m_world->FindEntity("Resources");
@@ -151,36 +152,36 @@ namespace Lina
 		std::random_device rd;
 		m_rng = std::mt19937(rd());
 
-		m_gameLostScreen = m_world->FindEntity("GUIGameLost");
-		m_gameWonScreen	 = m_world->FindEntity("GUIGameWon");
-		m_fireVisuals	 = m_world->FindEntity("Fire");
+		m_arena			  = m_world->FindEntity("arena");
+		m_gameLostScreen  = m_world->FindEntity("GUIGameLost");
+		m_gameWonScreen	  = m_world->FindEntity("GUIGameWon");
+		m_gameStartScreen = m_world->FindEntity("GUIStart");
+		m_fireVisuals	  = m_world->FindEntity("Fire");
 
-    if (m_gameWonScreen) {
-      m_gameLostScreen->SetVisible(false);
-    }
-    
+		if (m_gameStartScreen)
+			m_gameStartScreen->SetVisible(true);
+
+		if (m_hudManager->m_playerHud)
+			m_hudManager->m_playerHud->SetVisible(false);
+
+		if (m_hudManager->m_hudEntity)
+			m_hudManager->m_hudEntity->SetVisible(false);
+
+		if (m_gameWonScreen)
+		{
+			m_gameLostScreen->SetVisible(false);
+		}
+
+		if (m_player->m_weapon->m_entity)
+			m_player->m_weapon->m_entity->SetVisible(false);
+
 		if (m_gameLostScreen)
 		{
-      m_gameLostScreen->SetVisible(false);
-      
-			CompWidget* w = m_world->GetComponent<CompWidget>(m_gameLostScreen);
-			if (w)
-			{
-				WidgetManager& wm	   = w->GetWidgetManager();
-				Widget*		   restart = wm.GetRoot()->FindChildWithDebugName("Restart");
-				if (restart)
-				{
-					static_cast<Button*>(restart)->GetProps().onClicked = [this]() { m_gameLauncher->Restart(); };
-				}
-
-				Widget* quit = wm.GetRoot()->FindChildWithDebugName("Quit");
-				if (quit)
-				{
-
-					static_cast<Button*>(quit)->GetProps().onClicked = [this]() { m_gameLauncher->Quit(); };
-				}
-			}
+			m_gameLostScreen->SetVisible(false);
 		}
+
+		if (m_arena)
+			m_arena->SetVisible(false);
 
 		Material* skyMat = m_world->GetResourceManager()->GetIfExists<Material>(m_world->GetGfxSettings().skyMaterial);
 		if (skyMat)
@@ -189,11 +190,15 @@ namespace Lina
 			m_skyHorizonColor = *skyMat->GetProperty<Vector3>("horizonColor"_hs);
 		}
 		m_world->GetPhysicsWorld()->AddContactListener(this);
+
+		SetHeat(0.0f);
 	}
 
-	void Game::OnGameEnd()
+	void Game::OnGameEnd(bool isFinal)
 	{
-		m_world->GetPhysicsWorld()->RemoveContactListener(this);
+		if (!isFinal)
+			m_world->GetPhysicsWorld()->RemoveContactListener(this);
+
 		delete m_hudManager;
 		delete m_audioManager;
 		delete m_waveManager;
@@ -213,6 +218,28 @@ namespace Lina
 			m_world->GetScreen().GetOwnerWindow()->FreeMouse();
 		}
 
+		if (m_gameState == GameState::Waiting)
+		{
+			if (m_world->GetInput().GetKeyUp(LINAGX_KEY_SPACE))
+			{
+				m_gameState = GameState::Running;
+				if (m_gameStartScreen)
+					m_gameStartScreen->SetVisible(false);
+
+				if (m_hudManager->m_playerHud)
+					m_hudManager->m_playerHud->SetVisible(true);
+
+				if (m_hudManager->m_hudEntity)
+					m_hudManager->m_hudEntity->SetVisible(true);
+
+				if (m_player->m_weapon->m_entity)
+					m_player->m_weapon->m_entity->SetVisible(true);
+
+				if (m_arena)
+					m_arena->SetVisible(true);
+			}
+		}
+
 		if (m_gameState != GameState::Running)
 			return;
 
@@ -223,6 +250,7 @@ namespace Lina
 
 	void Game::OnGameTick(float dt)
 	{
+
 		m_audioManager->Tick(dt, m_heatDangerRatio);
 
 		if (m_gameState != GameState::Running)

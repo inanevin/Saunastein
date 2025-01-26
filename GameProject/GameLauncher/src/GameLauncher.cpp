@@ -28,6 +28,9 @@ SOFTWARE.
 
 #include "GameLauncher.hpp"
 #include "SwapchainRenderer.hpp"
+#include "Player.hpp"
+#include "Weapon.hpp"
+#include "HudManager.hpp"
 #include "Core/Lina.hpp"
 #include "Core/Graphics/Renderers/WorldRenderer.hpp"
 #include "Common/FileSystem/FileSystem.hpp"
@@ -49,7 +52,7 @@ namespace Lina
 #define PACKAGE_0_PATH "LinaPackage0.linapkg"
 #define PACKAGE_1_PATH "LinaPackage1.linapkg"
 
-#define FULLSCREEN 0
+#define FULLSCREEN 1
 
 	SystemInitializationInfo Lina_GetInitInfo()
 	{
@@ -119,9 +122,9 @@ namespace Lina
 		m_gameBegun = false;
 	}
 
-	void GameLauncher::ShutdownGame()
+	void GameLauncher::ShutdownGame(bool isfinal)
 	{
-		m_game->OnGameEnd();
+		m_game->OnGameEnd(isfinal);
 		delete m_game;
 	}
 
@@ -180,7 +183,7 @@ namespace Lina
 		if (m_swapchainMaterial)
 			m_app->GetResourceManager().DestroyResource(m_swapchainMaterial);
 
-		ShutdownGame();
+		ShutdownGame(true);
 
 		m_wr	= nullptr;
 		m_world = nullptr;
@@ -234,6 +237,32 @@ namespace Lina
 			}
 
 			m_game->OnGamePreTick();
+		}
+
+		if (m_game->m_gameState == GameState::Waiting || m_game->m_gameState == GameState::Lost || m_game->m_gameState == GameState::Won)
+		{
+			Entity* we = m_game->m_player->m_weapon->m_entity;
+			if (we && we->GetVisible())
+				we->SetVisible(false);
+
+			Entity* ph = m_game->m_hudManager->m_playerHud;
+
+			if (ph && ph->GetVisible())
+				ph->SetVisible(false);
+
+			if (m_window->GetInput()->GetKeyDown(LINAGX_KEY_Q))
+				Quit();
+		}
+		else
+		{
+			Entity* we = m_game->m_player->m_weapon->m_entity;
+			if (we && !we->GetVisible())
+				we->SetVisible(true);
+
+			Entity* ph = m_game->m_hudManager->m_playerHud;
+
+			if (ph && !ph->GetVisible())
+				ph->SetVisible(true);
 		}
 	}
 
@@ -326,7 +355,7 @@ namespace Lina
 
 	void GameLauncher::Restart()
 	{
-		ShutdownGame();
+		ShutdownGame(false);
 		InitializeGame();
 	}
 
