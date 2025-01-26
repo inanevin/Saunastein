@@ -187,7 +187,7 @@ namespace Lina
 	void Game::OnGameEnd()
 	{
 		m_world->GetPhysicsWorld()->RemoveContactListener(this);
-
+		delete m_hudManager;
 		delete m_audioManager;
 		delete m_waveManager;
 		delete m_player;
@@ -249,17 +249,16 @@ namespace Lina
 		{
 			UpdateHeat(-10.0f);
 		}
-    
-    m_hudManager->SetTopRight(FormatString("Score: %i", m_score));
-        
-    if (m_fireVisuals)
-    {
-      Vector3 scale = m_fireVisuals->GetLocalScale();
-      m_fireTargetScale = Math::Lerp(0.0f, 1.0f, m_dangerRatio);
-      scale.y      = Math::Lerp(scale.y, m_fireTargetScale, 10*dt);
-      m_fireVisuals->SetLocalScale(scale);
-    }
 
+		m_hudManager->SetTopRight(FormatString("Score: %i", m_score));
+
+		if (m_fireVisuals)
+		{
+			Vector3 scale	  = m_fireVisuals->GetLocalScale();
+			m_fireTargetScale = Math::Lerp(0.0f, 1.0f, m_dangerRatio);
+			scale.y			  = Math::Lerp(scale.y, m_fireTargetScale, 10 * dt);
+			m_fireVisuals->SetLocalScale(scale);
+		}
 	}
 
 	EntityTemplate* Game::GetEntityTemplate(String key)
@@ -334,7 +333,7 @@ namespace Lina
 	{
 		m_heatLevel = heat;
 		m_heatLevel = Math::Clamp(m_heatLevel, 0.0f, 100.0f);
-//		LINA_TRACE("HeatLevel {0}", m_heatLevel);
+		//		LINA_TRACE("HeatLevel {0}", m_heatLevel);
 
 		const float	  dangerRatio				   = Math::Clamp(Math::Remap(m_heatLevel, 00.0f, 100.0f, 0.0f, 1.0f), 0.0f, 1.0f);
 		const Vector4 ambientCold				   = Vector4(1, 1, 1, 1);
@@ -344,10 +343,10 @@ namespace Lina
 		m_world->GetGfxSettings().ambientBot	   = ambient;
 		m_world->GetGfxSettings().ambientMid	   = ambient;
 		m_world->GetGfxSettings().ambientIntensity = Math::Lerp(0.2f, 1.0f, dangerRatio);
-    
-    m_dangerRatio = dangerRatio;
-		
-    if (m_sunLight)
+
+		m_dangerRatio = dangerRatio;
+
+		if (m_sunLight)
 		{
 			m_sunLight->SetColor(Math::Lerp(Color::White, Color(1, 0, 0, 1), dangerRatio));
 			m_sunLight->SetIntensity(Math::Lerp(0.45f, 2.0f, dangerRatio));
@@ -373,7 +372,7 @@ namespace Lina
 
 	void Game::OnContact(Entity* e1, Entity* e2, const Vector3& p1, const Vector3& p2)
 	{
-    m_waveManager->HandleContact(e1, e2);
+		m_waveManager->HandleContact(e1, e2);
 	}
 
 	void Game::OnContactEnd(Entity* e1, Entity* e2)
