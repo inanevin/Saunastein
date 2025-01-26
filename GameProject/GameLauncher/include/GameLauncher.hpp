@@ -46,6 +46,7 @@ namespace Lina
 	class SwapchainRenderer;
 	class EntityWorld;
 	class Plugin;
+	class Material;
 
 	class GameLauncher : public ApplicationDelegate, public LinaGX::WindowListener
 	{
@@ -93,5 +94,7 @@ namespace Lina
 		ProjectData		   m_project		   = {};
 		LinaGX::Instance*  m_lgx			   = nullptr;
 		bool			   m_gameBegun		   = false;
+		Material*		   m_swapchainMaterial = nullptr;
+		bool			   m_heatEnabled	   = false;
 	};
 } // namespace Lina

@@ -85,6 +85,12 @@ namespace Lina
 			return m_swapchain;
 		}
 
+		inline void SetShaderOverride(Shader* shader, Material* mat)
+		{
+			m_shaderOverride   = shader;
+			m_materialOverride = mat;
+		}
+
 	private:
 		WorldRenderer*		m_wr			 = nullptr;
 		uint16				m_pipelineLayout = 0;
@@ -100,6 +106,8 @@ namespace Lina
 		TextureSampler*		m_samplerSwapchain = nullptr;
 		Shader*				m_shaderSwapchain  = nullptr;
 		RenderPass			m_renderPass;
-		uint8				m_swapchain = 0;
+		uint8				m_swapchain		   = 0;
+		Shader*				m_shaderOverride   = nullptr;
+		Material*			m_materialOverride = nullptr;
 	};
 } // namespace Lina

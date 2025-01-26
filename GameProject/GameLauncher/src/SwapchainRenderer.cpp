@@ -31,6 +31,7 @@ SOFTWARE.
 #include "Core/Graphics/Resource/TextureSampler.hpp"
 #include "Core/Graphics/Resource/Shader.hpp"
 #include "Core/Graphics/Resource/Texture.hpp"
+#include "Core/Graphics/Resource/Material.hpp"
 #include "Core/Graphics/Renderers/WorldRenderer.hpp"
 #include "Core/Resources/ResourceManager.hpp"
 #include "Core/Application.hpp"
@@ -165,9 +166,10 @@ namespace Lina
 		if (m_wr)
 		{
 			RenderPass::InstancedDraw draw = {
-				.shaderHandle  = m_shaderSwapchain->GetGPUHandle(),
+				.shaderHandle  = m_shaderOverride->GetGPUHandle(),
 				.vertexCount   = 3,
 				.instanceCount = 1,
+				.pushConstant  = m_materialOverride->GetBindlessIndex(),
 			};
 			m_renderPass.AddDrawCall(draw);
 		}

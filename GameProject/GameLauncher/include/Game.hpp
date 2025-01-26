@@ -79,8 +79,8 @@ namespace Lina
 
 		void UpdateHeat(float addition);
 		void SetHeat(float heat);
-    
-    void AddScore(uint32_t score);
+
+		void AddScore(uint32_t score);
 
 		virtual void OnContactBegin(Entity* e1, Entity* e2, const Vector3& p1, const Vector3& p2) override;
 		virtual void OnContact(Entity* e1, Entity* e2, const Vector3& p1, const Vector3& p2) override;
@@ -100,18 +100,18 @@ namespace Lina
 		std::mt19937					 m_rng;
 
 		GameLauncher* m_gameLauncher;
-		Entity*		  m_gameLostScreen = nullptr;
-		Entity*		  m_gameWonScreen  = nullptr;
-		GameState	  m_gameState	   = GameState::Running;
-		Entity*		  m_fireVisuals	   = nullptr;
-    float      m_fireTargetScale   = 0.0f;
+		Entity*		  m_gameLostScreen	= nullptr;
+		Entity*		  m_gameWonScreen	= nullptr;
+		GameState	  m_gameState		= GameState::Running;
+		Entity*		  m_fireVisuals		= nullptr;
+		float		  m_fireTargetScale = 0.0f;
 
-		float	   m_heatLevel		 = 50.0f;
-    float     m_dangerRatio     = 0.0f;
+		float	   m_heatLevel		 = 0.0f;
+		float	   m_dangerRatio	 = 0.0f;
 		Vector3	   m_skyTopColor	 = Vector3::Zero;
 		Vector3	   m_skyHorizonColor = Vector3::Zero;
 		CompLight* m_sunLight		 = nullptr;
-    uint32_t m_score = 0;
+		uint32_t   m_score			 = 0;
 		float	   m_heatDangerRatio = 0.0f;
 	};
 } // namespace Lina

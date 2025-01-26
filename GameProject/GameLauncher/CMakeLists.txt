@@ -42,7 +42,7 @@ include/Enemy.hpp
 include/SwapchainRenderer.hpp
 include/BubbleManager.hpp
 include/HudManager.hpp
-include/AudioManager.hpp
+include/AudioManager.hpp	
 )
 
 #--------------------------------------------------------------------

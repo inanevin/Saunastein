@@ -64,7 +64,7 @@ namespace Lina
 		body->GetMotionProperties()->SetMassProperties(JPH::EAllowedDOFs::TranslationX | JPH::EAllowedDOFs::TranslationY | JPH::EAllowedDOFs::TranslationZ | JPH::EAllowedDOFs::RotationY, mp);
 		m_entity->GetPhysicsBody()->SetAllowSleeping(false);
 
-		m_movement.movementPower = 60.5f;
+		m_movement.movementPower = 40.5f;
 		m_movement.rotationSpeed = 30.0f;
 		m_movement.rotationPower = 5.0f;
 

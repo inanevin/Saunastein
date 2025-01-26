@@ -116,100 +116,78 @@ layout (location = 3) in vec3 inWorldPos;
 struct LinaMaterial
 {
    vec4 color;
-   vec4 tilingAndOffset;
    LinaTexture2D txtAlbedo;
-   LinaTexture2D txtNormal;
+   float pixelSize;
+   float speed;
 };
-
-/*
-
-
-void mainImage( out vec4 fragColor, in vec2 fragCoord )
-{
-    vec2 p = vec2(fragCoord.xy / iResolution.xy);
-    vec2 r =  2.0*vec2(fragCoord.xy - 0.5*iResolution.xy)/iResolution.y;
-    float xMax = iResolution.x/iResolution.y;   
-    vec3 ret;
-if(p.x < 3./3.) { // Painting coordinates
-        r = r - vec2(xMax*0./3., -0.2);
-        float angle = 0.0;
-        mat2 rotMat = mat2(cos(angle), -sin(angle),
-                           sin(angle),  cos(angle));
-        vec2 q = rotMat*r;
-        vec3 texA = texture(iChannel1, q).xyz;
-        vec2 uv = fragCoord.xy/iResolution.xy;
-    float pixelSize = 2.0;
-    float plx = iResolution.x * pixelSize / 50.0;
-    float ply = iResolution.y * pixelSize / 50.0;
-    float dx = plx * (1.0 / iResolution.x);
-    float dy = ply * (1.0 / iResolution.y);
-    uv.x = dx * floor(uv.x / dx);
-    uv.y = dy * floor(uv.y / dy);
-    vec3 texB = vec3(0.5 + 0.5*cos(iTime+uv.xyx+vec3(3,1.5,1.8)));
-        //vec3 texB = vec3(0,0,0).xyz;
-        rotMat = mat2 (1, 0, 0, 1);                 
-        q = rotMat*r;       
-        ret = mix(texA, texB, rect(q, vec2(-0.3, -0.5), vec2(.3, .3)) );
-    }
-    vec3 pixel = ret;
-    fragColor = vec4(pixel, 1.0);
-}
-
-*/
 
 
 float rect(vec2 r, vec2 bottomLeft, vec2 topRight) {
     float ret;
     float d = 0.1;
     ret = smoothstep(bottomLeft.x-d, bottomLeft.x+d, r.x);
-    ret *= smoothstep(bottomLeft.y-d, bottomLeft.y+d, r.y);
-    ret *= 1.0 - smoothstep(topRight.y-d, topRight.y+d, r.y);
-    ret *= 1.0 - smoothstep(topRight.x-d, topRight.x+d, r.x);
+    ret = smoothstep(bottomLeft.y-d, bottomLeft.y+d, r.y);
+    ret= 1.0 - smoothstep(topRight.y-d, topRight.y+d, r.y);
+    ret = 1.0 - smoothstep(topRight.x-d, topRight.x+d, r.x);
     return ret;
+}
+
+float Noise21 (vec2 p, float ta, float tb) {
+    return fract(sin(p.x*ta+p.y*tb)*5678.);
 }
 
 void LINA_FRAG_MAIN(out LinaFragOutput outFrag)
 {
-      LinaMaterial material = LINA_GET_MATERIAL(inMaterialIndex);
+   LinaMaterial material = LINA_GET_MATERIAL(inMaterialIndex);
 
-   vec2 iResolution = vec2(512, 512);
+   vec2 iResolution = vec2(256, 256);
    vec2 fragCoord = inUV * iResolution;
    vec2 p = vec2(fragCoord.xy / iResolution.xy);
-   vec2 r =  2.0*vec2(fragCoord.xy - 0.5*iResolution.xy)/iResolution.y;
-
-   float xMax = iResolution.x/iResolution.y;   
+   vec2 r =  2.0 * vec2(fragCoord.xy - 0.5 * iResolution.xy)/iResolution.y;
+   
+   float xMax = iResolution.x/iResolution.y;
     vec3 ret;
-   float iTime = 0.0f;
+   float iTime = floor(LINA_GLOBAL.deltaElapsed.y * material.speed);
 
     if(p.x < 3./3.) { // Painting coordinates
-        r = r - vec2(xMax*0./3., -0.2);
-        float angle = 0.0;
+        r = r - vec2(xMax * 3./3., -0.2);
+       float angle = 0.0;
         mat2 rotMat = mat2(cos(angle), -sin(angle),
                            sin(angle),  cos(angle));
-        vec2 q = rotMat*r;
+        vec2 q = rotMat * r;
         vec3 texA = LINA_SAMPLE_TEXTURE(material.txtAlbedo, q).xyz;
         vec2 uv = fragCoord.xy/iResolution.xy;
-    float pixelSize = 2.0;
-    float plx = iResolution.x * pixelSize / 50.0;
-    float ply = iResolution.y * pixelSize / 50.0;
-    float dx = plx * (1.0 / iResolution.x);
-    float dy = ply * (1.0 / iResolution.y);
-    uv.x = dx * floor(uv.x / dx);
-    uv.y = dy * floor(uv.y / dy);
-    vec3 texB = vec3(0.5 + 0.5*cos(iTime+uv.xyx+vec3(3,1.5,1.8)));
-    //vec3 texB = vec3(0,0,0).xyz;
-    rotMat = mat2 (1, 0, 0, 1);                 
-    q = rotMat*r;       
-    ret = mix(texA, texB, rect(q, vec2(-0.3, -0.5), vec2(.3, .3)) );
+         float pixelSize = material.pixelSize;
+         float plx = iResolution.x * pixelSize / 50.0;
+         float ply = iResolution.y * pixelSize / 50.0;
+         float dx = plx * (1.0 / iResolution.x);
+         float dy = ply * (1.0 / iResolution.y);
+         uv.x = dx * floor(uv.x / dx);
+         uv.y = dy * floor(uv.y / dy);
+
+          float t = iTime; 
+      float ta = t*.154311;
+      float tb = t*(ta*.023456);
+    
+       float c = Noise21(uv, ta, tb);
+      vec3 col = vec3(c);
+
+       vec3 texB = vec3(col*vec3(0.95, 0.56, 0.56) * material.color.xyz);
+
+      //vec3 texB = vec3(0.5 + 0.5cos(iTime+uv.xyx+vec3(3,1.5,1.8)));
+      //vec3 texB = vec3(0,0,0).xyz;
+      rotMat = mat2(1, 0, 0, 1);
+      q = rotMat * r;
+      ret = mix(texA, texB, rect(q, vec2(-0.3, -0.5), vec2(.3, .3)) );
     }
+
     vec3 pixel = ret;
-   
-   
-   vec2 uv = inUV * material.tilingAndOffset.xy + material.tilingAndOffset.zw;
+
    outFrag.color = vec4(pixel, 1.0);
    outFrag.normal = vec3(0.0);
    outFrag.worldPos = vec3(0.0);
    outFrag.isUnlit = 0;
+
 }
 
 #lina_end

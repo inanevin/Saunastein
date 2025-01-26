@@ -66,6 +66,7 @@ namespace Lina
 
 				Entity* spawnedBubble = m_world->SpawnTemplate(m_bubbleTemplate, data.spawnPosition, data.spawnRotation);
 				spawnedBubble->GetPhysicsBody()->SetAllowSleeping(false);
+				spawnedBubble->GetPhysicsBody()->GetMotionProperties()->SetGravityFactor(-1.005f);
 				data._entity = spawnedBubble;
 
 				JPH::Body*			body = spawnedBubble->GetPhysicsBody();

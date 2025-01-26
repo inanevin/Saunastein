@@ -164,7 +164,6 @@ namespace Lina
 		}
 		if (m_world->GetInput().GetMouseButtonDown(LINAGX_MOUSE_0))
 		{
-			LINA_TRACE("Firing!");
 			Fire();
 		}
 	}
@@ -173,9 +172,9 @@ namespace Lina
 	{
 		const Vector3&	  camPosition	= m_player->m_cameraRef->GetPosition();
 		const Quaternion& camRotation	= m_player->m_cameraRef->GetRotation();
-		const Vector3	  spawnPosition = camPosition + camRotation.GetForward() * 5.5f;
+		const Vector3	  spawnPosition = camPosition + camRotation.GetForward() * 1.0f;
 		const Quaternion  spawnRotation = Quaternion::LookAt(spawnPosition, camPosition, Vector3::Up);
-		const Vector3	  shootForce	= camRotation.GetForward() * 500.0f;
+		const Vector3	  shootForce	= (camRotation.GetForward() * 700.0f + -camRotation.GetUp() * 100) * (m_isPistolHack ? 1.8f : 1.0f);
 		m_bubbleManager->SpawnBubble(shootForce, spawnPosition, spawnRotation);
 		m_animation->Fire();
 

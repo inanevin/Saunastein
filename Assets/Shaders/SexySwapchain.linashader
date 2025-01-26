@@ -1,0 +1,131 @@
+/*
+This file is a part of: Lina Engine
+https://github.com/inanevin/LinaEngine
+
+Author: Inan Evin
+http://www.inanevin.com
+
+Copyright (c) [2018-] [Inan Evin]
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+*/
+
+#lina_variant
+#name : Default
+#blend: LINA_BLEND_NONE
+#depth: LINA_DEPTH_NONE
+#target: LINA_TARGET_SWAPCHAIN
+#cull: LINA_CULL_NONE
+#face: LINA_FACE_CCW
+#lina_end
+
+#lina_vs
+
+#include "Resources/Core/Shaders/Common/GlobalData.linashader"
+#include "Resources/Core/Shaders/Common/RenderPass_Swapchain.linashader"
+
+layout (location = 0) out vec2 outUV;
+layout (location = 1) flat out uint outTextureIndex;
+layout (location = 2) flat out uint outSamplerIndex;
+layout (location = 3) flat out uint outMaterialIndex;
+
+layout( push_constant ) uniform constants
+{
+	uint value0;
+} PushConstants;
+
+void main()
+{
+   outUV = vec2((gl_VertexIndex << 1) & 2, gl_VertexIndex & 2);
+   gl_Position =  vec4(outUV * 2.0f + -1.0f, 0.0f, 1.0f);
+   outUV.y = 1.0f - outUV.y;
+
+   outTextureIndex = LINA_PASS.textureIndex;
+   outSamplerIndex = LINA_PASS.samplerIndex;
+   outMaterialIndex = PushConstants.value0;
+}
+
+#lina_end
+
+#lina_fs
+
+layout(location = 0) in vec2 inUV;
+layout (location = 1) flat in uint inTextureIndex;
+layout (location = 2) flat in uint inSamplerIndex;
+layout (location = 3) flat in uint inMaterialIndex;
+
+layout(location = 0) out vec4 outFragColor;
+
+#include "Resources/Core/Shaders/Common/GlobalData.linashader"
+#include "Resources/Core/Shaders/Common/RenderPass_Swapchain.linashader"
+
+struct LinaMaterial
+{
+   LinaTexture2D txtAlbedo;
+   float flames;
+   float heatShimmer;
+   float vignette;
+};
+
+vec3 GetScenePostBuffer(vec2 uv, float d)
+{
+   LinaTexture2D txt;
+   txt.txt = inTextureIndex;
+   txt.smp = inSamplerIndex;
+   return  LINA_SAMPLE_TEXTURE(txt, vec2(uv.x, 1.0 - uv.y) + d).rgb;
+}
+
+float GetNoise(vec2 uv)
+{
+    // Noise texture
+   LinaMaterial material = LINA_GET_MATERIAL(inMaterialIndex);
+   return LINA_SAMPLE_TEXTURE(material.txtAlbedo, uv * 2.0).r;
+}
+
+void AddVignette( inout vec3 col, vec3 vcol, vec2 uv, float d)
+{    
+    float v = uv.x * ( 1.0 - uv.x ) * uv.y *  ( 1.0 - uv.y );
+    v = clamp(pow( 16.0 * v, 0.25 ), 0.0, 1.0 );
+    col = mix(col, vcol, (1.0-v) * d);
+}
+
+void main()
+{
+   LinaMaterial material = LINA_GET_MATERIAL(inMaterialIndex);
+
+   float time = LINA_GLOBAL.deltaElapsed.y;
+   vec2 uv = vec2(inUV.x, 1.0 - inUV.y);
+   float flames = material.flames;
+   float heatShimmer = material.heatShimmer;
+   float vignette = material.vignette;
+   
+   float n = GetNoise(uv + vec2(0.0, -time));
+   float n2 = GetNoise(uv * vec2(2.0, 1.0) + vec2(0.0, -time / 2.0)) * 1.0;
+   vec3 vignetteCol = mix(vec3((1.0 + sin(time * 16.0) / 4.0 * n), 0.0, 0.0), vec3(1.0, 0.5, 0.0), n);
+   vec3 sceneCol = GetScenePostBuffer(uv, n * 0.005 * heatShimmer);
+   AddVignette(sceneCol, vignetteCol, uv, ((n + n2) * (1.0 - uv.y)) * flames);
+
+	outFragColor = vec4(sceneCol, 1.0);
+
+
+   
+   
+}
+
+#lina_end

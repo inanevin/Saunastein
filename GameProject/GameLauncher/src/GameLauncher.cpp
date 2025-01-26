@@ -41,6 +41,7 @@ SOFTWARE.
 #include "Core/GUI/Widgets/Widget.hpp"
 #include "Core/GUI/Widgets/Primitives/Text.hpp"
 #include "Core/GUI/Widgets/Primitives/Button.hpp"
+#include "Common/Math/Math.hpp"
 
 namespace Lina
 {
@@ -120,6 +121,35 @@ namespace Lina
 		m_world->GetWorldCamera().SetPosition(Vector3(0, 0, 0));
 		m_world->GetWorldCamera().Calculate(m_wr->GetSize());
 
+		Entity* swapchain = m_world->FindEntity("Swapchain");
+		if (swapchain)
+		{
+			const EntityParameter* p		= swapchain->GetParameter("0"_hs);
+			const ResourceID	   shaderID = p->valRes;
+			Shader*				   shader	= m_app->GetResourceManager().GetIfExists<Shader>(shaderID);
+			m_swapchainMaterial				= m_app->GetResourceManager().CreateResource<Material>(m_app->GetResourceManager().ConsumeResourceID());
+			m_swapchainMaterial->SetShader(shader);
+
+			Entity*	   noise = m_world->FindEntity("Noise");
+			ResourceID txtID = 0;
+			if (noise)
+			{
+				const EntityParameter* np = noise->GetParameter("0"_hs);
+				txtID					  = np->valRes;
+			}
+
+			const LinaTexture2D txt = {
+				.texture = txtID,
+				.sampler = ENGINE_SAMPLER_GUI_ID,
+			};
+			m_swapchainMaterial->SetProperty<LinaTexture2D>("txtAlbedo"_hs, txt);
+			m_swapchainMaterial->SetProperty<float>("flames"_hs, 0.0f);
+			m_swapchainMaterial->SetProperty<float>("heatShimmer"_hs, 0.0f);
+			m_swapchainMaterial->SetProperty<float>("vignette"_hs, 0.0f);
+			m_swapchainRenderer->SetShaderOverride(shader, m_swapchainMaterial);
+			m_app->GetGfxContext().MarkBindlessDirty();
+		}
+
 		if (FULLSCREEN)
 		{
 #ifdef LINA_PLATFORM_APPLE
@@ -133,6 +163,8 @@ namespace Lina
 
 	void GameLauncher::OnWorldUnloaded(ResourceID id)
 	{
+		if (m_swapchainMaterial)
+			m_app->GetResourceManager().DestroyResource(m_swapchainMaterial);
 		m_game.OnGameEnd();
 
 		m_wr	= nullptr;
@@ -148,6 +180,26 @@ namespace Lina
 		m_swapchainRenderer->OnWindowSizeChanged(m_window, m_window->GetSize());
 
 		m_swapchainRenderer->CheckVisibility();
+
+		if (m_game.m_heatLevel > 5.0f)
+		{
+			const float vign = Math::Remap(m_game.m_heatLevel, 5.0f, 100.0f, 0.0f, 1.0f);
+			const float shim = Math::Remap(m_game.m_heatLevel, 5.0f, 100.0f, 0.75f, 1.0f);
+
+			m_heatEnabled = true;
+			m_swapchainMaterial->SetProperty<float>("flames"_hs, vign);
+			m_swapchainMaterial->SetProperty<float>("heatShimmer"_hs, shim);
+			m_swapchainMaterial->SetProperty<float>("vignette"_hs, 0.5f);
+			m_app->GetGfxContext().MarkBindlessDirty();
+		}
+		else if (m_game.m_heatLevel < 5.0f && m_heatEnabled)
+		{
+			m_heatEnabled = false;
+			m_swapchainMaterial->SetProperty<float>("flames"_hs, 0.0f);
+			m_swapchainMaterial->SetProperty<float>("heatShimmer"_hs, 0.0f);
+			m_swapchainMaterial->SetProperty<float>("vignette"_hs, 0.0f);
+			m_app->GetGfxContext().MarkBindlessDirty();
+		}
 
 		if (m_world)
 		{
