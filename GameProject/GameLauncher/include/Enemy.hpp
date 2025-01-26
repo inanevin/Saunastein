@@ -35,5 +35,6 @@ namespace Lina
     float     m_hitFrameTime = 0;
 		int32_t		m_health = 0;
     bool        m_dead = false;
+    uint32_t  m_score = 0;
 	};
 } // namespace Lina

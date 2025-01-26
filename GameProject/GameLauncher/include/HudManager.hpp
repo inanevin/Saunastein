@@ -25,9 +25,14 @@ namespace Lina
 		~HudManager();
     
     void SetMainText(String text);
+    void SetTopText(String text);
+    void SetTopRight(String text);
+    
 		//	private:
     float m_timer = 0;
     String m_text = "";
+    String m_topText = "";
+    String m_topRightText = "";
 		Game* m_game = nullptr;
     Entity* m_hudEntity = nullptr;
 	};

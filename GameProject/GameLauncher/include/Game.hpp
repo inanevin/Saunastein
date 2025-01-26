@@ -78,6 +78,8 @@ namespace Lina
 
 		void UpdateHeat(float addition);
 		void SetHeat(float heat);
+    
+    void AddScore(uint32_t score);
 
 		virtual void OnContactBegin(Entity* e1, Entity* e2, const Vector3& p1, const Vector3& p2) override;
 		virtual void OnContact(Entity* e1, Entity* e2, const Vector3& p1, const Vector3& p2) override;
@@ -107,5 +109,7 @@ namespace Lina
 		Vector3	   m_skyTopColor	 = Vector3::Zero;
 		Vector3	   m_skyHorizonColor = Vector3::Zero;
 		CompLight* m_sunLight		 = nullptr;
+    
+    uint32_t m_score = 0;
 	};
 } // namespace Lina
