@@ -132,7 +132,7 @@ namespace Lina
 			m_game->OnWaveSpawned(m_waveCounter, currentWave.name);
 			return;
 		}
-
+    
 		// next wave when current wave is done
 		if (currentWaveIsDone)
 		{
@@ -188,6 +188,10 @@ namespace Lina
 			// Everything spawned.. waiting for enemies to be cleared...
 			m_game->UpdateHeat(currentWave.heatAddition * static_cast<float>(SystemInfo::GetDeltaTime()));
 		}
+    
+    // Update Fire
+    
+    
 	}
 
 	void WaveManager::PreTick()

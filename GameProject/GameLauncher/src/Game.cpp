@@ -121,6 +121,7 @@ namespace Lina
 		}
 		m_gameLostScreen = m_world->FindEntity("GUIGameLost");
 		m_gameWonScreen	 = m_world->FindEntity("GUIGameWon");
+    m_fireVisuals = m_world->FindEntity("Fire");
 
 		if (m_gameLostScreen)
 		{
@@ -304,7 +305,13 @@ namespace Lina
 			m_metalMusicComp->SetGain(Math::Lerp(0.0f, 0.8f, dangerRatio));
 			m_metalMusicComp->SetupProperties();
 		}
-
+    
+    if (m_fireVisuals) {
+      Vector3 scale = m_fireVisuals->GetLocalScale();
+      scale.y = Math::Lerp(0.0f, 1.0f, dangerRatio);
+      m_fireVisuals->SetLocalScale(scale);
+    }
+    
 		Material* skyMat = m_world->GetResourceManager()->GetIfExists<Material>(m_world->GetGfxSettings().skyMaterial);
 		if (skyMat)
 		{

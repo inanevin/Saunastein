@@ -101,6 +101,7 @@ namespace Lina
 		GameState	  m_gameState	   = GameState::Running;
 		Entity*		  m_metalMusic	   = nullptr;
 		CompAudio*	  m_metalMusicComp = nullptr;
+    Entity*      m_fireVisuals = nullptr;
 
 		float	   m_heatLevel		 = 50.0f;
 		Vector3	   m_skyTopColor	 = Vector3::Zero;
