@@ -21,6 +21,7 @@ namespace Lina
 		String	resourceKey;
 		int32_t health;
 		int32_t speed;
+    int32_t score;
 		String	projectileKey;
 		float	waitTimeBefore;
 	};
@@ -44,18 +45,18 @@ namespace Lina
 				 .heatAddition	 = 1.5f,
 				 .enemies =
 					 {
-						 WaveEnemyDesc{.resourceKey = "Enemy_1", .health = 3, .speed = 5, .waitTimeBefore = 0.0f},
-						 WaveEnemyDesc{.resourceKey = "Enemy_1", .health = 3, .speed = 5, .waitTimeBefore = 0.0f},
+						 WaveEnemyDesc{.resourceKey = "Enemy_1", .health = 3, .speed = 5, .waitTimeBefore = 0.0f, .score = 100},
+						 WaveEnemyDesc{.resourceKey = "Enemy_1", .health = 3, .speed = 5, .waitTimeBefore = 0.0f, .score = 100},
 					 }},
 		WaveDesc{.name			 = "Wave 2",
 				 .waitTimeBefore = 3.0f,
 				 .heatAddition	 = 2.5f,
 				 .enemies =
 					 {
-						 WaveEnemyDesc{.resourceKey = "Enemy_1", .health = 3, .speed = 5, .waitTimeBefore = 0.0f},
-						 WaveEnemyDesc{.resourceKey = "Enemy_1", .health = 3, .speed = 5, .waitTimeBefore = 0.0f},
-						 WaveEnemyDesc{.resourceKey = "Enemy_2", .health = 10, .speed = 5, .waitTimeBefore = 0.0f},
-						 WaveEnemyDesc{.resourceKey = "Enemy_1", .health = 3, .speed = 5, .waitTimeBefore = 0.0f},
+						 WaveEnemyDesc{.resourceKey = "Enemy_1", .health = 3, .speed = 5, .waitTimeBefore = 0.0f, .score = 100},
+						 WaveEnemyDesc{.resourceKey = "Enemy_1", .health = 3, .speed = 5, .waitTimeBefore = 0.0f, .score = 100},
+						 WaveEnemyDesc{.resourceKey = "Enemy_2", .health = 10, .speed = 5, .waitTimeBefore = 0.0f, .score = 300},
+						 WaveEnemyDesc{.resourceKey = "Enemy_1", .health = 3, .speed = 5, .waitTimeBefore = 0.0f, .score = 100},
 					 }},
 
 		WaveDesc{.name			 = "Wave 2",
@@ -63,9 +64,9 @@ namespace Lina
 				 .heatAddition	 = 5.5f,
 				 .enemies =
 					 {
-						 WaveEnemyDesc{.resourceKey = "Enemy_2", .health = 3, .speed = 5, .waitTimeBefore = 0.0f},
-						 WaveEnemyDesc{.resourceKey = "Enemy_2", .health = 3, .speed = 5, .waitTimeBefore = 0.0f},
-						 WaveEnemyDesc{.resourceKey = "Enemy_3", .health = 20, .speed = 5, .waitTimeBefore = 0.0f},
+						 WaveEnemyDesc{.resourceKey = "Enemy_2", .health = 3, .speed = 5, .waitTimeBefore = 0.0f, .score = 300},
+						 WaveEnemyDesc{.resourceKey = "Enemy_2", .health = 3, .speed = 5, .waitTimeBefore = 0.0f, .score = 300},
+						 WaveEnemyDesc{.resourceKey = "Enemy_3", .health = 20, .speed = 5, .waitTimeBefore = 0.0f, .score = 500},
 					 }},
 
 		WaveDesc{
@@ -78,14 +79,14 @@ namespace Lina
 				 .heatAddition	 = 50.0f,
 				 .enemies =
 					 {
-						 WaveEnemyDesc{.resourceKey = "Enemy_3", .health = 20, .speed = 5, .waitTimeBefore = 0.0f},
-						 WaveEnemyDesc{.resourceKey = "Enemy_3", .health = 20, .speed = 5, .waitTimeBefore = 0.0f},
-						 WaveEnemyDesc{.resourceKey = "Enemy_3", .health = 20, .speed = 5, .waitTimeBefore = 0.0f},
-						 WaveEnemyDesc{.resourceKey = "Enemy_3", .health = 20, .speed = 5, .waitTimeBefore = 0.0f},
-						 WaveEnemyDesc{.resourceKey = "Enemy_3", .health = 20, .speed = 5, .waitTimeBefore = 0.0f},
-						 WaveEnemyDesc{.resourceKey = "Enemy_3", .health = 20, .speed = 5, .waitTimeBefore = 0.0f},
-						 WaveEnemyDesc{.resourceKey = "Enemy_3", .health = 20, .speed = 5, .waitTimeBefore = 0.0f},
-						 WaveEnemyDesc{.resourceKey = "Enemy_3", .health = 20, .speed = 5, .waitTimeBefore = 0.0f},
+						 WaveEnemyDesc{.resourceKey = "Enemy_3", .health = 20, .speed = 5, .waitTimeBefore = 0.0f, .score = 500},
+						 WaveEnemyDesc{.resourceKey = "Enemy_3", .health = 20, .speed = 5, .waitTimeBefore = 0.0f, .score = 500},
+						 WaveEnemyDesc{.resourceKey = "Enemy_3", .health = 20, .speed = 5, .waitTimeBefore = 0.0f, .score = 500},
+						 WaveEnemyDesc{.resourceKey = "Enemy_3", .health = 20, .speed = 5, .waitTimeBefore = 0.0f, .score = 500},
+						 WaveEnemyDesc{.resourceKey = "Enemy_3", .health = 20, .speed = 5, .waitTimeBefore = 0.0f, .score = 500},
+						 WaveEnemyDesc{.resourceKey = "Enemy_3", .health = 20, .speed = 5, .waitTimeBefore = 0.0f, .score = 500},
+						 WaveEnemyDesc{.resourceKey = "Enemy_3", .health = 20, .speed = 5, .waitTimeBefore = 0.0f, .score = 500},
+						 WaveEnemyDesc{.resourceKey = "Enemy_3", .health = 20, .speed = 5, .waitTimeBefore = 0.0f, .score = 500},
 					 }},
 	};
 
@@ -176,6 +177,7 @@ namespace Lina
 						Entity* spawn	= m_enemySpawns[m_entitySpawnerCounter++ % m_enemySpawns.size()];
 						Enemy*	enemy	= new Enemy(world, templ, m_game->m_player, spawn->GetPosition(), spawn->GetRotation());
 						enemy->m_health = enemyDesc.health;
+            enemy->m_score = enemyDesc.score;
 
 						m_currentEnemies.push_back(enemy);
 						m_game->OnEnemySpawned(enemy);
@@ -261,6 +263,7 @@ namespace Lina
 
 		if (enemy1 != nullptr && player2 != nullptr)
 			HandlePlayerDamage(this, player2, enemy1);
+
 		if (enemy2 != nullptr && player1 != nullptr)
 			HandlePlayerDamage(this, player1, enemy2);
 	}
@@ -275,6 +278,7 @@ namespace Lina
 			enemy->Tick(dt);
 			if (!enemy->IsAlive())
 			{
+        m_game->AddScore(enemy->m_score);
 				m_deadEnemies.push_back(enemy);
 			}
 		}

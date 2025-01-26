@@ -50,6 +50,41 @@ SOFTWARE.
 
 namespace Lina
 {
+  static LINAGX_STRING FormatString(const char* fmt, va_list args)
+  {
+    // Determine the required size
+    va_list args_copy;
+    va_copy(args_copy, args);
+    int size = vsnprintf(nullptr, 0, fmt, args_copy) + 1; // +1 for the null terminator
+    va_end(args_copy);
+
+    // Allocate a buffer and format the string
+    std::vector<char> buffer(size);
+    vsnprintf(buffer.data(), size, fmt, args);
+
+    return std::string(buffer.data());
+  }
+static LINAGX_STRING FormatString(const char* fmt, ...)
+{
+    // Initialize a variable argument list
+    va_list args;
+    va_start(args, fmt);
+
+    // Call the existing FormatString that takes va_list
+    va_list args_copy;
+    va_copy(args_copy, args);
+    int size = vsnprintf(nullptr, 0, fmt, args_copy) + 1; // +1 for the null terminator
+    va_end(args_copy);
+
+    // Allocate a buffer and format the string
+    std::vector<char> buffer(size);
+    vsnprintf(buffer.data(), size, fmt, args);
+
+    va_end(args);
+
+    return LINAGX_STRING(buffer.data());
+}
+
 	void Game::OnKey(uint32 keycode, int32 scancode, LinaGX::InputAction inputAction)
 	{
 		if (keycode == LINAGX_KEY_ESCAPE && inputAction == LinaGX::InputAction::Pressed)
@@ -214,6 +249,8 @@ namespace Lina
 		{
 			UpdateHeat(-10.0f);
 		}
+    
+    m_hudManager->SetTopRight(FormatString("Score: %i", m_score));
 	}
 
 	EntityTemplate* Game::GetEntityTemplate(String key)
@@ -270,8 +307,13 @@ namespace Lina
 	void Game::OnWaveSpawned(uint32_t index, String name)
 	{
 		m_hudManager->SetMainText(name);
+    m_hudManager->SetTopRight(name);
 		//		LINA_TRACE("OnEnemyWaveSpawned: {0} {1}", index, name);
 	}
+  
+  void Game::AddScore(uint32_t score) {
+    m_score += score;
+  }
 
 	void Game::UpdateHeat(float addition)
 	{

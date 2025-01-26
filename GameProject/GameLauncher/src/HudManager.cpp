@@ -26,6 +26,14 @@ namespace Lina
     
 	}
   
+  void HudManager::SetTopText(String text) {
+    m_topText = text;
+  }
+  
+  void HudManager::SetTopRight(String text) {
+    m_topRightText = text;
+  }
+
   void HudManager::SetMainText(String text) {
     m_text = text;
     m_timer = 3.0f;
@@ -39,15 +47,18 @@ namespace Lina
     EntityWorld* world = m_game->m_world;
     
     CompWidget* cw = world->GetComponent<CompWidget>(m_hudEntity);
-    
     if (cw)
     {
       WidgetManager& wm = cw->GetWidgetManager();
+    
       Widget* mainText = wm.GetRoot()->FindChildWithDebugName("MainText");
-      if (mainText)
-      {
-        static_cast<Text*>(mainText)->UpdateTextAndCalcSize(m_text);
-      }
+      if (mainText) static_cast<Text*>(mainText)->UpdateTextAndCalcSize(m_text);
+      
+      Widget* topText = wm.GetRoot()->FindChildWithDebugName("TopText");
+      if (topText) static_cast<Text*>(topText)->UpdateTextAndCalcSize(m_topText);
+      
+      Widget* topRightText = wm.GetRoot()->FindChildWithDebugName("TopRightText");
+      if (topRightText) static_cast<Text*>(topRightText)->UpdateTextAndCalcSize(m_topRightText);
     }
 	}
 } // namespace Lina
