@@ -131,8 +131,12 @@ namespace Lina
 	{
 		EntityWorld* world = m_game->m_world;
 
-		if (m_waveCounter >= waves.size())
-			return;
+    if (m_waveCounter >= waves.size()) {
+      m_game->m_gameState == GameState::Won;
+      LINA_INFO("GAME WON");
+      return;
+    }
+			
 		uint32_t currentWaveIdx = m_waveCounter;
 
 		float currentWaveTime = m_globalTimer - m_currentWaveStartAt;
