@@ -1,0 +1,50 @@
+#iChannel0 "file://cloudnoise.png"
+
+// Define Lina global time blah blah...
+#define TIME iTime
+
+#iChannel1 "file://Scene.png"
+vec3 GetScenePostBuffer(vec2 uv, float d)
+{
+    return texture(iChannel1, uv + d).rgb;
+}
+
+void AddVignette( inout vec3 col, vec3 vcol, vec2 uv, float d)
+{    
+    float v = uv.x * ( 1.0 - uv.x ) * uv.y *  ( 1.0 - uv.y );
+    v = clamp(pow( 16.0 * v, 0.25 ), 0.0, 1.0 );
+    col = mix(col, vcol, (1.0-v) * d);
+}
+
+float GetNoise(vec2 uv)
+{
+    // Noise texture
+    return texture(iChannel0, uv * 2.0).r;
+}
+
+
+void mainImage( out vec4 fragColor, in vec2 fragCoord )
+{
+
+    vec2 uv = fragCoord / iResolution.xy;
+
+    // Parameters
+    float flames = 1.0;
+    float heatShimmer = 1.0;
+    float vignette = 0.5;
+
+    float n = GetNoise(uv + vec2(0.0, -TIME));
+    float n2 = GetNoise(uv * vec2(2.0, 1.0) + vec2(0.0, -TIME / 2.0)) * 1.0;
+
+    vec3 vignetteCol = mix(vec3((1.0 + sin(TIME * 16.0) / 4.0 * n), 0.0, 0.0), vec3(1.0, 0.5, 0.0), n);
+
+    // SceneBuffer
+    vec3 sceneCol = GetScenePostBuffer(uv, n * 0.005 * heatShimmer);
+
+    AddVignette(sceneCol, vignetteCol, uv, ((n + n2) * (1.0 - uv.y)) * flames);
+
+    // Remove comment below for a simple red vignette
+    // AddVignette(sceneCol, vec3(1.0, 0.0, 0.0), uv, vignette);
+
+    fragColor = vec4(sceneCol, 1.0);
+}
