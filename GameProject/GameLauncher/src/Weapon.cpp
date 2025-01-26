@@ -170,6 +170,9 @@ namespace Lina
 
 	void Weapon::Fire()
 	{
+		if (m_isPistolHack)
+			m_player->Recoil();
+
 		const Vector3&	  camPosition	= m_player->m_cameraRef->GetPosition();
 		const Quaternion& camRotation	= m_player->m_cameraRef->GetRotation();
 		const Vector3	  spawnPosition = camPosition + camRotation.GetForward() * 1.0f;

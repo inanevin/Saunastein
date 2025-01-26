@@ -43,10 +43,11 @@ SOFTWARE.
 namespace Lina
 {
 
-	Player::Player(EntityWorld* world, BubbleManager* bm, Application* app, AudioManager* audioManager)
+	Player::Player(EntityWorld* world, BubbleManager* bm, Application* app, AudioManager* audioManager, Game* game)
 	{
 		m_world		 = world;
 		m_audManager = audioManager;
+		m_game		 = game;
 
 		m_entity		= m_world->FindEntity("Player");
 		m_cameraRef		= m_world->FindEntity("CameraReference");
@@ -57,17 +58,19 @@ namespace Lina
 		JPH::MassProperties mp;
 		mp.mMass = m_entity->GetPhysicsSettings().mass;
 
-		body->SetFriction(10.0f);
+		body->SetFriction(2.0f);
 		body->SetRestitution(0.1f);
 		body->GetMotionProperties()->SetLinearDamping(3.0f);
+		body->GetMotionProperties()->SetGravityFactor(5.0f);
 
 		body->GetMotionProperties()->SetMassProperties(JPH::EAllowedDOFs::TranslationX | JPH::EAllowedDOFs::TranslationY | JPH::EAllowedDOFs::TranslationZ | JPH::EAllowedDOFs::RotationY, mp);
 		m_entity->GetPhysicsBody()->SetAllowSleeping(false);
 
-		m_movement.movementPower = 40.5f;
-		m_movement.rotationSpeed = 30.0f;
-		m_movement.rotationPower = 5.0f;
-
+		m_movement.movementPower	 = 50.5f;
+		m_movement.rotationSpeed	 = 30.0f;
+		m_movement.rotationPower	 = 5.0f;
+		m_movement.recoilMove		 = Vector3(0.0f, 0.0f, -0.2f);
+		m_movement.recoilEuler		 = Vector3(15.0f, 0.0f, 0.0f);
 		m_movement.headbobPitchPower = 0.15f;
 		m_movement.headbobPitchSpeed = 15.0f;
 
@@ -90,26 +93,37 @@ namespace Lina
 	{
 		m_health += addition;
 		LINA_TRACE("HEALTH {0}", m_health);
-    m_invincibilityTimer = 1.0f;
+		m_invincibilityTimer = 1.0f;
 	}
 
 	void Player::PreTick()
 	{
 	}
 
+	void Player::Recoil()
+	{
+		m_runtime.recoilAlpha  = 1.0f;
+		m_movement.recoilMove  = Vector3(0.0f, 0.0f, Math::RandF(-0.1f, -0.5f));
+		m_movement.recoilEuler = Vector3(0.0f, -Math::RandF(2.0f, 5.0f), Math::RandF(-2.0f, 2.0f));
+	}
 	void Player::Tick(float dt)
 	{
-		static float test = 0.0f;
-		test += dt;
+		m_runtime.recoilAlpha = Math::Lerp(m_runtime.recoilAlpha, 0.0f, dt * 10.0f);
+
 		const bool running = m_world->GetInput().GetKey(LINAGX_KEY_LSHIFT);
-    m_invincibilityTimer -= dt;
-    
+		m_invincibilityTimer -= dt;
+
 		const float	  verticalTarget   = m_world->GetInput().GetKey(LINAGX_KEY_W) ? 1.0f : (m_world->GetInput().GetKey(LINAGX_KEY_S) ? -1.0f : 0.0f);
 		const float	  horizontalTarget = m_world->GetInput().GetKey(LINAGX_KEY_D) ? 1.0f : (m_world->GetInput().GetKey(LINAGX_KEY_A) ? -1.0f : 0.0f);
 		const Vector2 input			   = Vector2(horizontalTarget, verticalTarget);
 		Vector3		  direction		   = (m_cameraRef->GetRotation().GetForward() * verticalTarget + m_cameraRef->GetRotation().GetRight() * horizontalTarget);
 		direction.y					   = 0.0f;
 		m_runtime.velocity			   = direction;
+
+		const bool	jump	  = m_world->GetInput().GetKeyDown(LINAGX_KEY_SPACE) && m_entity->GetPosition().y < 1.2f;
+		const float jumpPower = 20.0f * (jump ? 1.0f : 0.0f);
+
+		m_entity->GetPhysicsBody()->AddImpulse(ToJoltVec3(Vector3::Up * jumpPower));
 
 		if (!Math::Equals(direction.x, 0.0f, 0.001f) || !Math::Equals(direction.y, 0.0f, 0.001f))
 		{
@@ -129,14 +143,18 @@ namespace Lina
 			Vector3(Math::Sin(SystemInfo::GetAppTimeF() * m_movement.headbobYawSpeed) * m_movement.headbobYawPower, Math::Cos(SystemInfo::GetAppTimeF() * m_movement.headbobPitchSpeed) * m_movement.headbobPitchPower, input.x * m_movement.headSwayPower);
 		headbob *= direction.Magnitude() * 2.0f * (running ? 1.8f : 1.0f);
 
-		const Quaternion qX				= Quaternion::AngleAxis(m_runtime.cameraAngles.x + headbob.x, Vector3::Up);
-		const Quaternion qY				= Quaternion::AngleAxis(m_runtime.cameraAngles.y + headbob.y, Vector3::Right);
-		const Quaternion qZ				= Quaternion::AngleAxis(m_runtime.cameraAngles.z + headbob.z, Vector3::Forward);
+		const Vector3 recoilOffset	  = m_movement.recoilMove * m_runtime.recoilAlpha;
+		const Vector3 recoilEulOffset = m_movement.recoilEuler * m_runtime.recoilAlpha;
+
+		const Quaternion qX				= Quaternion::AngleAxis(m_runtime.cameraAngles.x + headbob.x + recoilEulOffset.x, Vector3::Up);
+		const Quaternion qY				= Quaternion::AngleAxis(m_runtime.cameraAngles.y + headbob.y + recoilEulOffset.y, Vector3::Right);
+		const Quaternion qZ				= Quaternion::AngleAxis(m_runtime.cameraAngles.z + headbob.z + recoilEulOffset.z, Vector3::Forward);
 		const Quaternion cameraRotation = qX * qY * qZ;
 		m_runtime.targetRotation		= Quaternion::Slerp(m_runtime.targetRotation, cameraRotation, dt * m_movement.rotationSpeed);
 
 		m_cameraRef->SetRotation(m_runtime.targetRotation);
-		m_cameraRef->SetPosition(m_entity->GetPosition() + m_entity->GetRotation().GetForward() * 0.1f);
+
+		m_cameraRef->SetPosition(m_entity->GetPosition() + m_entity->GetRotation().GetForward() * 0.1f + Vector3::Up * 0.5f + recoilOffset);
 
 		m_weapon->m_runtime.isRunning = running;
 		m_weapon->Tick(dt);
@@ -177,11 +195,20 @@ namespace Lina
 		if (m_world->GetInput().GetKey(LINAGX_KEY_K))
 			UpdateHealth(-10.0f);
 
-		if (m_world->GetInput().GetKeyDown(LINAGX_KEY_1))
+		if (m_weapon->m_isPistolHack && m_game->m_heatLevel < 50.0f)
+		{
 			SwitchWeapon(PlayerWeaponType::Melee);
-
-		if (m_world->GetInput().GetKeyDown(LINAGX_KEY_2))
+		}
+		else if (!m_weapon->m_isPistolHack && m_game->m_heatLevel > 50.0f)
+		{
 			SwitchWeapon(PlayerWeaponType::Pistol);
+		}
+
+		// if (m_world->GetInput().GetKeyDown(LINAGX_KEY_1))
+		//	SwitchWeapon(PlayerWeaponType::Melee);
+		//
+		// if (m_world->GetInput().GetKeyDown(LINAGX_KEY_2))
+		//	SwitchWeapon(PlayerWeaponType::Pistol);
 	}
 
 	void Player::SwitchWeapon(PlayerWeaponType type)
