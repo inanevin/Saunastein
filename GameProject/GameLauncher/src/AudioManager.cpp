@@ -78,15 +78,15 @@ namespace Lina
 	{
 		if (m_metalMusic)
 		{
-			m_metalMusic->SetGain(Math::Lerp(0.0f, 2.0f, dangerRatio));
+			m_metalMusic->SetGain(Math::Lerp(0.0f, 3.0f, dangerRatio));
 			m_metalMusic->SetupProperties();
 		}
 
 		if (m_chillMusic)
 		{
-			if (dangerRatio > 0.3f && m_chillMusic->GetGain() > 0.1f)
+			if (dangerRatio > 0.2f && m_chillMusic->GetGain() > 0.1f)
 			{
-				m_chillMusic->SetGain(0.0f);
+				m_chillMusic->SetGain(Math::Lerp(m_chillMusic->GetGain(), 0.0f, dt * 5.0f));
 				m_chillMusic->SetupProperties();
 			}
 
@@ -104,7 +104,7 @@ namespace Lina
 		if (m_chillMusic && m_chillMusic->GetGain() < 0.1f)
 		{
 			m_chillMusic->Rewind();
-			m_chillMusic->SetGain(1.0f);
+			m_chillMusic->SetGain(0.75f);
 			m_chillMusic->Play();
 		}
 
