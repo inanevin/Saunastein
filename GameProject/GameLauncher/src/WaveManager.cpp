@@ -1,4 +1,5 @@
 #include "WaveManager.hpp"
+#include "AudioManager.hpp"
 
 #include "Core/World/EntityWorld.hpp"
 #include "Common/Math/Math.hpp"
@@ -11,6 +12,7 @@
 #include "Enemy.hpp"
 #include "BubbleManager.hpp"
 #include "Common/System/SystemInfo.hpp"
+
 #include <algorithm>
 #include <random>
 
@@ -21,7 +23,7 @@ namespace Lina
 		String	resourceKey;
 		int32_t health;
 		int32_t speed;
-    int32_t score;
+		int32_t score;
 		String	projectileKey;
 		float	waitTimeBefore;
 	};
@@ -133,11 +135,12 @@ namespace Lina
 			m_game->OnWaveSpawned(m_waveCounter, currentWave.name);
 			return;
 		}
-    
+
 		// next wave when current wave is done
 		if (currentWaveIsDone)
 		{
-			m_game->SetHeat(00.0f);
+			m_game->SetHeat(0.0f);
+			m_game->m_audioManager->OnResetHeat();
 
 			LINA_INFO("[{0}] End Wave {1}", m_globalTimer, m_waveCounter);
 			m_waveCounter++;
@@ -177,7 +180,7 @@ namespace Lina
 						Entity* spawn	= m_enemySpawns[m_entitySpawnerCounter++ % m_enemySpawns.size()];
 						Enemy*	enemy	= new Enemy(world, templ, m_game->m_player, spawn->GetPosition(), spawn->GetRotation());
 						enemy->m_health = enemyDesc.health;
-            enemy->m_score = enemyDesc.score;
+						enemy->m_score	= enemyDesc.score;
 
 						m_currentEnemies.push_back(enemy);
 						m_game->OnEnemySpawned(enemy);
@@ -190,10 +193,8 @@ namespace Lina
 			// Everything spawned.. waiting for enemies to be cleared...
 			m_game->UpdateHeat(currentWave.heatAddition * static_cast<float>(SystemInfo::GetDeltaTime()));
 		}
-    
-    // Update Fire
-    
-    
+
+		// Update Fire
 	}
 
 	void WaveManager::PreTick()
@@ -278,7 +279,7 @@ namespace Lina
 			enemy->Tick(dt);
 			if (!enemy->IsAlive())
 			{
-        m_game->AddScore(enemy->m_score);
+				m_game->AddScore(enemy->m_score);
 				m_deadEnemies.push_back(enemy);
 			}
 		}

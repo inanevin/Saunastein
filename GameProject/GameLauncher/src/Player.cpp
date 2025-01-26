@@ -27,12 +27,14 @@ SOFTWARE.
 */
 
 #include "Player.hpp"
+#include "AudioManager.hpp"
+#include "Weapon.hpp"
+#include "Game.hpp"
+
 #include "Core/World/EntityWorld.hpp"
 #include "Common/Math/Math.hpp"
 #include "Core/Physics/PhysicsWorld.hpp"
 #include "Common/System/SystemInfo.hpp"
-#include "Weapon.hpp"
-#include "Game.hpp"
 
 #include <LinaGX/Core/InputMappings.hpp>
 #include <Jolt/Jolt.h>
@@ -41,9 +43,10 @@ SOFTWARE.
 namespace Lina
 {
 
-	Player::Player(EntityWorld* world, BubbleManager* bm, Application* app)
+	Player::Player(EntityWorld* world, BubbleManager* bm, Application* app, AudioManager* audioManager)
 	{
-		m_world = world;
+		m_world		 = world;
+		m_audManager = audioManager;
 
 		m_entity		= m_world->FindEntity("Player");
 		m_cameraRef		= m_world->FindEntity("CameraReference");
@@ -73,7 +76,7 @@ namespace Lina
 
 		m_movement.headSwayPower = 0.0f;
 
-		m_weapon = new Weapon(m_world, this, m_bubbleManager, m_app);
+		m_weapon = new Weapon(m_world, this, m_bubbleManager, m_app, m_audManager);
 
 		SetupWeapon(PlayerWeaponType::Melee, 0.0f);
 	}
@@ -216,6 +219,8 @@ namespace Lina
 			m_weapon->m_animation->m_fireDisplay = 6;
 			m_weapon->m_movement.spawnLight		 = false;
 			m_weapon->SetAnim("Weapon0_Idle", "Weapon0_Fire", "Weapon0_Idle");
+			m_weapon->m_isPistolHack = false;
+			m_audManager->Play(m_audManager->m_bubbleEquip, 0.0f);
 		}
 		else
 		{
@@ -230,6 +235,8 @@ namespace Lina
 			m_weapon->m_animation->m_fireDisplay = 2;
 			m_weapon->m_movement.spawnLight		 = true;
 			m_weapon->SetAnim("Weapon1_Idle", "Weapon1_Fire", "Weapon1_Run");
+			m_weapon->m_isPistolHack = true;
+			m_audManager->Play(m_audManager->m_pistolEquip, 0.0f);
 		}
 
 		m_weapon->m_runtime.localPositionOffset = m_weapon->CalculateTargetPosition(Vector2::Zero);

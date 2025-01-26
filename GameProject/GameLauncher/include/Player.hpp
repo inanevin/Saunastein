@@ -45,6 +45,7 @@ namespace Lina
 	class BubbleManager;
 	class Game;
 	class Application;
+	class AudioManager;
 
 	enum class PlayerWeaponType
 	{
@@ -75,7 +76,7 @@ namespace Lina
 			Vector3	   velocity		  = Vector3::Zero;
 		};
 
-		Player(EntityWorld* world, BubbleManager* bm, Application* app);
+		Player(EntityWorld* world, BubbleManager* bm, Application* app, AudioManager* am);
 		~Player();
 
 		void PreTick();
@@ -103,5 +104,6 @@ namespace Lina
 		Movement		 m_movement	  = {};
 		Runtime			 m_runtime	  = {};
 		PlayerWeaponType m_weaponType = PlayerWeaponType::Melee;
+		AudioManager*	 m_audManager = nullptr;
 	};
 } // namespace Lina
