@@ -75,6 +75,12 @@ namespace Lina
 			m_ctr++;
 		}
 
+		if (m_used == m_idle && m_isRunning)
+			m_used = m_run;
+
+		if (m_used == m_run && !m_isRunning)
+			m_used = m_idle;
+
 		UpdateMaterial();
 	}
 
@@ -102,6 +108,7 @@ namespace Lina
 		m_bubbleManager = bm;
 
 		m_entity = m_world->FindEntity("WeaponQuad");
+		m_light	 = m_world->FindEntity("WeaponLight");
 
 		if (!m_entity)
 			return;
@@ -141,8 +148,18 @@ namespace Lina
 		m_entity->SetLocalPosition(m_runtime.localPositionOffset);
 		m_entity->SetLocalRotation(Quaternion::PitchYawRoll(Vector3(m_runtime.startLocalEuler.x, 0.0f, bob)));
 
+		m_animation->m_isRunning = m_runtime.isRunning;
 		m_animation->Tick(dt);
 
+		if (m_light && m_light->GetVisible())
+		{
+			if (m_lightCtr > 3)
+			{
+				m_light->SetVisible(false);
+				m_lightCtr = 0;
+			}
+			m_lightCtr++;
+		}
 		if (m_world->GetInput().GetMouseButtonDown(LINAGX_MOUSE_0))
 		{
 			LINA_TRACE("Firing!");
@@ -159,12 +176,19 @@ namespace Lina
 		const Vector3	  shootForce	= camRotation.GetForward() * 500.0f;
 		m_bubbleManager->SpawnBubble(shootForce, spawnPosition, spawnRotation);
 		m_animation->Fire();
+
+		if (m_light && m_movement.spawnLight)
+		{
+			m_light->SetVisible(true);
+			m_lightCtr = 0;
+		}
 	}
 
-	void Weapon::SetAnim(const String& animIdle, const String& animFire)
+	void Weapon::SetAnim(const String& animIdle, const String& animFire, const String& animRun)
 	{
 		Entity* idle = m_world->FindEntity(animIdle);
 		Entity* fire = m_world->FindEntity(animFire);
+		Entity* run	 = m_world->FindEntity(animRun);
 		if (idle)
 		{
 			for (const EntityParameter& p : idle->GetParams().params)
@@ -178,6 +202,14 @@ namespace Lina
 			for (const EntityParameter& p : fire->GetParams().params)
 			{
 				m_animation->m_fire = p.valRes;
+			}
+		}
+
+		if (run)
+		{
+			for (const EntityParameter& p : run->GetParams().params)
+			{
+				m_animation->m_run = p.valRes;
 			}
 		}
 
