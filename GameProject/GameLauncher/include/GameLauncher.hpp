@@ -75,7 +75,7 @@ namespace Lina
 		void Restart();
 
 		void InitializeGame();
-		void ShutdownGame();
+		void ShutdownGame(bool isfinal);
 
 		Application* GetApp()
 		{

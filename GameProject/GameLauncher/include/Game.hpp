@@ -57,14 +57,15 @@ namespace Lina
 	{
 		Running,
 		Lost,
-		Won
+		Won,
+		Waiting,
 	};
 
 	class Game : public PhysicsContactListener
 	{
 	public:
 		void OnGameBegin(EntityWorld* world, GameLauncher* gl, Application* app);
-		void OnGameEnd();
+		void OnGameEnd(bool isFinal);
 		void OnGamePreTick();
 		void OnGameTick(float dt);
 
@@ -102,6 +103,7 @@ namespace Lina
 		GameLauncher* m_gameLauncher;
 		Entity*		  m_gameLostScreen	= nullptr;
 		Entity*		  m_gameWonScreen	= nullptr;
+		Entity*		  m_gameStartScreen = nullptr;
 		GameState	  m_gameState		= GameState::Running;
 		Entity*		  m_fireVisuals		= nullptr;
 		float		  m_fireTargetScale = 0.0f;
@@ -113,5 +115,6 @@ namespace Lina
 		CompLight* m_sunLight		 = nullptr;
 		uint32_t   m_score			 = 0;
 		float	   m_heatDangerRatio = 0.0f;
+		Entity*	   m_arena			 = nullptr;
 	};
 } // namespace Lina
