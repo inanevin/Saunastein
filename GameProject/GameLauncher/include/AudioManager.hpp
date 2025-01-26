@@ -61,6 +61,7 @@ namespace Lina
 		CompAudio*	 m_bubbleFire  = nullptr;
 		CompAudio*	 m_chillMusic  = nullptr;
 		CompAudio*	 m_metalMusic  = nullptr;
+		CompAudio*	 m_humpfh	   = nullptr;
 	};
 
 } // namespace Lina

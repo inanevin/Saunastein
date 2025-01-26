@@ -43,6 +43,7 @@ namespace Lina
 		Entity* bubbleFire	= m_world->FindEntity("BubbleFire");
 		Entity* chillMusic	= m_world->FindEntity("ChillMusic");
 		Entity* metalMusic	= m_world->FindEntity("MetalMusic");
+		Entity* humpfh		= m_world->FindEntity("Humpfh");
 
 		if (bubbleEquip)
 			m_bubbleEquip = m_world->GetComponent<CompAudio>(bubbleEquip);
@@ -55,6 +56,9 @@ namespace Lina
 
 		if (bubbleFire)
 			m_bubbleFire = m_world->GetComponent<CompAudio>(bubbleFire);
+
+		if (humpfh)
+			m_humpfh = m_world->GetComponent<CompAudio>(humpfh);
 
 		if (chillMusic)
 		{

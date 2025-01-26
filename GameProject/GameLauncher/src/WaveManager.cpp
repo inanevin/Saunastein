@@ -70,18 +70,18 @@ namespace Lina
 						 WaveEnemyDesc{.resourceKey = "Enemy_2", .health = 10, .speed = 5, .waitTimeBefore = 0.1f, .score = 300},
 						 WaveEnemyDesc{.resourceKey = "Enemy_3", .health = 20, .speed = 5, .waitTimeBefore = 0.1f, .score = 500},
 					 }},
-    WaveDesc{.name       = "Wave 4",
-         .waitTimeBefore = 3.0f,
-         .heatAddition   = 5.5f,
-         .enemies =
-           {
-             WaveEnemyDesc{.resourceKey = "Enemy_1", .health = 3, .speed = 5, .waitTimeBefore = 0.1f, .score = 100},
-             WaveEnemyDesc{.resourceKey = "Enemy_1", .health = 3, .speed = 5, .waitTimeBefore = 0.1f, .score = 100},
-             WaveEnemyDesc{.resourceKey = "Enemy_2", .health = 10, .speed = 5, .waitTimeBefore = 0.1f, .score = 300},
-             WaveEnemyDesc{.resourceKey = "Enemy_2", .health = 10, .speed = 5, .waitTimeBefore = 0.1f, .score = 300},
-             WaveEnemyDesc{.resourceKey = "Enemy_3", .health = 20, .speed = 5, .waitTimeBefore = 0.1f, .score = 500},
-             WaveEnemyDesc{.resourceKey = "Enemy_3", .health = 20, .speed = 5, .waitTimeBefore = 0.1f, .score = 500},
-           }},
+		WaveDesc{.name			 = "Wave 4",
+				 .waitTimeBefore = 3.0f,
+				 .heatAddition	 = 5.5f,
+				 .enemies =
+					 {
+						 WaveEnemyDesc{.resourceKey = "Enemy_1", .health = 3, .speed = 5, .waitTimeBefore = 0.1f, .score = 100},
+						 WaveEnemyDesc{.resourceKey = "Enemy_1", .health = 3, .speed = 5, .waitTimeBefore = 0.1f, .score = 100},
+						 WaveEnemyDesc{.resourceKey = "Enemy_2", .health = 10, .speed = 5, .waitTimeBefore = 0.1f, .score = 300},
+						 WaveEnemyDesc{.resourceKey = "Enemy_2", .health = 10, .speed = 5, .waitTimeBefore = 0.1f, .score = 300},
+						 WaveEnemyDesc{.resourceKey = "Enemy_3", .health = 20, .speed = 5, .waitTimeBefore = 0.1f, .score = 500},
+						 WaveEnemyDesc{.resourceKey = "Enemy_3", .health = 20, .speed = 5, .waitTimeBefore = 0.1f, .score = 500},
+					 }},
 		WaveDesc{
 			.waitTimeBefore = 0.5f,
 			.name			= "Well done!",
@@ -119,15 +119,15 @@ namespace Lina
 
 	WaveManager::~WaveManager()
 	{
-    for (Enemy* enemy : m_deadEnemies)
-    {
-      delete enemy;
-    }
-    
-    for (Enemy* enemy : m_currentEnemies)
-    {
-      delete enemy;
-    }
+		for (Enemy* enemy : m_deadEnemies)
+		{
+			delete enemy;
+		}
+
+		for (Enemy* enemy : m_currentEnemies)
+		{
+			delete enemy;
+		}
 	}
 
 	void WaveManager::UpdateWaves()
@@ -237,6 +237,7 @@ namespace Lina
 			LINA_INFO("ENEMY TAKE HIT! Has {0}", enemy->m_health);
 		}
 
+		wm->m_game->m_audioManager->Play(wm->m_game->m_audioManager->m_humpfh, 0.25f);
 		wm->m_game->m_bubbleManager->KillBubble(bubble->_entity);
 	}
 
@@ -245,9 +246,9 @@ namespace Lina
 		if (enemy->m_dead)
 			return;
 
-    if (player->m_invincibilityTimer > 0.0f)
-      return;
-    
+		if (player->m_invincibilityTimer > 0.0f)
+			return;
+
 		player->UpdateHealth(-5.0f);
 		LINA_INFO("PLAYER TAKE HIT! Has {0}", player->m_health);
 	}

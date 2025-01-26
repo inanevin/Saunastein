@@ -65,6 +65,7 @@ namespace Lina
 
 		body->GetMotionProperties()->SetMassProperties(JPH::EAllowedDOFs::TranslationX | JPH::EAllowedDOFs::TranslationY | JPH::EAllowedDOFs::TranslationZ | JPH::EAllowedDOFs::RotationY, mp);
 		m_entity->GetPhysicsBody()->SetAllowSleeping(false);
+		// m_entity->GetPhysicsBody()->MoveKinematic(ToJoltVec3(Vector3::Zero), ToJoltQuat(Quaternion::Identity()), 0.0f);
 
 		m_movement.movementPower	 = 50.5f;
 		m_movement.rotationSpeed	 = 30.0f;
@@ -122,6 +123,9 @@ namespace Lina
 
 		const bool	jump	  = m_world->GetInput().GetKeyDown(LINAGX_KEY_SPACE) && m_entity->GetPosition().y < 1.2f;
 		const float jumpPower = 20.0f * (jump ? 1.0f : 0.0f);
+
+		if (jump)
+			m_audManager->Play(m_audManager->m_humpfh, 0.25f);
 
 		m_entity->GetPhysicsBody()->AddImpulse(ToJoltVec3(Vector3::Up * jumpPower));
 
