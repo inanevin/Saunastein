@@ -334,7 +334,7 @@ namespace Lina
 	{
 		m_heatLevel = heat;
 		m_heatLevel = Math::Clamp(m_heatLevel, 0.0f, 100.0f);
-		LINA_TRACE("HeatLevel {0}", m_heatLevel);
+//		LINA_TRACE("HeatLevel {0}", m_heatLevel);
 
 		const float	  dangerRatio				   = Math::Clamp(Math::Remap(m_heatLevel, 00.0f, 100.0f, 0.0f, 1.0f), 0.0f, 1.0f);
 		const Vector4 ambientCold				   = Vector4(1, 1, 1, 1);
@@ -373,6 +373,7 @@ namespace Lina
 
 	void Game::OnContact(Entity* e1, Entity* e2, const Vector3& p1, const Vector3& p2)
 	{
+    m_waveManager->HandleContact(e1, e2);
 	}
 
 	void Game::OnContactEnd(Entity* e1, Entity* e2)

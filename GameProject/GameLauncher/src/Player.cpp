@@ -90,6 +90,7 @@ namespace Lina
 	{
 		m_health += addition;
 		LINA_TRACE("HEALTH {0}", m_health);
+    m_invincibilityTimer = 1.0f;
 	}
 
 	void Player::PreTick()
@@ -101,7 +102,8 @@ namespace Lina
 		static float test = 0.0f;
 		test += dt;
 		const bool running = m_world->GetInput().GetKey(LINAGX_KEY_LSHIFT);
-
+    m_invincibilityTimer -= dt;
+    
 		const float	  verticalTarget   = m_world->GetInput().GetKey(LINAGX_KEY_W) ? 1.0f : (m_world->GetInput().GetKey(LINAGX_KEY_S) ? -1.0f : 0.0f);
 		const float	  horizontalTarget = m_world->GetInput().GetKey(LINAGX_KEY_D) ? 1.0f : (m_world->GetInput().GetKey(LINAGX_KEY_A) ? -1.0f : 0.0f);
 		const Vector2 input			   = Vector2(horizontalTarget, verticalTarget);

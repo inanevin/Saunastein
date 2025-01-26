@@ -36,5 +36,6 @@ namespace Lina
 		int32_t		m_health = 0;
     bool        m_dead = false;
     uint32_t  m_score = 0;
+    float   m_invincibilityTimer = 0.0f;
 	};
 } // namespace Lina

@@ -204,7 +204,7 @@ namespace Lina
 
 	static void HandleEnemyDamage(WaveManager* wm, BubbleManager::BubbleData* bubble, Enemy* enemy)
 	{
-		if (!enemy->m_dead)
+		if (!enemy->m_dead && enemy->m_hitFrameTime <= 0.00001f)
 		{
 			enemy->TakeDamage(1);
 			LINA_INFO("ENEMY TAKE HIT! Has {0}", enemy->m_health);
@@ -217,7 +217,10 @@ namespace Lina
 	{
 		if (enemy->m_dead)
 			return;
-
+    
+    if (player->m_invincibilityTimer > 0.0f)
+      return;
+    
 		player->UpdateHealth(-1.0f);
 		LINA_INFO("PLAYER TAKE HIT! Has {0}", player->m_health);
 	}

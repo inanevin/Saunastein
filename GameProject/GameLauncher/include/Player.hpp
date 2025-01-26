@@ -105,5 +105,7 @@ namespace Lina
 		Runtime			 m_runtime	  = {};
 		PlayerWeaponType m_weaponType = PlayerWeaponType::Melee;
 		AudioManager*	 m_audManager = nullptr;
+    float   m_invincibilityTimer = 0.0f;
+    
 	};
 } // namespace Lina
