@@ -32,6 +32,7 @@ SOFTWARE.
 #include "WaveManager.hpp"
 #include "BubbleManager.hpp"
 #include "HudManager.hpp"
+#include "AudioManager.hpp"
 
 #include "Core/Resources/ResourceManager.hpp"
 #include "Core/World/EntityTemplate.hpp"
@@ -123,6 +124,7 @@ static LINAGX_STRING FormatString(const char* fmt, ...)
 
 		m_bubbleManager = new BubbleManager(m_world);
 		m_hudManager	= new HudManager(this);
+		m_audioManager	= new AudioManager(m_world);
 		m_player		= new Player(m_world, m_bubbleManager, app);
 		m_mouseLocked	= true;
 
@@ -148,15 +150,9 @@ static LINAGX_STRING FormatString(const char* fmt, ...)
 		std::random_device rd;
 		m_rng = std::mt19937(rd());
 
-		m_metalMusic = m_world->FindEntity("MetalMusic");
-
-		if (m_metalMusic)
-		{
-			m_metalMusicComp = m_world->GetComponent<CompAudio>(m_metalMusic);
-		}
 		m_gameLostScreen = m_world->FindEntity("GUIGameLost");
 		m_gameWonScreen	 = m_world->FindEntity("GUIGameWon");
-    m_fireVisuals = m_world->FindEntity("Fire");
+		m_fireVisuals	 = m_world->FindEntity("Fire");
 
 		if (m_gameLostScreen)
 		{
@@ -192,6 +188,7 @@ static LINAGX_STRING FormatString(const char* fmt, ...)
 	{
 		m_world->GetPhysicsWorld()->RemoveContactListener(this);
 
+		delete m_audioManager;
 		delete m_waveManager;
 		delete m_player;
 		delete m_bubbleManager;
@@ -219,6 +216,8 @@ static LINAGX_STRING FormatString(const char* fmt, ...)
 
 	void Game::OnGameTick(float dt)
 	{
+		m_audioManager->Tick(dt, m_heatDangerRatio);
+
 		if (m_gameState != GameState::Running)
 			return;
 
@@ -342,18 +341,13 @@ static LINAGX_STRING FormatString(const char* fmt, ...)
 			m_sunLight->SetIntensity(Math::Lerp(0.45f, 2.0f, dangerRatio));
 		}
 
-		if (m_metalMusicComp)
+		if (m_fireVisuals)
 		{
-			m_metalMusicComp->SetGain(Math::Lerp(0.0f, 0.8f, dangerRatio));
-			m_metalMusicComp->SetupProperties();
+			Vector3 scale = m_fireVisuals->GetLocalScale();
+			scale.y		  = Math::Lerp(0.0f, 1.0f, dangerRatio);
+			m_fireVisuals->SetLocalScale(scale);
 		}
-    
-    if (m_fireVisuals) {
-      Vector3 scale = m_fireVisuals->GetLocalScale();
-      scale.y = Math::Lerp(0.0f, 1.0f, dangerRatio);
-      m_fireVisuals->SetLocalScale(scale);
-    }
-    
+
 		Material* skyMat = m_world->GetResourceManager()->GetIfExists<Material>(m_world->GetGfxSettings().skyMaterial);
 		if (skyMat)
 		{
@@ -363,7 +357,10 @@ static LINAGX_STRING FormatString(const char* fmt, ...)
 			skyMat->SetProperty<Vector3>("horizonColor"_hs, horizonColor);
 			m_gameLauncher->GetApp()->GetGfxContext().MarkBindlessDirty();
 		}
+
+		m_heatDangerRatio = dangerRatio;
 	}
+
 	void Game::OnContactBegin(Entity* e1, Entity* e2, const Vector3& p1, const Vector3& p2)
 	{
 		m_waveManager->HandleContact(e1, e2);

@@ -51,6 +51,7 @@ namespace Lina
 	class HudManager;
 	class CompLight;
 	class Application;
+	class AudioManager;
 
 	enum class GameState
 	{
@@ -87,6 +88,7 @@ namespace Lina
 
 		EntityTemplate* GetEntityTemplate(String key);
 
+		AudioManager*					 m_audioManager	 = nullptr;
 		BubbleManager*					 m_bubbleManager = nullptr;
 		WaveManager*					 m_waveManager	 = nullptr;
 		EntityWorld*					 m_world		 = nullptr;
@@ -101,15 +103,13 @@ namespace Lina
 		Entity*		  m_gameLostScreen = nullptr;
 		Entity*		  m_gameWonScreen  = nullptr;
 		GameState	  m_gameState	   = GameState::Running;
-		Entity*		  m_metalMusic	   = nullptr;
-		CompAudio*	  m_metalMusicComp = nullptr;
-    Entity*      m_fireVisuals = nullptr;
+		Entity*		  m_fireVisuals	   = nullptr;
 
 		float	   m_heatLevel		 = 50.0f;
 		Vector3	   m_skyTopColor	 = Vector3::Zero;
 		Vector3	   m_skyHorizonColor = Vector3::Zero;
 		CompLight* m_sunLight		 = nullptr;
-    
     uint32_t m_score = 0;
+		float	   m_heatDangerRatio = 0.0f;
 	};
 } // namespace Lina

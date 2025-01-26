@@ -38,40 +38,29 @@ namespace LinaGX
 
 namespace Lina
 {
-
+	class CompAudio;
 	class EntityWorld;
 	class Entity;
 	class Player;
 	class EntityTemplate;
 	class Game;
 
-	class BubbleManager
+	class AudioManager
 	{
 	public:
-		struct BubbleData
-		{
-			Vector3	   shootForce	 = Vector3::Zero;
-			Vector3	   spawnPosition = Vector3::Zero;
-			Quaternion spawnRotation = Quaternion::Identity();
-			float	   destroyIn	 = 3.0f;
-			float	   _counter		 = 0.0f;
-			bool	   _inited		 = false;
-			bool	   _spawned		 = false;
-			bool	   _kill		 = false;
-			Entity*	   _entity		 = nullptr;
-		};
+		AudioManager(EntityWorld* world);
 
-		BubbleManager(EntityWorld* world);
+		void Play(CompAudio* audio);
+		void Tick(float dt, float dangerRatio);
 
-		void PreTick();
-		void Tick(float dt);
-		void SpawnBubble(const Vector3& shootForce, const Vector3& position, const Quaternion& rotation, float destroyIn = 3.0f);
-		void KillBubble(Entity* e);
-
-		EntityTemplate*	   m_bubbleTemplate = nullptr;
-		Vector<BubbleData> m_bubbles;
-		EntityWorld*	   m_world	  = nullptr;
-		ResourceID		   m_bubbleID = 0;
+		EntityWorld* m_world	   = nullptr;
+		CompAudio*	 m_pistolEquip = nullptr;
+		CompAudio*	 m_bubbleEquip = nullptr;
+		CompAudio*	 m_pistolRun   = nullptr;
+		CompAudio*	 m_pistolFire  = nullptr;
+		CompAudio*	 m_bubbleFire  = nullptr;
+		CompAudio*	 m_chillMusic  = nullptr;
+		CompAudio*	 m_metalMusic  = nullptr;
 	};
 
 } // namespace Lina
