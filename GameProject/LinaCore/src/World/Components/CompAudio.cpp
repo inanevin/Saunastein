@@ -78,39 +78,28 @@ namespace Lina
 
 	void CompAudio::Play()
 	{
-		int err = 0;
-
-		if (!m_generated)
-		{
-			if (!m_audioPtr)
-				return;
-
-			m_generated = true;
-			alGenSources((ALuint)1, &m_alSource);
-			AL_CHECK_ERR(err);
-
-			alSourcei(m_alSource, AL_BUFFER, m_audioPtr->GetHW());
-			AL_CHECK_ERR(err);
-		}
-
+		CheckSource();
 		SetupProperties();
-
 		alSourcePlay(m_alSource);
+		int err = 0;
 		AL_CHECK_ERR(err);
 	}
 
 	void CompAudio::Stop()
 	{
+		CheckSource();
 		alSourcePause(m_alSource);
 	}
 
 	void CompAudio::Pause()
 	{
+		CheckSource();
 		alSourcePause(m_alSource);
 	}
 
 	void CompAudio::Rewind()
 	{
+		CheckSource();
 		alSourceRewind(m_alSource);
 	}
 
@@ -131,6 +120,23 @@ namespace Lina
 		AL_CHECK_ERR(err);
 		alSourcei(m_alSource, AL_LOOPING, (ALint)m_isLooping);
 		AL_CHECK_ERR(err);
+	}
+
+	void CompAudio::CheckSource()
+	{
+		if (!m_generated)
+		{
+			if (!m_audioPtr)
+				return;
+
+			int err		= 0;
+			m_generated = true;
+			alGenSources((ALuint)1, &m_alSource);
+			AL_CHECK_ERR(err);
+
+			alSourcei(m_alSource, AL_BUFFER, m_audioPtr->GetHW());
+			AL_CHECK_ERR(err);
+		}
 	}
 
 } // namespace Lina

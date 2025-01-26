@@ -30,6 +30,7 @@ src/SwapchainRenderer.cpp
 src/BubbleManager.cpp
 src/WaveManager.cpp
 src/HudManager.cpp
+src/AudioManager.cpp
 )
 
 set(HEADERS
@@ -41,6 +42,7 @@ include/Enemy.hpp
 include/SwapchainRenderer.hpp
 include/BubbleManager.hpp
 include/HudManager.hpp
+include/AudioManager.hpp
 )
 
 #--------------------------------------------------------------------
