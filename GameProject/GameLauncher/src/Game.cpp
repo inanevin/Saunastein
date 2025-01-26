@@ -32,6 +32,7 @@ SOFTWARE.
 #include "WaveManager.hpp"
 #include "BubbleManager.hpp"
 #include "HudManager.hpp"
+#include "AudioManager.hpp"
 
 #include "Core/Resources/ResourceManager.hpp"
 #include "Core/World/EntityTemplate.hpp"
@@ -43,6 +44,7 @@ SOFTWARE.
 #include "Core/Graphics/Resource/Material.hpp"
 #include "Core/Application.hpp"
 #include "Core/World/Components/CompAudio.hpp"
+#include "Core/World/Components/CompLight.hpp"
 #include "Core/Physics/PhysicsWorld.hpp"
 #include <LinaGX/Core/InputMappings.hpp>
 
@@ -87,6 +89,7 @@ namespace Lina
 
 		m_bubbleManager = new BubbleManager(m_world);
 		m_hudManager	= new HudManager(this);
+		m_audioManager	= new AudioManager(m_world);
 		m_player		= new Player(m_world, m_bubbleManager, app);
 		m_mouseLocked	= true;
 
@@ -105,18 +108,16 @@ namespace Lina
 			LINA_INFO("Resource: {0}", param.name);
 		}
 
+		Entity* light = m_world->FindEntity("SunLight");
+		m_sunLight	  = m_world->GetComponent<CompLight>(light);
+
 		m_waveManager = new WaveManager(this);
 		std::random_device rd;
 		m_rng = std::mt19937(rd());
 
-		m_metalMusic = m_world->FindEntity("MetalMusic");
-
-		if (m_metalMusic)
-		{
-			m_metalMusicComp = m_world->GetComponent<CompAudio>(m_metalMusic);
-		}
 		m_gameLostScreen = m_world->FindEntity("GUIGameLost");
 		m_gameWonScreen	 = m_world->FindEntity("GUIGameWon");
+		m_fireVisuals	 = m_world->FindEntity("Fire");
 
 		if (m_gameLostScreen)
 		{
@@ -152,6 +153,7 @@ namespace Lina
 	{
 		m_world->GetPhysicsWorld()->RemoveContactListener(this);
 
+		delete m_audioManager;
 		delete m_waveManager;
 		delete m_player;
 		delete m_bubbleManager;
@@ -179,6 +181,8 @@ namespace Lina
 
 	void Game::OnGameTick(float dt)
 	{
+		m_audioManager->Tick(dt, m_heatDangerRatio);
+
 		if (m_gameState != GameState::Running)
 			return;
 
@@ -271,38 +275,53 @@ namespace Lina
 
 	void Game::UpdateHeat(float addition)
 	{
-		m_heatLevel += addition;
+		SetHeat(m_heatLevel + addition);
+	}
+
+	void Game::SetHeat(float heat)
+	{
+		m_heatLevel = heat;
+		m_heatLevel = Math::Clamp(m_heatLevel, 0.0f, 100.0f);
 		LINA_TRACE("HeatLevel {0}", m_heatLevel);
 
-		const float	  dangerRatio				   = Math::Clamp(Math::Remap(m_heatLevel, 50.0f, 100.0f, 0.0f, 1.0f), 0.0f, 1.0f);
+		const float	  dangerRatio				   = Math::Clamp(Math::Remap(m_heatLevel, 00.0f, 100.0f, 0.0f, 1.0f), 0.0f, 1.0f);
 		const Vector4 ambientCold				   = Vector4(1, 1, 1, 1);
 		const Vector4 ambientHot				   = Vector4(0.9f, 0.1f, 0.1f, 1.0f);
 		const Vector4 ambient					   = Math::Lerp(ambientCold, ambientHot, dangerRatio);
 		m_world->GetGfxSettings().ambientTop	   = ambient;
 		m_world->GetGfxSettings().ambientBot	   = ambient;
 		m_world->GetGfxSettings().ambientMid	   = ambient;
-		m_world->GetGfxSettings().ambientIntensity = Math::Lerp(1.0f, 2.0f, dangerRatio);
+		m_world->GetGfxSettings().ambientIntensity = Math::Lerp(0.2f, 1.0f, dangerRatio);
 
-		if (m_metalMusicComp)
+		if (m_sunLight)
 		{
-			m_metalMusicComp->SetGain(Math::Lerp(0.0f, 0.8f, dangerRatio));
-			m_metalMusicComp->SetupProperties();
+			m_sunLight->SetColor(Math::Lerp(Color::White, Color(1, 0, 0, 1), dangerRatio));
+			m_sunLight->SetIntensity(Math::Lerp(0.45f, 2.0f, dangerRatio));
+		}
+
+		if (m_fireVisuals)
+		{
+			Vector3 scale = m_fireVisuals->GetLocalScale();
+			scale.y		  = Math::Lerp(0.0f, 1.0f, dangerRatio);
+			m_fireVisuals->SetLocalScale(scale);
 		}
 
 		Material* skyMat = m_world->GetResourceManager()->GetIfExists<Material>(m_world->GetGfxSettings().skyMaterial);
 		if (skyMat)
 		{
-			const Vector3 skyColor	   = Math::Lerp(m_skyTopColor, Vector3(0.8f, 0.1f, 0.1f), dangerRatio);
-			const Vector3 horizonColor = Math::Lerp(m_skyTopColor, Vector3(1.0f, 0.1f, 0.1f), dangerRatio);
+			const Vector3 skyColor	   = Math::Lerp(m_skyTopColor, Vector3(0.3f, 0.01f, 0.01f), dangerRatio);
+			const Vector3 horizonColor = Math::Lerp(m_skyTopColor, Vector3(3.0f, 0.01f, 0.01f), dangerRatio);
 			skyMat->SetProperty<Vector3>("skyColor"_hs, skyColor);
 			skyMat->SetProperty<Vector3>("horizonColor"_hs, horizonColor);
 			m_gameLauncher->GetApp()->GetGfxContext().MarkBindlessDirty();
 		}
+
+		m_heatDangerRatio = dangerRatio;
 	}
 
 	void Game::OnContactBegin(Entity* e1, Entity* e2, const Vector3& p1, const Vector3& p2)
 	{
-    m_waveManager->HandleContact(e1, e2);
+		m_waveManager->HandleContact(e1, e2);
 	}
 
 	void Game::OnContact(Entity* e1, Entity* e2, const Vector3& p1, const Vector3& p2)

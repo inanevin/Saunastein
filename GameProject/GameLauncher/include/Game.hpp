@@ -49,7 +49,9 @@ namespace Lina
 	class WaveManager;
 	class BubbleManager;
 	class HudManager;
+	class CompLight;
 	class Application;
+	class AudioManager;
 
 	enum class GameState
 	{
@@ -76,6 +78,7 @@ namespace Lina
 		void OnWaveSpawned(uint32_t index, String name);
 
 		void UpdateHeat(float addition);
+		void SetHeat(float heat);
 
 		virtual void OnContactBegin(Entity* e1, Entity* e2, const Vector3& p1, const Vector3& p2) override;
 		virtual void OnContact(Entity* e1, Entity* e2, const Vector3& p1, const Vector3& p2) override;
@@ -83,6 +86,7 @@ namespace Lina
 
 		EntityTemplate* GetEntityTemplate(String key);
 
+		AudioManager*					 m_audioManager	 = nullptr;
 		BubbleManager*					 m_bubbleManager = nullptr;
 		WaveManager*					 m_waveManager	 = nullptr;
 		EntityWorld*					 m_world		 = nullptr;
@@ -97,11 +101,12 @@ namespace Lina
 		Entity*		  m_gameLostScreen = nullptr;
 		Entity*		  m_gameWonScreen  = nullptr;
 		GameState	  m_gameState	   = GameState::Running;
-		Entity*		  m_metalMusic	   = nullptr;
-		CompAudio*	  m_metalMusicComp = nullptr;
+		Entity*		  m_fireVisuals	   = nullptr;
 
-		float	m_heatLevel		  = 50.0f;
-		Vector3 m_skyTopColor	  = Vector3::Zero;
-		Vector3 m_skyHorizonColor = Vector3::Zero;
+		float	   m_heatLevel		 = 50.0f;
+		Vector3	   m_skyTopColor	 = Vector3::Zero;
+		Vector3	   m_skyHorizonColor = Vector3::Zero;
+		CompLight* m_sunLight		 = nullptr;
+		float	   m_heatDangerRatio = 0.0f;
 	};
 } // namespace Lina

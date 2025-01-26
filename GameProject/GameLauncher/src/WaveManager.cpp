@@ -10,7 +10,7 @@
 #include "Player.hpp"
 #include "Enemy.hpp"
 #include "BubbleManager.hpp"
-
+#include "Common/System/SystemInfo.hpp"
 #include <algorithm>
 #include <random>
 
@@ -28,6 +28,7 @@ namespace Lina
 	struct WaveDesc
 	{
 		float				  waitTimeBefore;
+		float				  heatAddition = 0.0f;
 		String				  name;
 		Vector<WaveEnemyDesc> enemies;
 	};
@@ -37,54 +38,55 @@ namespace Lina
 			.name			= "Get ready",
 			.waitTimeBefore = 2.0f,
 		},
-    
-    WaveDesc{
-      .name = "Wave 1",
-      .waitTimeBefore = 2.0f,
-      .enemies = {
-        WaveEnemyDesc{.resourceKey = "Enemy_1", .health = 3, .speed = 5, .waitTimeBefore = 0.0f},
-        WaveEnemyDesc{.resourceKey = "Enemy_1", .health = 3, .speed = 5, .waitTimeBefore = 0.0f},
-      }
-    },
-    WaveDesc{
-      .name = "Wave 2",
-      .waitTimeBefore = 3.0f,
-      .enemies = {
-        WaveEnemyDesc{.resourceKey = "Enemy_1", .health = 3, .speed = 5, .waitTimeBefore = 0.0f},
-        WaveEnemyDesc{.resourceKey = "Enemy_1", .health = 3, .speed = 5, .waitTimeBefore = 0.0f},
-        WaveEnemyDesc{.resourceKey = "Enemy_2", .health = 10, .speed = 5, .waitTimeBefore = 0.0f},
-        WaveEnemyDesc{.resourceKey = "Enemy_1", .health = 3, .speed = 5, .waitTimeBefore = 0.0f},
-      }
-    },
 
-    WaveDesc{
-      .name = "Wave 2",
-      .waitTimeBefore = 3.0f,
-      .enemies = {
-        WaveEnemyDesc{.resourceKey = "Enemy_2", .health = 3, .speed = 5, .waitTimeBefore = 0.0f},
-        WaveEnemyDesc{.resourceKey = "Enemy_2", .health = 3, .speed = 5, .waitTimeBefore = 0.0f},
-        WaveEnemyDesc{.resourceKey = "Enemy_3", .health = 20, .speed = 5, .waitTimeBefore = 0.0f},
-      }
-    },
-    
-    WaveDesc{
+		WaveDesc{.name			 = "Wave 1",
+				 .waitTimeBefore = 2.0f,
+				 .heatAddition	 = 1.5f,
+				 .enemies =
+					 {
+						 WaveEnemyDesc{.resourceKey = "Enemy_1", .health = 3, .speed = 5, .waitTimeBefore = 0.0f},
+						 WaveEnemyDesc{.resourceKey = "Enemy_1", .health = 3, .speed = 5, .waitTimeBefore = 0.0f},
+					 }},
+		WaveDesc{.name			 = "Wave 2",
+				 .waitTimeBefore = 3.0f,
+				 .heatAddition	 = 2.5f,
+				 .enemies =
+					 {
+						 WaveEnemyDesc{.resourceKey = "Enemy_1", .health = 3, .speed = 5, .waitTimeBefore = 0.0f},
+						 WaveEnemyDesc{.resourceKey = "Enemy_1", .health = 3, .speed = 5, .waitTimeBefore = 0.0f},
+						 WaveEnemyDesc{.resourceKey = "Enemy_2", .health = 10, .speed = 5, .waitTimeBefore = 0.0f},
+						 WaveEnemyDesc{.resourceKey = "Enemy_1", .health = 3, .speed = 5, .waitTimeBefore = 0.0f},
+					 }},
+
+		WaveDesc{.name			 = "Wave 2",
+				 .waitTimeBefore = 3.0f,
+				 .heatAddition	 = 5.5f,
+				 .enemies =
+					 {
+						 WaveEnemyDesc{.resourceKey = "Enemy_2", .health = 3, .speed = 5, .waitTimeBefore = 0.0f},
+						 WaveEnemyDesc{.resourceKey = "Enemy_2", .health = 3, .speed = 5, .waitTimeBefore = 0.0f},
+						 WaveEnemyDesc{.resourceKey = "Enemy_3", .health = 20, .speed = 5, .waitTimeBefore = 0.0f},
+					 }},
+
+		WaveDesc{
 			.waitTimeBefore = 0.5f,
 			.name			= "Well done!",
 		},
-    
-    WaveDesc{.waitTimeBefore = 10.0f,
-        .name			 = "Here's some more!",
-        .enemies = {
-          WaveEnemyDesc{.resourceKey = "Enemy_3", .health = 20, .speed = 5, .waitTimeBefore = 0.0f},
-          WaveEnemyDesc{.resourceKey = "Enemy_3", .health = 20, .speed = 5, .waitTimeBefore = 0.0f},
-          WaveEnemyDesc{.resourceKey = "Enemy_3", .health = 20, .speed = 5, .waitTimeBefore = 0.0f},
-          WaveEnemyDesc{.resourceKey = "Enemy_3", .health = 20, .speed = 5, .waitTimeBefore = 0.0f},
-          WaveEnemyDesc{.resourceKey = "Enemy_3", .health = 20, .speed = 5, .waitTimeBefore = 0.0f},
-          WaveEnemyDesc{.resourceKey = "Enemy_3", .health = 20, .speed = 5, .waitTimeBefore = 0.0f},
-          WaveEnemyDesc{.resourceKey = "Enemy_3", .health = 20, .speed = 5, .waitTimeBefore = 0.0f},
-          WaveEnemyDesc{.resourceKey = "Enemy_3", .health = 20, .speed = 5, .waitTimeBefore = 0.0f},
-        }
-    },
+
+		WaveDesc{.waitTimeBefore = 10.0f,
+				 .name			 = "Here's some more!",
+				 .heatAddition	 = 50.0f,
+				 .enemies =
+					 {
+						 WaveEnemyDesc{.resourceKey = "Enemy_3", .health = 20, .speed = 5, .waitTimeBefore = 0.0f},
+						 WaveEnemyDesc{.resourceKey = "Enemy_3", .health = 20, .speed = 5, .waitTimeBefore = 0.0f},
+						 WaveEnemyDesc{.resourceKey = "Enemy_3", .health = 20, .speed = 5, .waitTimeBefore = 0.0f},
+						 WaveEnemyDesc{.resourceKey = "Enemy_3", .health = 20, .speed = 5, .waitTimeBefore = 0.0f},
+						 WaveEnemyDesc{.resourceKey = "Enemy_3", .health = 20, .speed = 5, .waitTimeBefore = 0.0f},
+						 WaveEnemyDesc{.resourceKey = "Enemy_3", .health = 20, .speed = 5, .waitTimeBefore = 0.0f},
+						 WaveEnemyDesc{.resourceKey = "Enemy_3", .health = 20, .speed = 5, .waitTimeBefore = 0.0f},
+						 WaveEnemyDesc{.resourceKey = "Enemy_3", .health = 20, .speed = 5, .waitTimeBefore = 0.0f},
+					 }},
 	};
 
 	WaveManager::WaveManager(Game* game) : m_game(game)
@@ -117,23 +119,25 @@ namespace Lina
 
 		WaveDesc& currentWave = waves[currentWaveIdx];
 
-		bool currentWaveAllSpawned = m_currentWaveEnemiesSpawned >= currentWave.enemies.size();
+		bool currentWaveAllSpawned		 = m_currentWaveEnemiesSpawned >= currentWave.enemies.size();
 		bool currentWaveHasActiveEnemies = m_currentEnemies.size() > 0;
-		bool currentWaveIsWaiting = currentWaveTime < currentWave.waitTimeBefore;
-		bool currentWaveIsDone = !currentWaveIsWaiting && currentWaveAllSpawned && !currentWaveHasActiveEnemies;
+		bool currentWaveIsWaiting		 = currentWaveTime < currentWave.waitTimeBefore;
+		bool currentWaveIsDone			 = !currentWaveIsWaiting && currentWaveAllSpawned && !currentWaveHasActiveEnemies;
 
 		if (!currentWaveIsWaiting && !m_currentWaveHasWaited)
 		{
 			LINA_INFO("[{0}] Start Wave {1}", m_globalTimer, m_waveCounter);
 			m_currentWaveHasWaited	   = true;
 			m_currentWaveLastSpawnedAt = m_globalTimer;
-      m_game->OnWaveSpawned(m_waveCounter, currentWave.name);
+			m_game->OnWaveSpawned(m_waveCounter, currentWave.name);
 			return;
 		}
-
+    
 		// next wave when current wave is done
 		if (currentWaveIsDone)
 		{
+			m_game->SetHeat(00.0f);
+
 			LINA_INFO("[{0}] End Wave {1}", m_globalTimer, m_waveCounter);
 			m_waveCounter++;
 
@@ -166,99 +170,123 @@ namespace Lina
 
 					m_currentWaveEnemiesSpawned++;
 					m_currentWaveLastSpawnedAt = m_globalTimer;
-          EntityTemplate* templ = m_game->GetEntityTemplate(enemyDesc.resourceKey);
-          if (templ != nullptr)
-          {
-            Entity* spawn = m_enemySpawns[m_entitySpawnerCounter++%m_enemySpawns.size()];
-            Enemy* enemy = new Enemy(world, templ, m_game->m_player, spawn->GetPosition(), spawn->GetRotation());
-            enemy->m_health = enemyDesc.health;
-            
-            m_currentEnemies.push_back(enemy);
-            m_game->OnEnemySpawned(enemy);
-          }
+					EntityTemplate* templ	   = m_game->GetEntityTemplate(enemyDesc.resourceKey);
+					if (templ != nullptr)
+					{
+						Entity* spawn	= m_enemySpawns[m_entitySpawnerCounter++ % m_enemySpawns.size()];
+						Enemy*	enemy	= new Enemy(world, templ, m_game->m_player, spawn->GetPosition(), spawn->GetRotation());
+						enemy->m_health = enemyDesc.health;
+
+						m_currentEnemies.push_back(enemy);
+						m_game->OnEnemySpawned(enemy);
+					}
 				}
 			}
 		}
 		else
 		{
 			// Everything spawned.. waiting for enemies to be cleared...
+			m_game->UpdateHeat(currentWave.heatAddition * static_cast<float>(SystemInfo::GetDeltaTime()));
 		}
+    
+    // Update Fire
+    
+    
 	}
 
 	void WaveManager::PreTick()
 	{
-    UpdateWaves();
+		UpdateWaves();
 	}
 
-static void HandleEnemyDamage(WaveManager* wm, BubbleManager::BubbleData* bubble, Enemy* enemy) {
-  if (!enemy->m_dead) {
-    enemy->TakeDamage(1);
-    LINA_INFO("ENEMY TAKE HIT! Has {0}", enemy->m_health);
-  }
-  
-  wm->m_game->m_bubbleManager->KillBubble(bubble->_entity);
-}
+	static void HandleEnemyDamage(WaveManager* wm, BubbleManager::BubbleData* bubble, Enemy* enemy)
+	{
+		if (!enemy->m_dead)
+		{
+			enemy->TakeDamage(1);
+			LINA_INFO("ENEMY TAKE HIT! Has {0}", enemy->m_health);
+		}
 
-static void HandlePlayerDamage(WaveManager* wm, Player* player, Enemy* enemy) {
-  if (enemy->m_dead) return;
-  
-  player->UpdateHealth(-1.0f);
-  LINA_INFO("PLAYER TAKE HIT! Has {0}", player->m_health);
-}
+		wm->m_game->m_bubbleManager->KillBubble(bubble->_entity);
+	}
 
-  void WaveManager::HandleContact(Entity* e1, Entity* e2) {
-    Player* player = m_game->m_player;
-    
-    Enemy* enemy1 = nullptr;
-    Enemy* enemy2 = nullptr;
-    
-    Player* player1 = nullptr;
-    Player* player2 = nullptr;
-    
-    BubbleManager::BubbleData* bubble1 = nullptr;
-    BubbleManager::BubbleData* bubble2 = nullptr;
-    
-    if (e1 == player->m_entity) player1 = player;
-    if (e2 == player->m_entity) player2 = player;
-    
-    for (Enemy* enemy : m_currentEnemies) {
-      if (enemy->m_entity == e1) enemy1 = enemy;
-      if (enemy->m_entity == e2) enemy2 = enemy;
-    }
+	static void HandlePlayerDamage(WaveManager* wm, Player* player, Enemy* enemy)
+	{
+		if (enemy->m_dead)
+			return;
 
-    for (uint32_t i = 0; i < m_game->m_bubbleManager->m_bubbles.size(); ++i) {
-      auto* bubble = &m_game->m_bubbleManager->m_bubbles[i];
-      if (bubble->_entity == e1) bubble1 = bubble;
-      if (bubble->_entity == e2) bubble2 = bubble;
-    }
-    
-    if (enemy1 != nullptr && bubble2 != nullptr) HandleEnemyDamage(this, bubble2, enemy1);
-    if (enemy2 != nullptr && bubble1 != nullptr) HandleEnemyDamage(this, bubble1, enemy2);
-    
-    if (enemy1 != nullptr && player2 != nullptr) HandlePlayerDamage(this, player2, enemy1);
-    if (enemy2 != nullptr && player1 != nullptr) HandlePlayerDamage(this, player1, enemy2);
-  }
-	
-  void WaveManager::Tick(float dt)
+		player->UpdateHealth(-1.0f);
+		LINA_INFO("PLAYER TAKE HIT! Has {0}", player->m_health);
+	}
+
+	void WaveManager::HandleContact(Entity* e1, Entity* e2)
+	{
+		Player* player = m_game->m_player;
+
+		Enemy* enemy1 = nullptr;
+		Enemy* enemy2 = nullptr;
+
+		Player* player1 = nullptr;
+		Player* player2 = nullptr;
+
+		BubbleManager::BubbleData* bubble1 = nullptr;
+		BubbleManager::BubbleData* bubble2 = nullptr;
+
+		if (e1 == player->m_entity)
+			player1 = player;
+		if (e2 == player->m_entity)
+			player2 = player;
+
+		for (Enemy* enemy : m_currentEnemies)
+		{
+			if (enemy->m_entity == e1)
+				enemy1 = enemy;
+			if (enemy->m_entity == e2)
+				enemy2 = enemy;
+		}
+
+		for (uint32_t i = 0; i < m_game->m_bubbleManager->m_bubbles.size(); ++i)
+		{
+			auto* bubble = &m_game->m_bubbleManager->m_bubbles[i];
+			if (bubble->_entity == e1)
+				bubble1 = bubble;
+			if (bubble->_entity == e2)
+				bubble2 = bubble;
+		}
+
+		if (enemy1 != nullptr && bubble2 != nullptr)
+			HandleEnemyDamage(this, bubble2, enemy1);
+		if (enemy2 != nullptr && bubble1 != nullptr)
+			HandleEnemyDamage(this, bubble1, enemy2);
+
+		if (enemy1 != nullptr && player2 != nullptr)
+			HandlePlayerDamage(this, player2, enemy1);
+		if (enemy2 != nullptr && player1 != nullptr)
+			HandlePlayerDamage(this, player1, enemy2);
+	}
+
+	void WaveManager::Tick(float dt)
 	{
 		m_globalTimer += dt;
 		EntityWorld* world = m_game->m_world;
-    
+
 		for (Enemy* enemy : m_currentEnemies)
 		{
 			enemy->Tick(dt);
-      if (!enemy->IsAlive()) {
-        m_deadEnemies.push_back(enemy);
-      }
+			if (!enemy->IsAlive())
+			{
+				m_deadEnemies.push_back(enemy);
+			}
 		}
-    
-    for (Enemy* deadEnemy : m_deadEnemies) {
-      deadEnemy->Tick(dt);
-      m_currentEnemies.erase(std::remove(m_currentEnemies.begin(), m_currentEnemies.end(), deadEnemy), m_currentEnemies.end());
-    }
-    
-//    if (deadEnemies.size() > 0) {
-//      LINA_INFO("Destroyed {0} enemies. Had: {1}, Has: {2}", deadEnemies.size(), enemyCount, m_currentEnemies.size());
-//    }
+
+		for (Enemy* deadEnemy : m_deadEnemies)
+		{
+			deadEnemy->Tick(dt);
+			m_currentEnemies.erase(std::remove(m_currentEnemies.begin(), m_currentEnemies.end(), deadEnemy), m_currentEnemies.end());
+		}
+
+		//    if (deadEnemies.size() > 0) {
+		//      LINA_INFO("Destroyed {0} enemies. Had: {1}, Has: {2}", deadEnemies.size(), enemyCount, m_currentEnemies.size());
+		//    }
 	}
 } // namespace Lina
