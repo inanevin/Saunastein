@@ -251,6 +251,15 @@ static LINAGX_STRING FormatString(const char* fmt, ...)
 		}
     
     m_hudManager->SetTopRight(FormatString("Score: %i", m_score));
+    
+    
+    if (m_fireVisuals)
+    {
+      Vector3 scale = m_fireVisuals->GetLocalScale();
+      m_fireTargetScale = Math::Lerp(0.0f, 1.0f, m_dangerRatio);
+      scale.y      = Math::Lerp(scale.y, m_fireTargetScale, 10*dt);
+      m_fireVisuals->SetLocalScale(scale);
+    }
 	}
 
 	EntityTemplate* Game::GetEntityTemplate(String key)
@@ -334,18 +343,13 @@ static LINAGX_STRING FormatString(const char* fmt, ...)
 		m_world->GetGfxSettings().ambientBot	   = ambient;
 		m_world->GetGfxSettings().ambientMid	   = ambient;
 		m_world->GetGfxSettings().ambientIntensity = Math::Lerp(0.2f, 1.0f, dangerRatio);
-
-		if (m_sunLight)
+    
+    m_dangerRatio = dangerRatio;
+		
+    if (m_sunLight)
 		{
 			m_sunLight->SetColor(Math::Lerp(Color::White, Color(1, 0, 0, 1), dangerRatio));
 			m_sunLight->SetIntensity(Math::Lerp(0.45f, 2.0f, dangerRatio));
-		}
-
-		if (m_fireVisuals)
-		{
-			Vector3 scale = m_fireVisuals->GetLocalScale();
-			scale.y		  = Math::Lerp(0.0f, 1.0f, dangerRatio);
-			m_fireVisuals->SetLocalScale(scale);
 		}
 
 		Material* skyMat = m_world->GetResourceManager()->GetIfExists<Material>(m_world->GetGfxSettings().skyMaterial);

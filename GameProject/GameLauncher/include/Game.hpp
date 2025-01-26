@@ -104,8 +104,10 @@ namespace Lina
 		Entity*		  m_gameWonScreen  = nullptr;
 		GameState	  m_gameState	   = GameState::Running;
 		Entity*		  m_fireVisuals	   = nullptr;
+    float      m_fireTargetScale   = 0.0f;
 
 		float	   m_heatLevel		 = 50.0f;
+    float     m_dangerRatio     = 0.0f;
 		Vector3	   m_skyTopColor	 = Vector3::Zero;
 		Vector3	   m_skyHorizonColor = Vector3::Zero;
 		CompLight* m_sunLight		 = nullptr;
