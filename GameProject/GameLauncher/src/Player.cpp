@@ -212,9 +212,10 @@ namespace Lina
 			m_weapon->m_movement.swayPowerY		 = -0.001f;
 			m_weapon->m_movement.localOffset	 = Vector3(0.0f, 0.0f, 0.5f);
 			m_weapon->m_movement.holsterOffset	 = Vector3(0.0f, -0.5f, 0.0f);
-			m_weapon->m_movement.runningOffset	 = Vector3(0.0f, -0.2f, 0.0f);
+			m_weapon->m_movement.runningOffset	 = Vector3(0.0f, -0.0f, 0.0f);
 			m_weapon->m_animation->m_fireDisplay = 6;
-			m_weapon->SetAnim("Weapon0_Idle", "Weapon0_Fire");
+			m_weapon->m_movement.spawnLight		 = false;
+			m_weapon->SetAnim("Weapon0_Idle", "Weapon0_Fire", "Weapon0_Idle");
 		}
 		else
 		{
@@ -225,9 +226,10 @@ namespace Lina
 			m_weapon->m_movement.swayPowerY		 = -0.001f;
 			m_weapon->m_movement.localOffset	 = Vector3(0.08f, -0.01f, 0.5f);
 			m_weapon->m_movement.holsterOffset	 = Vector3(0.0f, -0.5f, 0.0f);
-			m_weapon->m_movement.runningOffset	 = Vector3(0.0f, -0.2f, 0.0f);
+			m_weapon->m_movement.runningOffset	 = Vector3(0.0f, -0.0f, 0.0f);
 			m_weapon->m_animation->m_fireDisplay = 2;
-			m_weapon->SetAnim("Weapon1_Idle", "Weapon1_Fire");
+			m_weapon->m_movement.spawnLight		 = true;
+			m_weapon->SetAnim("Weapon1_Idle", "Weapon1_Fire", "Weapon1_Run");
 		}
 
 		m_weapon->m_runtime.localPositionOffset = m_weapon->CalculateTargetPosition(Vector2::Zero);

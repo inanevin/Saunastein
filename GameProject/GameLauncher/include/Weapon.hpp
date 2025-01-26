@@ -73,9 +73,11 @@ namespace Lina
 		uint32		 m_fireDisplay = 0;
 		ResourceID	 m_idle		   = 0;
 		ResourceID	 m_fire		   = 0;
+		ResourceID	 m_run		   = 0;
 		ResourceID	 m_used		   = 0;
 		Material*	 m_material	   = nullptr;
 		Application* m_app		   = nullptr;
+		bool		 m_isRunning;
 	};
 
 	class Weapon
@@ -92,6 +94,7 @@ namespace Lina
 			Vector3 holsterOffset = Vector3::Zero;
 			Vector3 runningOffset = Vector3::Zero;
 			float	holsterAlpha  = 0.0f;
+			bool	spawnLight	  = false;
 		};
 
 		struct Runtime
@@ -107,7 +110,7 @@ namespace Lina
 		virtual void Tick(float dt);
 
 		void	Fire();
-		void	SetAnim(const String& animIdle, const String& animFire);
+		void	SetAnim(const String& animIdle, const String& animFire, const String& run);
 		Vector3 CalculateTargetPosition(const Vector2& md);
 
 		inline void MoveAway()
@@ -118,6 +121,7 @@ namespace Lina
 		Movement		 m_movement		 = {};
 		Runtime			 m_runtime		 = {};
 		Entity*			 m_entity		 = nullptr;
+		Entity*			 m_light		 = nullptr;
 		EntityWorld*	 m_world		 = nullptr;
 		Player*			 m_player		 = nullptr;
 		BubbleManager*	 m_bubbleManager = nullptr;
@@ -126,6 +130,7 @@ namespace Lina
 		bool			 m_isMovingAway	 = false;
 		bool			 m_movedAway	 = false;
 		float			 m_swayAlpha	 = 0.0f;
+		uint32			 m_lightCtr		 = 0;
 	};
 
 } // namespace Lina

@@ -49,6 +49,7 @@ namespace Lina
 	class WaveManager;
 	class BubbleManager;
 	class HudManager;
+	class CompLight;
 	class Application;
 
 	enum class GameState
@@ -76,6 +77,7 @@ namespace Lina
 		void OnWaveSpawned(uint32_t index, String name);
 
 		void UpdateHeat(float addition);
+		void SetHeat(float heat);
 
 		virtual void OnContactBegin(Entity* e1, Entity* e2, const Vector3& p1, const Vector3& p2) override;
 		virtual void OnContact(Entity* e1, Entity* e2, const Vector3& p1, const Vector3& p2) override;
@@ -100,8 +102,9 @@ namespace Lina
 		Entity*		  m_metalMusic	   = nullptr;
 		CompAudio*	  m_metalMusicComp = nullptr;
 
-		float	m_heatLevel		  = 50.0f;
-		Vector3 m_skyTopColor	  = Vector3::Zero;
-		Vector3 m_skyHorizonColor = Vector3::Zero;
+		float	   m_heatLevel		 = 50.0f;
+		Vector3	   m_skyTopColor	 = Vector3::Zero;
+		Vector3	   m_skyHorizonColor = Vector3::Zero;
+		CompLight* m_sunLight		 = nullptr;
 	};
 } // namespace Lina
