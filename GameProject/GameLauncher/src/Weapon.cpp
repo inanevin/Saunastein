@@ -30,6 +30,7 @@ SOFTWARE.
 #include "Player.hpp"
 #include "Game.hpp"
 #include "BubbleManager.hpp"
+#include "AudioManager.hpp"
 
 #include "Core/World/EntityWorld.hpp"
 #include "Common/System/SystemInfo.hpp"
@@ -100,12 +101,13 @@ namespace Lina
 		}
 	}
 
-	Weapon::Weapon(EntityWorld* world, Player* player, BubbleManager* bm, Application* app)
+	Weapon::Weapon(EntityWorld* world, Player* player, BubbleManager* bm, Application* app, AudioManager* am)
 	{
 		m_app			= app;
 		m_world			= world;
 		m_player		= player;
 		m_bubbleManager = bm;
+		m_audioManager	= am;
 
 		m_entity = m_world->FindEntity("WeaponQuad");
 		m_light	 = m_world->FindEntity("WeaponLight");
@@ -182,6 +184,8 @@ namespace Lina
 			m_light->SetVisible(true);
 			m_lightCtr = 0;
 		}
+
+		m_audioManager->Play(m_isPistolHack ? m_audioManager->m_pistolFire : m_audioManager->m_bubbleFire, 0.5f);
 	}
 
 	void Weapon::SetAnim(const String& animIdle, const String& animFire, const String& animRun)

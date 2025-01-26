@@ -48,6 +48,7 @@ namespace Lina
 	class Game;
 	class Material;
 	class Application;
+	class AudioManager;
 
 	class WeaponAnimation
 	{
@@ -104,7 +105,7 @@ namespace Lina
 			bool	isRunning			= false;
 		};
 
-		Weapon(EntityWorld* world, Player* player, BubbleManager* bm, Application* app);
+		Weapon(EntityWorld* world, Player* player, BubbleManager* bm, Application* app, AudioManager* am);
 		virtual ~Weapon();
 
 		virtual void Tick(float dt);
@@ -131,6 +132,8 @@ namespace Lina
 		bool			 m_movedAway	 = false;
 		float			 m_swayAlpha	 = 0.0f;
 		uint32			 m_lightCtr		 = 0;
+		bool			 m_isPistolHack	 = false;
+		AudioManager*	 m_audioManager	 = nullptr;
 	};
 
 } // namespace Lina

@@ -50,40 +50,40 @@ SOFTWARE.
 
 namespace Lina
 {
-  static LINAGX_STRING FormatString(const char* fmt, va_list args)
-  {
-    // Determine the required size
-    va_list args_copy;
-    va_copy(args_copy, args);
-    int size = vsnprintf(nullptr, 0, fmt, args_copy) + 1; // +1 for the null terminator
-    va_end(args_copy);
+	static LINAGX_STRING FormatString(const char* fmt, va_list args)
+	{
+		// Determine the required size
+		va_list args_copy;
+		va_copy(args_copy, args);
+		int size = vsnprintf(nullptr, 0, fmt, args_copy) + 1; // +1 for the null terminator
+		va_end(args_copy);
 
-    // Allocate a buffer and format the string
-    std::vector<char> buffer(size);
-    vsnprintf(buffer.data(), size, fmt, args);
+		// Allocate a buffer and format the string
+		std::vector<char> buffer(size);
+		vsnprintf(buffer.data(), size, fmt, args);
 
-    return std::string(buffer.data());
-  }
-static LINAGX_STRING FormatString(const char* fmt, ...)
-{
-    // Initialize a variable argument list
-    va_list args;
-    va_start(args, fmt);
+		return std::string(buffer.data());
+	}
+	static LINAGX_STRING FormatString(const char* fmt, ...)
+	{
+		// Initialize a variable argument list
+		va_list args;
+		va_start(args, fmt);
 
-    // Call the existing FormatString that takes va_list
-    va_list args_copy;
-    va_copy(args_copy, args);
-    int size = vsnprintf(nullptr, 0, fmt, args_copy) + 1; // +1 for the null terminator
-    va_end(args_copy);
+		// Call the existing FormatString that takes va_list
+		va_list args_copy;
+		va_copy(args_copy, args);
+		int size = vsnprintf(nullptr, 0, fmt, args_copy) + 1; // +1 for the null terminator
+		va_end(args_copy);
 
-    // Allocate a buffer and format the string
-    std::vector<char> buffer(size);
-    vsnprintf(buffer.data(), size, fmt, args);
+		// Allocate a buffer and format the string
+		std::vector<char> buffer(size);
+		vsnprintf(buffer.data(), size, fmt, args);
 
-    va_end(args);
+		va_end(args);
 
-    return LINAGX_STRING(buffer.data());
-}
+		return LINAGX_STRING(buffer.data());
+	}
 
 	void Game::OnKey(uint32 keycode, int32 scancode, LinaGX::InputAction inputAction)
 	{
@@ -125,7 +125,7 @@ static LINAGX_STRING FormatString(const char* fmt, ...)
 		m_bubbleManager = new BubbleManager(m_world);
 		m_hudManager	= new HudManager(this);
 		m_audioManager	= new AudioManager(m_world);
-		m_player		= new Player(m_world, m_bubbleManager, app);
+		m_player		= new Player(m_world, m_bubbleManager, app, m_audioManager);
 		m_mouseLocked	= true;
 
 		// Find resources
@@ -249,8 +249,8 @@ static LINAGX_STRING FormatString(const char* fmt, ...)
 		{
 			UpdateHeat(-10.0f);
 		}
-    
-    m_hudManager->SetTopRight(FormatString("Score: %i", m_score));
+
+		m_hudManager->SetTopRight(FormatString("Score: %i", m_score));
 	}
 
 	EntityTemplate* Game::GetEntityTemplate(String key)
@@ -307,13 +307,14 @@ static LINAGX_STRING FormatString(const char* fmt, ...)
 	void Game::OnWaveSpawned(uint32_t index, String name)
 	{
 		m_hudManager->SetMainText(name);
-    m_hudManager->SetTopRight(name);
+		m_hudManager->SetTopRight(name);
 		//		LINA_TRACE("OnEnemyWaveSpawned: {0} {1}", index, name);
 	}
-  
-  void Game::AddScore(uint32_t score) {
-    m_score += score;
-  }
+
+	void Game::AddScore(uint32_t score)
+	{
+		m_score += score;
+	}
 
 	void Game::UpdateHeat(float addition)
 	{

@@ -50,13 +50,13 @@ namespace Lina
 	public:
 		AudioManager(EntityWorld* world);
 
-		void Play(CompAudio* audio);
+		void Play(CompAudio* audio, float varyPitch);
 		void Tick(float dt, float dangerRatio);
+		void OnResetHeat();
 
 		EntityWorld* m_world	   = nullptr;
 		CompAudio*	 m_pistolEquip = nullptr;
 		CompAudio*	 m_bubbleEquip = nullptr;
-		CompAudio*	 m_pistolRun   = nullptr;
 		CompAudio*	 m_pistolFire  = nullptr;
 		CompAudio*	 m_bubbleFire  = nullptr;
 		CompAudio*	 m_chillMusic  = nullptr;

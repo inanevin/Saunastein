@@ -37,25 +37,18 @@ namespace Lina
 	{
 		m_world = world;
 
-		CompAudio* m_bubbleEquip = nullptr;
-		CompAudio* m_pistolRun	 = nullptr;
-		CompAudio* m_pistolFire	 = nullptr;
-		CompAudio* m_bubbleFire	 = nullptr;
-		CompAudio* m_chillMusic	 = nullptr;
-		CompAudio* m_metalMusic	 = nullptr;
-
+		Entity* bubbleEquip = m_world->FindEntity("BubbleEquip");
 		Entity* pistolEquip = m_world->FindEntity("PistolEquip");
-		Entity* pistolRun	= m_world->FindEntity("PistolRun");
 		Entity* pistolFire	= m_world->FindEntity("PistolFire");
 		Entity* bubbleFire	= m_world->FindEntity("BubbleFire");
 		Entity* chillMusic	= m_world->FindEntity("ChillMusic");
 		Entity* metalMusic	= m_world->FindEntity("MetalMusic");
 
+		if (bubbleEquip)
+			m_bubbleEquip = m_world->GetComponent<CompAudio>(bubbleEquip);
+
 		if (pistolEquip)
 			m_pistolEquip = m_world->GetComponent<CompAudio>(pistolEquip);
-
-		if (pistolRun)
-			m_pistolRun = m_world->GetComponent<CompAudio>(pistolRun);
 
 		if (pistolFire)
 			m_pistolFire = m_world->GetComponent<CompAudio>(pistolFire);
@@ -70,11 +63,13 @@ namespace Lina
 			m_metalMusic = m_world->GetComponent<CompAudio>(metalMusic);
 	}
 
-	void AudioManager::Play(CompAudio* audio)
+	void AudioManager::Play(CompAudio* audio, float varyPitch)
 	{
 		if (!audio)
 			return;
 
+		const float pitch = Math::RandF(1.0f - varyPitch, 1.0f + varyPitch);
+		audio->SetPitch(pitch);
 		audio->Rewind();
 		audio->Play();
 	}
@@ -83,15 +78,42 @@ namespace Lina
 	{
 		if (m_metalMusic)
 		{
-			m_metalMusic->SetGain(Math::Lerp(0.0f, 1.0f, dangerRatio));
+			m_metalMusic->SetGain(Math::Lerp(0.0f, 2.0f, dangerRatio));
 			m_metalMusic->SetupProperties();
 		}
 
 		if (m_chillMusic)
 		{
-			m_chillMusic->SetGain(Math::Lerp(1.0f, 0.0f, dangerRatio));
-			m_chillMusic->SetupProperties();
+			if (dangerRatio > 0.3f && m_chillMusic->GetGain() > 0.1f)
+			{
+				m_chillMusic->SetGain(0.0f);
+				m_chillMusic->SetupProperties();
+			}
+
+			// if(dangerRatio > 0.3f)
+			// m_chillMusic->SetGain(Math::Lerp(1.0f, 0.0f, dangerRatio));
+			// else
+			// m_chillMusic->SetGain(1.0f);
+
+			/// m_chillMusic->SetupProperties();
 		}
+	}
+
+	void AudioManager::OnResetHeat()
+	{
+		if (m_chillMusic && m_chillMusic->GetGain() < 0.1f)
+		{
+			m_chillMusic->Rewind();
+			m_chillMusic->SetGain(1.0f);
+			m_chillMusic->Play();
+		}
+
+		// if(m_chillMusic)
+		// {
+		//     m_chillMusic->Rewind();
+		//     m_chillMusic->SetGain(1.0f);
+		//     m_chillMusic->SetupProperties();
+		// }
 	}
 
 } // namespace Lina
