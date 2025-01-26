@@ -89,7 +89,7 @@ namespace Lina
 
 		m_bubbleManager = new BubbleManager(m_world);
 		m_hudManager	= new HudManager(this);
-        m_audioManager = new AudioManager(m_world);
+		m_audioManager	= new AudioManager(m_world);
 		m_player		= new Player(m_world, m_bubbleManager, app);
 		m_mouseLocked	= true;
 
@@ -117,7 +117,7 @@ namespace Lina
 
 		m_gameLostScreen = m_world->FindEntity("GUIGameLost");
 		m_gameWonScreen	 = m_world->FindEntity("GUIGameWon");
-    m_fireVisuals = m_world->FindEntity("Fire");
+		m_fireVisuals	 = m_world->FindEntity("Fire");
 
 		if (m_gameLostScreen)
 		{
@@ -153,7 +153,7 @@ namespace Lina
 	{
 		m_world->GetPhysicsWorld()->RemoveContactListener(this);
 
-        delete m_audioManager;
+		delete m_audioManager;
 		delete m_waveManager;
 		delete m_player;
 		delete m_bubbleManager;
@@ -181,8 +181,8 @@ namespace Lina
 
 	void Game::OnGameTick(float dt)
 	{
-        m_audioManager->Tick(dt, m_heatDangerRatio);
-        
+		m_audioManager->Tick(dt, m_heatDangerRatio);
+
 		if (m_gameState != GameState::Running)
 			return;
 
@@ -299,14 +299,13 @@ namespace Lina
 			m_sunLight->SetIntensity(Math::Lerp(0.45f, 2.0f, dangerRatio));
 		}
 
-	
-    
-        if (m_fireVisuals) {
-            Vector3 scale = m_fireVisuals->GetLocalScale();
-            scale.y = Math::Lerp(0.0f, 1.0f, dangerRatio);
-            m_fireVisuals->SetLocalScale(scale);
-        }
-    
+		if (m_fireVisuals)
+		{
+			Vector3 scale = m_fireVisuals->GetLocalScale();
+			scale.y		  = Math::Lerp(0.0f, 1.0f, dangerRatio);
+			m_fireVisuals->SetLocalScale(scale);
+		}
+
 		Material* skyMat = m_world->GetResourceManager()->GetIfExists<Material>(m_world->GetGfxSettings().skyMaterial);
 		if (skyMat)
 		{
@@ -316,8 +315,8 @@ namespace Lina
 			skyMat->SetProperty<Vector3>("horizonColor"_hs, horizonColor);
 			m_gameLauncher->GetApp()->GetGfxContext().MarkBindlessDirty();
 		}
-        
-        m_heatDangerRatio = dangerRatio;
+
+		m_heatDangerRatio = dangerRatio;
 	}
 
 	void Game::OnContactBegin(Entity* e1, Entity* e2, const Vector3& p1, const Vector3& p2)
