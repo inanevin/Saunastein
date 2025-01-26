@@ -45,8 +45,10 @@ namespace Lina
 	{
 		m_world = world;
 
-		m_entity	= m_world->FindEntity("Player");
-		m_cameraRef = m_world->FindEntity("CameraReference");
+		m_entity		= m_world->FindEntity("Player");
+		m_cameraRef		= m_world->FindEntity("CameraReference");
+		m_app			= app;
+		m_bubbleManager = bm;
 
 		JPH::Body*			body = m_entity->GetPhysicsBody();
 		JPH::MassProperties mp;
@@ -70,7 +72,10 @@ namespace Lina
 		m_movement.headbobYawSpeed = 7.5f;
 
 		m_movement.headSwayPower = 0.0f;
-		m_weapon				 = new Weapon(m_world, this, bm, app, "Weapon1_Idle", "Weapon1_Fire", 2, Vector2(0.08f, -0.01f));
+
+		m_weapon = new Weapon(m_world, this, m_bubbleManager, m_app);
+
+		SetupWeapon(PlayerWeaponType::Melee, 0.0f);
 	}
 
 	Player::~Player()
@@ -92,6 +97,7 @@ namespace Lina
 	{
 		static float test = 0.0f;
 		test += dt;
+		const bool running = m_world->GetInput().GetKey(LINAGX_KEY_LSHIFT);
 
 		const float	  verticalTarget   = m_world->GetInput().GetKey(LINAGX_KEY_W) ? 1.0f : (m_world->GetInput().GetKey(LINAGX_KEY_S) ? -1.0f : 0.0f);
 		const float	  horizontalTarget = m_world->GetInput().GetKey(LINAGX_KEY_D) ? 1.0f : (m_world->GetInput().GetKey(LINAGX_KEY_A) ? -1.0f : 0.0f);
@@ -102,7 +108,7 @@ namespace Lina
 
 		if (!Math::Equals(direction.x, 0.0f, 0.001f) || !Math::Equals(direction.y, 0.0f, 0.001f))
 		{
-			const Vector3 force = direction.Normalized() * m_movement.movementPower;
+			const Vector3 force = direction.Normalized() * m_movement.movementPower * (running ? m_movement.runningMultiplier : 1.0f);
 			m_entity->GetPhysicsBody()->AddForce(ToJoltVec3(force));
 		}
 
@@ -116,7 +122,7 @@ namespace Lina
 		// Head-bob
 		Vector3 headbob =
 			Vector3(Math::Sin(SystemInfo::GetAppTimeF() * m_movement.headbobYawSpeed) * m_movement.headbobYawPower, Math::Cos(SystemInfo::GetAppTimeF() * m_movement.headbobPitchSpeed) * m_movement.headbobPitchPower, input.x * m_movement.headSwayPower);
-		headbob *= direction.Magnitude() * 2.0f;
+		headbob *= direction.Magnitude() * 2.0f * (running ? 1.8f : 1.0f);
 
 		const Quaternion qX				= Quaternion::AngleAxis(m_runtime.cameraAngles.x + headbob.x, Vector3::Up);
 		const Quaternion qY				= Quaternion::AngleAxis(m_runtime.cameraAngles.y + headbob.y, Vector3::Right);
@@ -127,6 +133,7 @@ namespace Lina
 		m_cameraRef->SetRotation(m_runtime.targetRotation);
 		m_cameraRef->SetPosition(m_entity->GetPosition() + m_entity->GetRotation().GetForward() * 0.1f);
 
+		m_weapon->m_runtime.isRunning = running;
 		m_weapon->Tick(dt);
 
 		// Camera.
@@ -134,8 +141,96 @@ namespace Lina
 		m_world->GetWorldCamera().SetRotation(m_cameraRef->GetRotation());
 		m_world->GetWorldCamera().Calculate(m_world->GetScreen().GetRenderSize());
 
+		static constexpr float switchSpeed = 160.0f;
+
+		// AAA quality animation system.
+		if (m_switchingWeapon)
+		{
+			if (m_switchingWeaponStage1)
+			{
+				m_weapon->m_movement.holsterAlpha += 0.05f;
+
+				if (m_weapon->m_movement.holsterAlpha > 0.99f)
+				{
+					m_switchingWeaponStage1 = false;
+					SetupWeapon(m_switchWeaponTo, 1.0f);
+				}
+			}
+			else
+			{
+				m_weapon->m_movement.holsterAlpha -= 0.05f;
+
+				if (m_weapon->m_movement.holsterAlpha < 0.02f)
+				{
+					m_weapon->m_movement.holsterAlpha = 0.0f;
+					m_switchingWeapon				  = false;
+				}
+			}
+		}
+
 		// DEBUG
 		if (m_world->GetInput().GetKey(LINAGX_KEY_K))
 			UpdateHealth(-10.0f);
+
+		if (m_world->GetInput().GetKeyDown(LINAGX_KEY_1))
+			SwitchWeapon(PlayerWeaponType::Melee);
+
+		if (m_world->GetInput().GetKeyDown(LINAGX_KEY_2))
+			SwitchWeapon(PlayerWeaponType::Pistol);
 	}
+
+	void Player::SwitchWeapon(PlayerWeaponType type)
+	{
+		if (type == m_weaponType)
+			return;
+
+		if (m_switchingWeapon)
+			return;
+
+		m_switchWeaponTo		= type;
+		m_switchingWeapon		= true;
+		m_switchingWeaponStage1 = true;
+	}
+
+	void Player::CreateWeapon(PlayerWeaponType type, float holsterAlpha)
+	{
+		if (m_weapon)
+			delete m_weapon;
+	}
+
+	void Player::SetupWeapon(PlayerWeaponType type, float holsterAlpha)
+	{
+		m_weaponType					  = type;
+		m_weapon->m_movement.holsterAlpha = holsterAlpha;
+
+		if (type == PlayerWeaponType::Melee)
+		{
+			m_weapon->m_movement.bobPower		 = 0.7f;
+			m_weapon->m_movement.bobSpeed		 = 12.0f;
+			m_weapon->m_movement.swaySpeed		 = 0.8f;
+			m_weapon->m_movement.swayPowerX		 = 0.001f;
+			m_weapon->m_movement.swayPowerY		 = -0.001f;
+			m_weapon->m_movement.localOffset	 = Vector3(0.0f, 0.0f, 0.5f);
+			m_weapon->m_movement.holsterOffset	 = Vector3(0.0f, -0.5f, 0.0f);
+			m_weapon->m_movement.runningOffset	 = Vector3(0.0f, -0.2f, 0.0f);
+			m_weapon->m_animation->m_fireDisplay = 6;
+			m_weapon->SetAnim("Weapon0_Idle", "Weapon0_Fire");
+		}
+		else
+		{
+			m_weapon->m_movement.bobPower		 = 0.7f;
+			m_weapon->m_movement.bobSpeed		 = 12.0f;
+			m_weapon->m_movement.swaySpeed		 = 0.8f;
+			m_weapon->m_movement.swayPowerX		 = 0.001f;
+			m_weapon->m_movement.swayPowerY		 = -0.001f;
+			m_weapon->m_movement.localOffset	 = Vector3(0.08f, -0.01f, 0.5f);
+			m_weapon->m_movement.holsterOffset	 = Vector3(0.0f, -0.5f, 0.0f);
+			m_weapon->m_movement.runningOffset	 = Vector3(0.0f, -0.2f, 0.0f);
+			m_weapon->m_animation->m_fireDisplay = 2;
+			m_weapon->SetAnim("Weapon1_Idle", "Weapon1_Fire");
+		}
+
+		m_weapon->m_runtime.localPositionOffset = m_weapon->CalculateTargetPosition(Vector2::Zero);
+	}
+
 } // namespace Lina

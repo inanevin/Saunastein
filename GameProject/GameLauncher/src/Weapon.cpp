@@ -49,10 +49,9 @@ SOFTWARE.
 namespace Lina
 {
 
-	WeaponAnimation::WeaponAnimation(EntityWorld* world, Entity* idle, Entity* fire, Application* app, uint32 fireDisp)
+	WeaponAnimation::WeaponAnimation(EntityWorld* world, Application* app)
 	{
 		m_app						   = app;
-		m_fireDisplay				   = fireDisp;
 		Entity*					 wep   = world->FindEntity("WeaponQuad");
 		CompModel*				 model = world->GetComponent<CompModel>(wep);
 		const Vector<ResourceID> mats  = model->GetMaterials();
@@ -60,21 +59,8 @@ namespace Lina
 		if (!mats.empty())
 			m_material = m_app->GetResourceManager().GetIfExists<Material>(mats.at(0));
 
-		if (idle)
-		{
-			for (const EntityParameter& p : idle->GetParams().params)
-			{
-				m_idle = p.valRes;
-			}
-		}
-
-		if (fire)
-		{
-			for (const EntityParameter& p : fire->GetParams().params)
-			{
-				m_fire = p.valRes;
-			}
-		}
+		m_used = m_idle;
+		UpdateMaterial();
 	}
 
 	void WeaponAnimation::Tick(float dt)
@@ -100,7 +86,7 @@ namespace Lina
 		if (m_material->HasProperty<LinaTexture2D>("txtAlbedo"_hs))
 		{
 			LinaTexture2D* prop = m_material->GetProperty<LinaTexture2D>("txtAlbedo"_hs);
-			if (prop->texture != m_used)
+			if (prop->texture != m_used && m_used != 0)
 			{
 				prop->texture = m_used;
 				m_app->GetGfxContext().MarkBindlessDirty();
@@ -108,7 +94,7 @@ namespace Lina
 		}
 	}
 
-	Weapon::Weapon(EntityWorld* world, Player* player, BubbleManager* bm, Application* app, const String& idleStr, const String& fireStr, uint32 fireFrames, const Vector2& localOffset)
+	Weapon::Weapon(EntityWorld* world, Player* player, BubbleManager* bm, Application* app)
 	{
 		m_app			= app;
 		m_world			= world;
@@ -117,28 +103,28 @@ namespace Lina
 
 		m_entity = m_world->FindEntity("WeaponQuad");
 
-		m_movement.bobPower	   = 0.7f;
-		m_movement.bobSpeed	   = 12.0f;
-		m_movement.swaySpeed   = 0.8f;
-		m_movement.swayPowerX  = 0.001f;
-		m_movement.swayPowerY  = -0.001f;
-		m_movement.localOffset = localOffset;
-
 		if (!m_entity)
 			return;
 
-		m_runtime.startLocalPos	  = m_entity->GetLocalPosition();
-		m_runtime.startLocalEuler = m_entity->GetLocalRotationAngles();
+		m_runtime.localPositionOffset = CalculateTargetPosition(Vector2::Zero);
+		m_runtime.startLocalEuler	  = m_entity->GetLocalRotationAngles();
 
-		Entity* idle = m_world->FindEntity(idleStr);
-		Entity* fire = m_world->FindEntity(fireStr);
-		m_animation	 = new WeaponAnimation(m_world, idle, fire, app, fireFrames);
+		m_animation = new WeaponAnimation(m_world, app);
 	}
 
 	Weapon::~Weapon()
 	{
 		if (m_animation)
 			delete m_animation;
+	}
+
+	Vector3 Weapon::CalculateTargetPosition(const Vector2& md)
+	{
+		const Vector3 holster = m_movement.holsterOffset * m_movement.holsterAlpha;
+		const Vector3 running = m_movement.runningOffset * (m_runtime.isRunning ? 1.0f : 0.0f);
+		Vector3		  targetLocalPositionOffset =
+			Vector3(md.x * m_movement.swayPowerX + m_movement.localOffset.x + holster.x + running.x, md.y * m_movement.swayPowerY + m_movement.localOffset.y + holster.y + running.y, m_movement.localOffset.z + holster.z + running.z);
+		return targetLocalPositionOffset;
 	}
 
 	void Weapon::Tick(float dt)
@@ -149,11 +135,10 @@ namespace Lina
 		float bob = Math::Sin(SystemInfo::GetAppTimeF() * m_movement.bobSpeed) * m_movement.bobPower;
 		bob *= m_player->m_runtime.velocity.Magnitude();
 
-		const Vector2 md = m_world->GetInput().GetMouseDelta();
+		const Vector2 md			  = m_world->GetInput().GetMouseDelta();
+		m_runtime.localPositionOffset = Math::Lerp(m_runtime.localPositionOffset, CalculateTargetPosition(md), m_movement.swaySpeed * dt * 10.0f);
 
-		const Vector3 targetLocalPositionOffset = Vector3(md.x * m_movement.swayPowerX + m_movement.localOffset.x, md.y * m_movement.swayPowerY + m_movement.localOffset.y, 0.0f);
-		m_runtime.localPositionOffset			= Math::Lerp(m_runtime.localPositionOffset, targetLocalPositionOffset, m_movement.swaySpeed * dt);
-		m_entity->SetLocalPosition(m_runtime.startLocalPos + m_runtime.localPositionOffset);
+		m_entity->SetLocalPosition(m_runtime.localPositionOffset);
 		m_entity->SetLocalRotation(Quaternion::PitchYawRoll(Vector3(m_runtime.startLocalEuler.x, 0.0f, bob)));
 
 		m_animation->Tick(dt);
@@ -174,6 +159,30 @@ namespace Lina
 		const Vector3	  shootForce	= camRotation.GetForward() * 500.0f;
 		m_bubbleManager->SpawnBubble(shootForce, spawnPosition, spawnRotation);
 		m_animation->Fire();
+	}
+
+	void Weapon::SetAnim(const String& animIdle, const String& animFire)
+	{
+		Entity* idle = m_world->FindEntity(animIdle);
+		Entity* fire = m_world->FindEntity(animFire);
+		if (idle)
+		{
+			for (const EntityParameter& p : idle->GetParams().params)
+			{
+				m_animation->m_idle = p.valRes;
+			}
+		}
+
+		if (fire)
+		{
+			for (const EntityParameter& p : fire->GetParams().params)
+			{
+				m_animation->m_fire = p.valRes;
+			}
+		}
+
+		m_animation->m_used = m_animation->m_idle;
+		m_animation->UpdateMaterial();
 	}
 
 } // namespace Lina

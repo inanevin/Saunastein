@@ -46,14 +46,20 @@ namespace Lina
 	class Game;
 	class Application;
 
+	enum class PlayerWeaponType
+	{
+		Melee,
+		Pistol
+	};
 	class Player
 	{
 	public:
 		struct Movement
 		{
-			float movementPower = 10.5f;
-			float rotationSpeed = 20.0f;
-			float rotationPower = 5.0f;
+			float movementPower		= 10.5f;
+			float runningMultiplier = 1.2f;
+			float rotationSpeed		= 20.0f;
+			float rotationPower		= 5.0f;
 
 			float headbobPitchPower = 4.0f;
 			float headbobYawPower	= 2.0f;
@@ -76,14 +82,26 @@ namespace Lina
 		void Tick(float dt);
 		void UpdateHealth(float addition);
 
-		EntityWorld* m_world	 = nullptr;
-		Entity*		 m_entity	 = nullptr;
-		Entity*		 m_cameraRef = nullptr;
-		Weapon*		 m_weapon	 = nullptr;
+		void SwitchWeapon(PlayerWeaponType type);
+		void CreateWeapon(PlayerWeaponType type, float holsterAlpha);
+
+		void SetupWeapon(PlayerWeaponType type, float holsterAlpha);
+
+		BubbleManager* m_bubbleManager = nullptr;
+		Application*   m_app		   = nullptr;
+		EntityWorld*   m_world		   = nullptr;
+		Entity*		   m_entity		   = nullptr;
+		Entity*		   m_cameraRef	   = nullptr;
+		Weapon*		   m_weapon		   = nullptr;
 
 		float m_health = 100.0f;
 
-		Movement m_movement = {};
-		Runtime	 m_runtime	= {};
+		bool			 m_switchingWeapon		 = false;
+		bool			 m_switchingWeaponStage1 = false;
+		PlayerWeaponType m_switchWeaponTo		 = PlayerWeaponType::Melee;
+
+		Movement		 m_movement	  = {};
+		Runtime			 m_runtime	  = {};
+		PlayerWeaponType m_weaponType = PlayerWeaponType::Melee;
 	};
 } // namespace Lina

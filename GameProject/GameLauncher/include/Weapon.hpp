@@ -52,7 +52,7 @@ namespace Lina
 	class WeaponAnimation
 	{
 	public:
-		WeaponAnimation(EntityWorld* world, Entity* idle, Entity* fire, Application* app, uint32 fireDisplay);
+		WeaponAnimation(EntityWorld* world, Application* app);
 
 		inline void Idle()
 		{
@@ -67,10 +67,8 @@ namespace Lina
 
 		void Tick(float dt);
 
-	private:
 		void UpdateMaterial();
 
-	private:
 		uint32		 m_ctr		   = 0;
 		uint32		 m_fireDisplay = 0;
 		ResourceID	 m_idle		   = 0;
@@ -85,27 +83,37 @@ namespace Lina
 	public:
 		struct Movement
 		{
-			float	bobPower	= 4.0f;
-			float	bobSpeed	= 8.0f;
-			float	swayPowerX	= 0.5f;
-			float	swayPowerY	= 0.5f;
-			float	swaySpeed	= 15.0f;
-			Vector2 localOffset = Vector2::Zero;
+			float	bobPower	  = 4.0f;
+			float	bobSpeed	  = 8.0f;
+			float	swayPowerX	  = 0.5f;
+			float	swayPowerY	  = 0.5f;
+			float	swaySpeed	  = 15.0f;
+			Vector3 localOffset	  = Vector3::Zero;
+			Vector3 holsterOffset = Vector3::Zero;
+			Vector3 runningOffset = Vector3::Zero;
+			float	holsterAlpha  = 0.0f;
 		};
 
 		struct Runtime
 		{
-			Vector3 startLocalPos		= Vector3::Zero;
 			Vector3 startLocalEuler		= Vector3::Zero;
 			Vector3 localPositionOffset = Vector3::Zero;
+			bool	isRunning			= false;
 		};
 
-		Weapon(EntityWorld* world, Player* player, BubbleManager* bm, Application* app, const String& idle, const String& fire, uint32 fireFrames, const Vector2& localOffset);
+		Weapon(EntityWorld* world, Player* player, BubbleManager* bm, Application* app);
 		virtual ~Weapon();
 
 		virtual void Tick(float dt);
 
-		void Fire();
+		void	Fire();
+		void	SetAnim(const String& animIdle, const String& animFire);
+		Vector3 CalculateTargetPosition(const Vector2& md);
+
+		inline void MoveAway()
+		{
+			m_isMovingAway = true;
+		}
 
 		Movement		 m_movement		 = {};
 		Runtime			 m_runtime		 = {};
@@ -115,6 +123,9 @@ namespace Lina
 		BubbleManager*	 m_bubbleManager = nullptr;
 		Application*	 m_app			 = nullptr;
 		WeaponAnimation* m_animation	 = nullptr;
+		bool			 m_isMovingAway	 = false;
+		bool			 m_movedAway	 = false;
+		float			 m_swayAlpha	 = 0.0f;
 	};
 
 } // namespace Lina

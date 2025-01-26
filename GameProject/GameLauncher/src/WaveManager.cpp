@@ -35,49 +35,56 @@ namespace Lina
 	static Vector<WaveDesc> waves = {
 		WaveDesc{
 			.name			= "Get ready",
-			.waitTimeBefore = 1.0f,
+			.waitTimeBefore = 2.0f,
 		},
-		WaveDesc{.waitTimeBefore = 3.0f,
-				 .name			 = "Wave 1",
-				 .enemies =
-					 {
-             WaveEnemyDesc{.resourceKey = "Enemy_1", .health = 10, .speed = 5, .waitTimeBefore = 0.0f},
-             WaveEnemyDesc{.resourceKey = "Enemy_1", .health = 10, .speed = 5, .waitTimeBefore = 0.0f},
-//             WaveEnemyDesc{.resourceKey = "Enemy_1", .health = 100, .speed = 5, .waitTimeBefore = 0.0f},
-//             WaveEnemyDesc{.resourceKey = "Enemy_1", .health = 100, .speed = 5, .waitTimeBefore = 0.0f},
-//             WaveEnemyDesc{.resourceKey = "Enemy_1", .health = 100, .speed = 5, .waitTimeBefore = 0.0f},
-//             WaveEnemyDesc{.resourceKey = "Enemy_1", .health = 100, .speed = 5, .waitTimeBefore = 0.0f},
-//             WaveEnemyDesc{.resourceKey = "Enemy_1", .health = 100, .speed = 5, .waitTimeBefore = 0.0f},
-//             WaveEnemyDesc{.resourceKey = "Enemy_1", .health = 100, .speed = 5, .waitTimeBefore = 0.0f},
-//             WaveEnemyDesc{.resourceKey = "Enemy_1", .health = 100, .speed = 5, .waitTimeBefore = 0.0f},
-//             WaveEnemyDesc{.resourceKey = "Enemy_1", .health = 100, .speed = 5, .waitTimeBefore = 0.0f},
-					 }},
-		WaveDesc{
+    
+    WaveDesc{
+      .name = "Wave 1",
+      .waitTimeBefore = 2.0f,
+      .enemies = {
+        WaveEnemyDesc{.resourceKey = "Enemy_1", .health = 3, .speed = 5, .waitTimeBefore = 0.0f},
+        WaveEnemyDesc{.resourceKey = "Enemy_1", .health = 3, .speed = 5, .waitTimeBefore = 0.0f},
+      }
+    },
+    WaveDesc{
+      .name = "Wave 2",
+      .waitTimeBefore = 3.0f,
+      .enemies = {
+        WaveEnemyDesc{.resourceKey = "Enemy_1", .health = 3, .speed = 5, .waitTimeBefore = 0.0f},
+        WaveEnemyDesc{.resourceKey = "Enemy_1", .health = 3, .speed = 5, .waitTimeBefore = 0.0f},
+        WaveEnemyDesc{.resourceKey = "Enemy_2", .health = 10, .speed = 5, .waitTimeBefore = 0.0f},
+        WaveEnemyDesc{.resourceKey = "Enemy_1", .health = 3, .speed = 5, .waitTimeBefore = 0.0f},
+      }
+    },
+
+    WaveDesc{
+      .name = "Wave 2",
+      .waitTimeBefore = 3.0f,
+      .enemies = {
+        WaveEnemyDesc{.resourceKey = "Enemy_2", .health = 3, .speed = 5, .waitTimeBefore = 0.0f},
+        WaveEnemyDesc{.resourceKey = "Enemy_2", .health = 3, .speed = 5, .waitTimeBefore = 0.0f},
+        WaveEnemyDesc{.resourceKey = "Enemy_3", .health = 20, .speed = 5, .waitTimeBefore = 0.0f},
+      }
+    },
+    
+    WaveDesc{
 			.waitTimeBefore = 0.5f,
 			.name			= "Well done!",
 		},
-		WaveDesc{.waitTimeBefore = 3.0f,
-				 .name			 = "Wave 2",
-				 .enemies =
-					 {
-             WaveEnemyDesc{.resourceKey = "Enemy_2", .health = 10, .speed = 5, .waitTimeBefore = 0.1f},
-						 WaveEnemyDesc{.resourceKey = "Enemy_2", .health = 10, .speed = 5, .waitTimeBefore = 0.1f},
-//             WaveEnemyDesc{.resourceKey = "Enemy_1", .health = 100, .speed = 5, .waitTimeBefore = 0.1f},
-//             WaveEnemyDesc{.resourceKey = "Enemy_1", .health = 100, .speed = 5, .waitTimeBefore = 0.1f},
-//             WaveEnemyDesc{.resourceKey = "Enemy_1", .health = 100, .speed = 5, .waitTimeBefore = 0.1f},
-//             WaveEnemyDesc{.resourceKey = "Enemy_1", .health = 100, .speed = 5, .waitTimeBefore = 0.1f},
-//             WaveEnemyDesc{.resourceKey = "Enemy_1", .health = 100, .speed = 5, .waitTimeBefore = 0.1f},
-//             WaveEnemyDesc{.resourceKey = "Enemy_1", .health = 100, .speed = 5, .waitTimeBefore = 0.1f},
-//             WaveEnemyDesc{.resourceKey = "Enemy_1", .health = 100, .speed = 5, .waitTimeBefore = 0.1f},
-//             WaveEnemyDesc{.resourceKey = "Enemy_1", .health = 100, .speed = 5, .waitTimeBefore = 0.1f},
-//             WaveEnemyDesc{.resourceKey = "Enemy_1", .health = 100, .speed = 5, .waitTimeBefore = 0.1f},
-//             WaveEnemyDesc{.resourceKey = "Enemy_1", .health = 100, .speed = 5, .waitTimeBefore = 0.1f},
-//             WaveEnemyDesc{.resourceKey = "Enemy_1", .health = 100, .speed = 5, .waitTimeBefore = 0.1f},
-//             WaveEnemyDesc{.resourceKey = "Enemy_1", .health = 100, .speed = 5, .waitTimeBefore = 0.1f},
-//             WaveEnemyDesc{.resourceKey = "Enemy_1", .health = 100, .speed = 5, .waitTimeBefore = 0.1f},
-//             WaveEnemyDesc{.resourceKey = "Enemy_1", .health = 100, .speed = 5, .waitTimeBefore = 0.1f},
-//             WaveEnemyDesc{.resourceKey = "Enemy_1", .health = 100, .speed = 5, .waitTimeBefore = 0.1f},
-					 }},
+    
+    WaveDesc{.waitTimeBefore = 10.0f,
+        .name			 = "Here's some more!",
+        .enemies = {
+          WaveEnemyDesc{.resourceKey = "Enemy_3", .health = 20, .speed = 5, .waitTimeBefore = 0.0f},
+          WaveEnemyDesc{.resourceKey = "Enemy_3", .health = 20, .speed = 5, .waitTimeBefore = 0.0f},
+          WaveEnemyDesc{.resourceKey = "Enemy_3", .health = 20, .speed = 5, .waitTimeBefore = 0.0f},
+          WaveEnemyDesc{.resourceKey = "Enemy_3", .health = 20, .speed = 5, .waitTimeBefore = 0.0f},
+          WaveEnemyDesc{.resourceKey = "Enemy_3", .health = 20, .speed = 5, .waitTimeBefore = 0.0f},
+          WaveEnemyDesc{.resourceKey = "Enemy_3", .health = 20, .speed = 5, .waitTimeBefore = 0.0f},
+          WaveEnemyDesc{.resourceKey = "Enemy_3", .health = 20, .speed = 5, .waitTimeBefore = 0.0f},
+          WaveEnemyDesc{.resourceKey = "Enemy_3", .health = 20, .speed = 5, .waitTimeBefore = 0.0f},
+        }
+    },
 	};
 
 	WaveManager::WaveManager(Game* game) : m_game(game)
@@ -185,7 +192,7 @@ namespace Lina
 
 static void HandleEnemyDamage(WaveManager* wm, BubbleManager::BubbleData* bubble, Enemy* enemy) {
   if (!enemy->m_dead) {
-    enemy->m_health--;
+    enemy->TakeDamage(1);
     LINA_INFO("ENEMY TAKE HIT! Has {0}", enemy->m_health);
   }
   

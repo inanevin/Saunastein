@@ -22,6 +22,7 @@ namespace Lina
 
 		void Tick(float dt);
     bool IsAlive();
+    void TakeDamage(int);
 		~Enemy();
 
 		//	private:
@@ -31,6 +32,7 @@ namespace Lina
 		uint32_t		m_currentSpriteIdx = 0;
 		Vector<Entity*> m_sprites;
 		float			m_timer	 = 0.0f;
+    float     m_hitFrameTime = 0;
 		int32_t		m_health = 0;
     bool        m_dead = false;
 	};
