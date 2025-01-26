@@ -74,6 +74,9 @@ namespace Lina
 		void Quit();
 		void Restart();
 
+		void InitializeGame();
+		void ShutdownGame();
+
 		Application* GetApp()
 		{
 			return m_app;
@@ -84,7 +87,7 @@ namespace Lina
 		bool VerifyPackages(String& errString);
 
 	private:
-		Game			   m_game			   = {};
+		Game*			   m_game			   = nullptr;
 		Plugin*			   m_gamePlugin		   = nullptr;
 		PluginInterface	   m_pluginInterface   = {};
 		LinaGX::Window*	   m_window			   = nullptr;

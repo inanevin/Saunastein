@@ -113,6 +113,18 @@ namespace Lina
 		}
 	}
 
+	void GameLauncher::InitializeGame()
+	{
+		m_game		= new Game();
+		m_gameBegun = false;
+	}
+
+	void GameLauncher::ShutdownGame()
+	{
+		m_game->OnGameEnd();
+		delete m_game;
+	}
+
 	void GameLauncher::OnWorldLoaded(WorldRenderer* wr)
 	{
 		m_wr	= wr;
@@ -159,13 +171,16 @@ namespace Lina
 #endif
 			m_window->SetPosition({});
 		}
+
+		InitializeGame();
 	}
 
 	void GameLauncher::OnWorldUnloaded(ResourceID id)
 	{
 		if (m_swapchainMaterial)
 			m_app->GetResourceManager().DestroyResource(m_swapchainMaterial);
-		m_game.OnGameEnd();
+
+		ShutdownGame();
 
 		m_wr	= nullptr;
 		m_world = nullptr;
@@ -181,10 +196,10 @@ namespace Lina
 
 		m_swapchainRenderer->CheckVisibility();
 
-		if (m_game.m_heatLevel > 5.0f)
+		if (m_game->m_heatLevel > 5.0f)
 		{
-			const float vign = Math::Remap(m_game.m_heatLevel, 5.0f, 100.0f, 0.0f, 1.0f);
-			const float shim = Math::Remap(m_game.m_heatLevel, 5.0f, 100.0f, 0.75f, 1.0f);
+			const float vign = Math::Remap(m_game->m_heatLevel, 5.0f, 100.0f, 0.0f, 1.0f);
+			const float shim = Math::Remap(m_game->m_heatLevel, 5.0f, 100.0f, 0.75f, 1.0f);
 
 			m_heatEnabled = true;
 			m_swapchainMaterial->SetProperty<float>("flames"_hs, vign);
@@ -192,13 +207,18 @@ namespace Lina
 			m_swapchainMaterial->SetProperty<float>("vignette"_hs, 0.5f);
 			m_app->GetGfxContext().MarkBindlessDirty();
 		}
-		else if (m_game.m_heatLevel < 5.0f && m_heatEnabled)
+		else if (m_game->m_heatLevel < 5.0f && m_heatEnabled)
 		{
 			m_heatEnabled = false;
 			m_swapchainMaterial->SetProperty<float>("flames"_hs, 0.0f);
 			m_swapchainMaterial->SetProperty<float>("heatShimmer"_hs, 0.0f);
 			m_swapchainMaterial->SetProperty<float>("vignette"_hs, 0.0f);
 			m_app->GetGfxContext().MarkBindlessDirty();
+		}
+
+		if (m_window->GetInput()->GetKeyDown(LINAGX_KEY_R))
+		{
+			Restart();
 		}
 
 		if (m_world)
@@ -210,10 +230,10 @@ namespace Lina
 			if (!m_gameBegun)
 			{
 				m_gameBegun = true;
-				m_game.OnGameBegin(m_world, this, m_app);
+				m_game->OnGameBegin(m_world, this, m_app);
 			}
 
-			m_game.OnGamePreTick();
+			m_game->OnGamePreTick();
 		}
 	}
 
@@ -222,7 +242,7 @@ namespace Lina
 		if (m_world)
 		{
 			m_world->Tick(delta);
-			m_game.OnGameTick(delta);
+			m_game->OnGameTick(delta);
 		}
 
 		if (m_wr)
@@ -306,6 +326,8 @@ namespace Lina
 
 	void GameLauncher::Restart()
 	{
+		ShutdownGame();
+		InitializeGame();
 	}
 
 	void GameLauncher::OnWindowSizeChanged(LinaGX::Window* window, const LinaGX::LGXVector2ui& sz)
@@ -323,7 +345,7 @@ namespace Lina
 		if (window != m_window)
 			return;
 
-		m_game.OnKey(keycode, scancode, inputAction);
+		m_game->OnKey(keycode, scancode, inputAction);
 
 		if (m_world)
 			m_world->GetInput().OnKey(keycode, scancode, inputAction);
@@ -334,7 +356,7 @@ namespace Lina
 		if (window != m_window)
 			return;
 
-		m_game.OnMouse(button, inputAction);
+		m_game->OnMouse(button, inputAction);
 
 		if (m_world)
 			m_world->GetInput().OnMouse(button, inputAction);
@@ -360,7 +382,7 @@ namespace Lina
 
 	void GameLauncher::OnWindowFocus(LinaGX::Window* window, bool gainedFocus)
 	{
-		m_game.OnWindowFocus(gainedFocus);
+		m_game->OnWindowFocus(gainedFocus);
 	}
 
 	void GameLauncher::OnWindowHoverBegin(LinaGX::Window* window)
